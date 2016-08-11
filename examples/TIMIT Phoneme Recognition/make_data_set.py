@@ -12,6 +12,8 @@ from preprocess.get_features import get_features
 from preprocess.speaker_lists import get_speaker_lists
 
 
+
+
 # Location of the TIMIT speech corpus
 rootDir = "/media/joerg/hddred/development/datasets/TIMIT/TRAIN/"
 

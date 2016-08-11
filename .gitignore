@@ -1,0 +1,14 @@
+
+# PyCharm
+.idea
+
+# C extensions
+*.so
+
+# virtualenv
+venv_rnnfwk/
+
+# examples data
+examples/TIMIT Phoneme Recognition/data_set/timit*
+examples/TIMIT Phoneme Recognition/outcome/n*
+

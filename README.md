@@ -1,7 +1,9 @@
 
 # Recurrent Neural Network Framework
 
-[![License](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/joergfranke/rnnfwk/LICENSE)
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/joergfranke/rnnfwk/blob/master/LICENSE.txt)
+
+[![Python](https://img.shields.io/badge/python-2.7-yellow.svg](https://www.python.org/download/releases/2.7/)
 
 ## About
 This recurrent neural network framework implements a deep bidriectional LSTM algorithm in Python with use of the
