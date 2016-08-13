@@ -4,9 +4,10 @@
 Based on example designed by [Herbert Jaeger](http://www.pdx.edu/sites/www.pdx.edu.sysc/files/Jaeger_TrainingRNNsTutorial.2005.pdf)
 This task has two imput signal, a start signal and a duration signal. The target output is a signal which starts at each start signal peek and builds a rectangular signal with length of duration signal value.
 
+![](sample.png =700x)
 <table>
   <tr>
-    <td><img src="sample.png?raw=true" width="200"></td>
+    <td><img src="sample.png?raw=true" width="600"></td>
   </tr>
 </table>
 
