@@ -14,17 +14,18 @@ This task has two imput signal, a start signal and a duration signal. The target
 ### How to use it
 
 1. Generate data set
-
-Run `make_data_set.py`
-
+⋅⋅* Run `make_data_set.py`
 2. Train model
-
 Run `train_model.py`
-
 3. Use model
-
 Run `ude_model.py`
 
+
+<ol>
+  <li>Generate data set</li> <dd>Run `make_data_set.py`</dd>
+  <li>Train model</li>Run `train_model.py`
+  <li>Use model</li>Run `ude_model.py`
+</ol>
 
 ### Hints
 
