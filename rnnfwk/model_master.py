@@ -44,7 +44,7 @@ class modelMaster:
     ########################################
     def dump(self):
 
-        data_location = self.p_struct["file_name"] + ".params"
+        data_location = self.p_struct["file_name"] + ".prm"
         self.pub("save " + data_location)
         d = klepto.archives.file_archive(data_location, cached=True,serialized=True)
         d['layer_weights'] = [[np.asarray(w.eval()) for w in layer] for layer in self.layer_weights]
@@ -96,7 +96,7 @@ class modelMaster:
         numb = 1
         fname =  self.p_struct['output_location'] + "n-" + net_str + bi_str + "_d-" + day_str + "_v-" + str(numb)
 
-        while(os.path.isfile(fname)):
+        while(os.path.isfile(fname + ".log")):
             numb +=1
             fname =  self.p_struct['output_location'] + "n-" + net_str + bi_str + "_d-" + day_str + "_v-" + str(numb)
 
@@ -109,7 +109,7 @@ class modelMaster:
         if(self.p_struct["output_type"]=="console" or self.p_struct["output_type"]=="both"):
             print text
         if(self.p_struct["output_type"]=="file" or self.p_struct["output_type"]=="both"):
-            self.fobj = open(self.p_struct["file_name"], "a")
+            self.fobj = open(self.p_struct["file_name"]  + ".log", "a")
             self.fobj.write(str(text) + "\n")
             self.fobj.close()
 
@@ -132,7 +132,7 @@ class modelMaster:
                 print kk, ": ", pp
             print "###"
         if(self.p_struct["output_type"]=="file" or self.p_struct["output_type"]=="both"):
-            self.fobj = open(self.p_struct["file_name"], "a")
+            self.fobj = open(self.p_struct["file_name"] + ".log", "a")
 
             self.fobj.write( "###" + "\n")
             self.fobj.write( "####### Boundary Detection with use of Long Short term Memories ########" + "\n")
