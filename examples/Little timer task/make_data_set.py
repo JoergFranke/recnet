@@ -12,10 +12,13 @@ import matplotlib.pyplot as plt
 
 def make_start_signal(rng, length):
     start_time = rng.randint(0,10,1)
-    time_frame = rng.randint(10,15,1)
+
     start_signal = np.zeros(length)
-    for i in xrange(start_time, length, time_frame):
+    i = start_time
+    while(i<length):
         start_signal[i] = 1
+        i += rng.randint(10,15,1)
+
     return start_signal
 
 

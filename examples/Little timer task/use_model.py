@@ -85,8 +85,8 @@ print("## area under the curve  : " + "{0:.4f}".format(np.mean(auc_error))) #str
 
 ###### PLOT SAMPLE
 
-sample_no = 0
-batch = 0
+sample_no = 1
+batch = 1
 net_out = forward_fn(test_mb_set_x[sample_no], test_mb_set_m[sample_no])[0]
 
 fig = plt.figure()
