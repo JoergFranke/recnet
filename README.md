@@ -12,11 +12,27 @@ This recurrent neural network framework implements a deep bidriectional LSTM alg
 the opportunity to test easily new ideas and implement the latest research.
 
 Current implemented features:
+- bidirectional LSTM Layers
+- Softmax
 - RMSprop
 - AdaDelta
 - Dropout
 - Identity function layer-wise
-
+- Weighted cross-entropy loss
+- Noisy inputs
 
 ## How to use it
 
+```bash
+git clone https://github.com/joergfranke/rnnfwk.git
+cd rnnfwk
+python setup.py install
+```
+
+## Further work
+
+- Tests
+- Implementations:
+    - Layer-Normalization
+    - GPU Layers
+    - Mix of SGD and AdaDelta
