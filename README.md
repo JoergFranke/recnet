@@ -24,6 +24,9 @@ __Current implemented features:__
 
 __Example of use:__
 
+|Little timer task](https://github.com/joergfranke/rnnfwk/tree/master/examples/little_timer_task)|<img src="examples/little_timer_task/sample.png"  width="250">|
+
+
 <table >
   <tr border="0">
     <td border="0"><a href="https://github.com/joergfranke/rnnfwk/tree/master/examples/little_timer_task">Little timer task</a></td>
