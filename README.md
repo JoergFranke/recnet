@@ -24,10 +24,10 @@ __Current implemented features:__
 
 __Example of use:__
 
-<table border="0px" cellpadding="0" cellspacing="0">
+<table border:none>
   <tr>
     <td><a href="https://github.com/joergfranke/rnnfwk/tree/master/examples/little_timer_task">Little timer task</a></td>
-    <td><img src="examples/little_timer_task/sample.png"  width="200"></td>
+    <td><img src="examples/little_timer_task/sample.png"  width="250"></td>
   </tr>
 </table>
 
