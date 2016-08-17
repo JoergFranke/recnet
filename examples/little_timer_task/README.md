@@ -22,8 +22,6 @@ This task has two imput signal, a start signal and a duration signal. The target
     - Run `use_model.py`
 
 
-
-
 ### Hints
 
 For training its usefull to have minimum two output signal. So in this example we use the target output and the inverse output. Otherwise cross entropy does't work.

@@ -1,9 +1,8 @@
 #!/usr/bin/env python
-__author__ = 'joerg'
 
 """ Little timer task """
 """___________________"""
-"""
+"""    USE MODEL
 """
 
 
@@ -15,13 +14,9 @@ os.environ["THEANO_FLAGS"] = t_flags
 
 
 ######         IMPORTS          ######
-import theano
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
-
 import numpy as np
 import sklearn.metrics
-from scipy import stats
-import time
 from collections import OrderedDict
 import matplotlib.pyplot as plt
 
@@ -29,55 +24,49 @@ from rnnfwk.build_model import rnnModel
 from rnnfwk.data_handler import load_minibatches
 
 
-
-###### GLOBAL TIMER
-time_0 = time.time()
-
 ########## RANDOM STREAMS
-params_optimization = OrderedDict()
-params_optimization["seed"] = 211
-rng = np.random.RandomState(params_optimization["seed"])
-trng = RandomStreams(params_optimization["seed"] )
-
-
+prm_optimization = OrderedDict()
+prm_optimization["seed"] = 211
+rng = np.random.RandomState(prm_optimization["seed"])
+trng = RandomStreams(prm_optimization["seed"] )
 
 
 ###### DATA IN
 print("# Load data")
-params_structure = OrderedDict()
-params_structure["batch_size"  ] = 10
-params_structure["set_specs"   ] = ""
-params_structure["corpus_name" ] = "little-timer"
+prm_structure = OrderedDict()
+prm_structure["batch_size"  ] = 10
+prm_structure["corpus_name" ] = "little-timer"
+prm_structure["data_location"] = "data_set/"
 
-data_location = "data_set/"
-
-data_name = params_structure["corpus_name" ] + '_' + 'test' + params_structure["set_specs" ]
-test_mb_set_x,test_mb_set_y,test_mb_set_m = load_minibatches(data_location, data_name, params_structure["batch_size"])
+data_name = prm_structure["corpus_name" ] + '_' + 'test'
+test_mb_set_x,test_mb_set_y,test_mb_set_m = load_minibatches(prm_structure["data_location"], data_name, prm_structure["batch_size"])
 set_length = test_mb_set_x.__len__()
 
+
 ###### LOAD MODEL
-#########################################################
-###################### ADD NAME FROM TRAINED MODEL HERE !
+################################################################################
+###################### ADD NAME FROM TRAINED MODEL HERE ! ######################
 model_name = "outcome/" + "n-*********************.prm"
 lstm = rnnModel(None, None, rng, trng, True, model_name, 10)
 
 forward_fn = lstm.get_forward_function()
 
-###### TEST MODEL
-ce_error = np.zeros([set_length*params_structure["batch_size"]])
-auc_error = np.zeros([set_length*params_structure["batch_size"]])
 
-for v in np.arange(0,set_length):
+###### TEST MODEL
+ce_error = np.zeros([set_length*prm_structure["batch_size"]])
+auc_error = np.zeros([set_length*prm_structure["batch_size"]])
+
+for v in np.arange(0, set_length):
     v_net_out_ = forward_fn(test_mb_set_x[v], test_mb_set_m[v])[0]
 
-    for b in np.arange(0,params_structure["batch_size"]):
-        true_out = test_mb_set_y[v][:,b,:]
-        code_out = v_net_out_[:,b,:]
+    for b in np.arange(0,prm_structure["batch_size"]):
+        true_out = test_mb_set_y[v][:, b, :]
+        code_out = v_net_out_[:, b, :]
 
-        count = v * params_structure["batch_size"] + b
+        count = v * prm_structure["batch_size"] + b
 
-        ce_error[count] = sklearn.metrics.log_loss( true_out,code_out)
-        auc_error[count] = sklearn.metrics.roc_auc_score( true_out,code_out)
+        ce_error[count] = sklearn.metrics.log_loss(true_out, code_out)
+        auc_error[count] = sklearn.metrics.roc_auc_score(true_out, code_out)
 
 
 print("## cross entropy sklearn : " + "{0:.4f}".format(np.mean(ce_error)))
@@ -85,7 +74,6 @@ print("## area under the curve  : " + "{0:.4f}".format(np.mean(auc_error)))
 
 
 ###### PLOT SAMPLE
-
 sample_no = 1
 batch = 1
 net_out = forward_fn(test_mb_set_x[sample_no], test_mb_set_m[sample_no])[0]
