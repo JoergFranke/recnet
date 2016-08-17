@@ -11,7 +11,7 @@ This recurrent neural network framework implements a deep bidriectional LSTM alg
 [Theano](http://deeplearning.net/software/theano/) library. The intension is a light weight flat implementation with
 the opportunity to test easily new ideas and implement the latest research.
 
-Current implemented features:
+__Current implemented features:__
 - bidirectional LSTM Layers
 - Softmax
 - RMSprop
@@ -21,7 +21,18 @@ Current implemented features:
 - Weighted cross-entropy loss
 - Noisy inputs
 
-## How to use it
+
+__Example of use:__
+
+<table>
+  <tr>
+    <td><a href="https://github.com/joergfranke/rnnfwk/tree/master/examples/little_timer_task">Little timer task</a></td>
+    <td><img src="examples/little_timer_task/sample.png"  width="200"></td>
+  </tr>
+</table>
+
+
+## How to install it
 
 ```bash
 git clone https://github.com/joergfranke/rnnfwk.git

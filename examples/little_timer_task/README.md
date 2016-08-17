@@ -13,6 +13,9 @@ This task has two imput signal, a start signal and a duration signal. The target
 
 ### How to use it
 
+1. Install:
+    - [RNNFWK](https://github.com/joergfranke/rnnfwk/blob/master/README.md).
+    - [requirements.txt](https://github.com/joergfranke/rnnfwk/tree/master/examples/little_timer_task/requirements.txt)
 1. Generate data set
     - Run `make_data_set.py`
 2. Train model
