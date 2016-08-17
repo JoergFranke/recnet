@@ -26,8 +26,8 @@ __Example of use:__
 
 <table >
   <tr border="0">
-    <td border="5"><a href="https://github.com/joergfranke/rnnfwk/tree/master/examples/little_timer_task">Little timer task</a></td>
-    <td><img src="examples/little_timer_task/sample.png"  width="250"></td>
+    <td border="0"><a href="https://github.com/joergfranke/rnnfwk/tree/master/examples/little_timer_task">Little timer task</a></td>
+    <td border="0><img src="examples/little_timer_task/sample.png"  width="250"></td>
   </tr>
 </table>
 
