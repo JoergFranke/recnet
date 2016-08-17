@@ -1,15 +1,24 @@
 
 language: python
 python:
-  - "2.6"
+#  - "2.6"
   - "2.7"
 #  - "3.2"
 #  - "3.3"
 #  - "3.4"
-  # does not have headers provided, please ask https://launchpad.net/~pypy/+archive/ppa
-  # maintainers to fix their pypy-dev package.
-  - "pypy"
+
 # command to install dependencies
+before_install:
+# Install miniconda to avoid compiling scipy
+  - mkdir -p download
+  - cd download
+  - wget -c https://repo.continuum.io/miniconda/Miniconda2-3.19.0-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - cd ..
+  - export PATH=/home/travis/miniconda2/bin:$PATH
+
+
 install:
   - pip install .
   - pip install -r requirements.txt
