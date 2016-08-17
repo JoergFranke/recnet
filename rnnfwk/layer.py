@@ -53,8 +53,7 @@ class LSTMlayer(layerMaster):
         - one function for each step, one for each sequence
     """
 
-    # todo clean file and delete BLSTM
-    def __init__(self, rng, trng, n_in, n_out, n_batches, go_backwards=False, old_weights=None): #, params_structure, layer_no ):
+    def __init__(self, rng, trng, n_in, n_out, n_batches, old_weights=None,go_backwards=False): #, params_structure, layer_no ):
 
         # Parameters
         self.go_backwards = go_backwards
@@ -174,8 +173,8 @@ class BLSTMlayer(layerMaster):
             forward_weights = old_weights[:old_weights.__len__()/2]
             backward_weights = old_weights[old_weights.__len__()/2:]
 
-            self.forward_layer  = LSTMlayer(rng, trng, n_in, n_out, n_batches, False, forward_weights)
-            self.backward_layer = LSTMlayer(rng, trng, n_in, n_out, n_batches, True, backward_weights)
+            self.forward_layer  = LSTMlayer(rng, trng, n_in, n_out, n_batches, forward_weights, False)
+            self.backward_layer = LSTMlayer(rng, trng, n_in, n_out, n_batches, backward_weights, True)
         else:
             self.forward_layer  = LSTMlayer(rng, trng, n_in, n_out, n_batches)
             self.backward_layer = LSTMlayer(rng, trng, n_in, n_out, n_batches, go_backwards=True)

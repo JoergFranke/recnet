@@ -24,9 +24,9 @@ from scipy import stats
 import time
 from collections import OrderedDict
 
+
 from rnnfwk.build_model import rnnModel
 from rnnfwk.data_handler import load_minibatches
-
 
 
 ###### GLOBAL TIMER
@@ -69,7 +69,7 @@ print "# Loading duration: ",time.time()-time_0 ," sec"
 
 params_structure["net_size"      ] = [input_size,10, output_size]
 params_structure["hidden_layer"  ] = params_structure["net_size"].__len__() - 2
-params_structure["bi_directional"] = True
+params_structure["bi_directional"] = False
 params_structure["identity_func" ] = False
 params_structure["train_set_len" ] = train_mb_set_x.__len__()
 params_structure["valid_set_len" ] = valid_mb_set_x.__len__()
@@ -181,7 +181,7 @@ for i in xrange(params_optimization["epochs"]):
     #lstm.pub("Lerning Rate adaptation: " + str(t_learn_rate.eval()) )
     lstm.pub("Epoch training duration: "+ str(time.time()-time_training_start) + "sec")
 
-#Finale Test
+#Finale
 lstm.pub("## ||||||||||||||||||||||||||||||||||||||||")
 
 

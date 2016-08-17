@@ -1,0 +1,15 @@
+cycler==0.10.0
+dill==0.2.5
+freeze==1.0.10
+klepto==0.1.2
+matplotlib==1.5.1
+numpy==1.11.1
+pox==0.2.2
+pyparsing==2.1.8
+python-dateutil==2.5.3
+pytz==2016.6.1
+scikit-learn==0.17.1
+scipy==0.18.0
+six==1.10.0
+sklearn==0.0
+Theano==0.8.2

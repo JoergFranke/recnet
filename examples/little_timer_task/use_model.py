@@ -45,8 +45,8 @@ trng = RandomStreams(params_optimization["seed"] )
 ###### DATA IN
 print("# Load data")
 params_structure = OrderedDict()
-params_structure["batch_size"    ] = 10
-params_structure["set_specs" ] = ""
+params_structure["batch_size"  ] = 10
+params_structure["set_specs"   ] = ""
 params_structure["corpus_name" ] = "little-timer"
 
 data_location = "data_set/"
@@ -56,8 +56,9 @@ test_mb_set_x,test_mb_set_y,test_mb_set_m = load_minibatches(data_location, data
 set_length = test_mb_set_x.__len__()
 
 ###### LOAD MODEL
-#model_name = "outcome/" + "n-2-10-2_d-13-08-2016_v-21.prm"
-model_name = "outcome/" + "n-2-10-2-bi_d-13-08-2016_v-1.prm"
+#########################################################
+###################### ADD NAME FROM TRAINED MODEL HERE !
+model_name = "outcome/" + "n-*********************.prm"
 lstm = rnnModel(None, None, rng, trng, True, model_name, 10)
 
 forward_fn = lstm.get_forward_function()
@@ -79,8 +80,8 @@ for v in np.arange(0,set_length):
         auc_error[count] = sklearn.metrics.roc_auc_score( true_out,code_out)
 
 
-print("## cross entropy sklearn : " + "{0:.4f}".format(np.mean(ce_error))) #str(np.mean(ce_error)))
-print("## area under the curve  : " + "{0:.4f}".format(np.mean(auc_error))) #str(np.mean(acc_error)))
+print("## cross entropy sklearn : " + "{0:.4f}".format(np.mean(ce_error)))
+print("## area under the curve  : " + "{0:.4f}".format(np.mean(auc_error)))
 
 
 ###### PLOT SAMPLE
