@@ -1,8 +1,8 @@
 
 ## Little timer task
 
-Based on example designed by [Herbert Jaeger](http://www.pdx.edu/sites/www.pdx.edu.sysc/files/Jaeger_TrainingRNNsTutorial.2005.pdf).
-This task has two imput signal, a start signal and a duration signal. The target output is a signal which starts at each start signal peek and builds a rectangular signal with length of duration signal value at starting peek.
+Based on an example designed by [Herbert Jaeger](http://www.pdx.edu/sites/www.pdx.edu.sysc/files/Jaeger_TrainingRNNsTutorial.2005.pdf).
+This task has two input signals, a *start signal* and a *duration signal*. The target output is a signal which starts at each *start signal* peak and builds a rectangular signal with the length of *duration signal* value at starting peak.
 
 <table>
   <tr>

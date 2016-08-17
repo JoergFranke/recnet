@@ -7,9 +7,9 @@
 [![Theano](https://img.shields.io/badge/theano-0.8.2-yellow.svg)](http://deeplearning.net/software/theano/)
 
 ## About
-This recurrent neural network framework implements a deep bidriectional LSTM algorithm in Python with use of the
+This recurrent neural network framework implements a deep bidirectional LSTM recurrent neural network in Python with use of the
 [Theano](http://deeplearning.net/software/theano/) library. The intension is a light weight flat implementation with
-the opportunity to test easily new ideas and implement the latest research.
+the opportunity to test easily new ideas and to implement the latest research.
 
 __Current implemented features:__
 - bidirectional LSTM Layers
