@@ -1,5 +1,6 @@
-from setuptools import setup
-from setuptools import find_packages
+#from setuptools import setup
+#from setuptools import find_packages
+from distutils.core import setup
 
 
 setup(name='rnnfwk',
@@ -10,4 +11,5 @@ setup(name='rnnfwk',
       url='https://github.com/joergfranke/rnnfwk',
       license='MIT License',
       install_requires=['theano>=0.8.2'],
-      packages=find_packages())
+      packages=['rnnfwk',])
+      #py_modules=['rnnfwk'])
