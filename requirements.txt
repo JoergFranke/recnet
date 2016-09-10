@@ -1,3 +1,0 @@
-klepto==0.1.2
-numpy==1.11.1
-Theano==0.8.2
