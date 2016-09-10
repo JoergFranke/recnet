@@ -43,16 +43,27 @@ python setup.py install
 
 ## How to use it
 
-- Please provide the data set in form of two lists and save it in a klepto file. One list contains sequences of features and another the corresponding targets.
+- Please provide our data in form of two lists and save it in a klepto file. One list contains sequences of features
+and another the corresponding targets.
 
 ```bash
     d = klepto.archives.file_archive(file_name, cached=True,serialized=True)
-    d['x'] = input_data #example shape [ [123,26] , [254,26] , [180,26] , [340,26] , ... ]
-    d['y'] = output_data #example shape [ [123,61] , [254,61] , [180,61] , [340,61] , ... ]
+    d['x'] = input_features #example shape [ [123,26] , [254,26] , [180,26] , [340,26] , ... ]
+    d['y'] = output_targets #example shape [ [123,61] , [254,61] , [180,61] , [340,61] , ... ]
     d.dump()
     d.clear()
 ```
 
+
+- Use the data handler from the framework to create mini batches. It deals with sequences with different length.
+Therefore it shuffles the sequences and sorts them in respect to there length. Now mini batches gets build and shorter
+sequences will be pad with zeros. Additionally the data handler creates masks for the padding zeros which are used in
+training. The data handler provides the function `load_minibatches` which takes the data set location, data set name and
+mini batch size.
+```bash
+from recnet.data_handler import load_minibatches
+data_set_x,data_set_y,data_set_mask = load_minibatches(data_location, data_name, mini_batch_size)
+```
 
 
 - Define the parameters for the recurrent neural network
@@ -79,17 +90,18 @@ python setup.py install
 | dropout_level      | Probability of dropout                             | Float [0...1]    | 
 | regularization     | Use of regularization (L1/L2)                      | False/"L1"/"L2"  | 
 | reg_factor         | Influence of regularization                        | Float [0...1]    | 
-| optimization       | Optimization algorithm                             | "sgd"/"rmsprop"/"nesterov_momentum"/"adadelta" |
+| optimization       | Optimization algorithm                             | "sgd" / "rmsprop" / "nesterov_momentum" / "adadelta" |
 | noisy_input        | Add noise to the input                             | True/False          | 
 | noise_level        | Factor for noise level                             | Float [0...1]    | 
-| loss_function      | Loss/Error function (weighted or normal ce)        | "w2_cross_entropy"/"cross_entropy"          | 
+| loss_function      | Loss/Error function (weighted or normal ce)        | "w2_cross_entropy" / "cross_entropy"          |
 | bound_weight       | Weight for weighted cross entropy                  | Integer          | 
 
 
 
-- Use the provided functions to train, validate and test the model.
+- The framework contains the `rnnModel` which provides functions to train, validate and test the model.
 The `rnnModel` takes the structure and optimization parameters as a dictionary and a random number stream for numpy `rng` and theano `trng`.
 ```bash
+from recnet.build_model import rnnModel
 rnn = rnnModel(prm_structure, prm_optimization, rng, trng)
 train_fn    = rnn.get_training_function()
 valid_fn    = rnn.get_validation_function()
