@@ -22,6 +22,7 @@ __Current implemented features:__
 - Noisy inputs
 
 
+
 __Example of use:__
 
 <table>
@@ -42,7 +43,7 @@ python setup.py install
 
 ## How to use it
 
-- Please provide the data set in form of two lists. One list contains sequences of features and another the corresponding targets.
+- Please provide the data set in form of two lists and save it in a klepto file. One list contains sequences of features and another the corresponding targets.
 
 ```bash
     d = klepto.archives.file_archive(file_name, cached=True,serialized=True)
