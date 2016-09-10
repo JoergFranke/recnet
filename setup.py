@@ -3,13 +3,13 @@
 from distutils.core import setup
 
 
-setup(name='rnnfwk',
+setup(name='recnet',
       version='0.1',
-      description='Recurrent Neural Network Framework',
+      description='recnet - Recurrent Neural Network Framework',
       author='Joerg Franke',
       author_email='joergfranke@zoho.com',
-      url='https://github.com/joergfranke/rnnfwk',
+      url='https://github.com/joergfranke/recnet',
       license='MIT License',
       install_requires=['theano>=0.8.2'],
-      packages=['rnnfwk',])
-      #py_modules=['rnnfwk'])
+      packages=['recnet',])
+
