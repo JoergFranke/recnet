@@ -1,13 +1,13 @@
 
 # Recurrent Neural Network Framework
 
-[![Build Status](https://travis-ci.org/joergfranke/rnnfwk.svg?branch=master)](https://travis-ci.org/joergfranke/rnnfwk)
-[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/joergfranke/rnnfwk/blob/master/LICENSE.txt)
+[![Build Status](https://travis-ci.org/joergfranke/recnet.svg?branch=master)](https://travis-ci.org/joergfranke/recnet)
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/joergfranke/recnet/blob/master/LICENSE.txt)
 [![Python](https://img.shields.io/badge/python-2.7-yellow.svg)](https://www.python.org/download/releases/2.7/)
 [![Theano](https://img.shields.io/badge/theano-0.8.2-yellow.svg)](http://deeplearning.net/software/theano/)
 
 ## About
-This recurrent neural network framework implements a deep bidirectional LSTM neural network in Python with use of the
+*recnet* is a recurrent neural network framework implements a deep bidirectional LSTM neural network in Python with use of the
 [Theano](http://deeplearning.net/software/theano/) library. The intension is a light weight flat implementation with
 the opportunity to check out easily new ideas and to implement the latest research.
 
@@ -27,7 +27,7 @@ __Example of use:__
 
 <table>
   <tr>
-    <td><a href="https://github.com/joergfranke/rnnfwk/tree/master/examples/little_timer_task">Little timer task</a></td>
+    <td><a href="https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task">Little timer task</a></td>
     <td><img src="examples/little_timer_task/sample.png"  width="250"></td>
   </tr>
 </table>
@@ -36,7 +36,7 @@ __Example of use:__
 ## How to install it
 
 ```bash
-git clone https://github.com/joergfranke/rnnfwk.git
+git clone https://github.com/joergfranke/recnet.git
 cd rnnfwk
 python setup.py install
 ```
@@ -106,7 +106,7 @@ Difference between train_fn and valid_fn is no use of dropout or noise.
 
 
 
-- Feel free to orient oneself on the [example](https://github.com/joergfranke/rnnfwk/tree/master/examples/little_timer_task) provided in this reposetory.
+- Feel free to orient oneself on the [example](https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task) provided in this reposetory.
 
 ## Further work
 

@@ -20,8 +20,8 @@ import sklearn.metrics
 import time
 from collections import OrderedDict
 
-from rnnfwk.build_model import rnnModel
-from rnnfwk.data_handler import load_minibatches
+from recnet.build_model import rnnModel
+from recnet.data_handler import load_minibatches
 
 
 ###### GLOBAL TIMER
