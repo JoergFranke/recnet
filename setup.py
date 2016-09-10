@@ -10,6 +10,6 @@ setup(name='recnet',
       author_email='joergfranke@zoho.com',
       url='https://github.com/joergfranke/recnet',
       license='MIT License',
-      install_requires=['theano>=0.8.2'],
+      install_requires=['theano>=0.8.2', 'klepto==0.1.2', 'numpy>=1.11.1'],
       packages=['recnet',])
 
