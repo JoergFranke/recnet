@@ -8,7 +8,7 @@ Generates the data set for this little timer task
 ########################################
 import klepto
 import numpy as np
-import matplotlib.pyplot as plt
+
 
 
 ######               Create start signal

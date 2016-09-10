@@ -61,7 +61,9 @@ prm_structure["bi_directional"] = False
 prm_structure["identity_func" ] = False
 prm_structure["train_set_len" ] = train_mb_set_x.__len__()
 prm_structure["valid_set_len" ] = valid_mb_set_x.__len__()
-prm_structure["output_location"] = "outcome/"
+if "log" not in os.listdir(os.getcwd()):
+    os.mkdir("log")
+prm_structure["output_location"] = "log/"
 prm_structure["output_type"    ] = "both"        # console, file, both
 
 prm_optimization["epochs"        ] = 5
