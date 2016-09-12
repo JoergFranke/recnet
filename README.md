@@ -1,5 +1,5 @@
 
-# recnet - Recurrent Neural Network Framework
+# RecNet - Recurrent Neural Network Framework
 
 [![Build Status](https://travis-ci.org/joergfranke/recnet.svg?branch=master)](https://travis-ci.org/joergfranke/recnet)
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/joergfranke/recnet/blob/master/LICENSE.txt)
@@ -7,7 +7,7 @@
 [![Theano](https://img.shields.io/badge/theano-0.8.2-yellow.svg)](http://deeplearning.net/software/theano/)
 
 ## About
-*recnet* is a framework for recurrent neural networks. It implements a deep bidirectional LSTM neural network in Python with use of the
+*RecNet* is a framework for recurrent neural networks. It implements a deep bidirectional LSTM neural network in Python with use of the
 [Theano](http://deeplearning.net/software/theano/) library. The intension is a light weight flat implementation with
 the opportunity to check out easily new ideas and to implement the latest research.
 
