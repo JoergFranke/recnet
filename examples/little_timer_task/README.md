@@ -28,5 +28,6 @@ each *start signal* peak and builds a rectangular signal. This signal length is 
 
 ### Hints
 
-For training its usefull to have minimum two output signal. So in this example we use the target output and the inverse output. Otherwise cross entropy does't work.
+For training its useful to have minimum two output signal. So in this example we use the target output and the inverse
+output. Otherwise cross entropy does't work.
 

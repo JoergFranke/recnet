@@ -41,6 +41,8 @@ cd recnet
 python setup.py install
 ```
 
+*In case of error try to update setuptools and/or install as sudo.*
+
 ## How to use it
 
 - Please provide our data in form of two lists and save it in a klepto file. One list contains sequences of features
@@ -128,3 +130,4 @@ Difference between train_fn and valid_fn is no use of dropout or noise.
     - Layer-Normalization
     - GPU Layers
     - Mix of SGD and others like AdaDelta
+
