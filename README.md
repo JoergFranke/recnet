@@ -116,7 +116,7 @@ forward_fn  = rnn.get_forward_function()
 | `valid_fn` | features, targets, minibatch mask | validation error, network output | 
 | `forward_fn` | features, minibatch mask | network output | 
 
-Difference between train_fn and valid_fn is no use of dropout or noise.
+Difference between train_fn and valid_fn is no use of dropout or noise and no weight update.
 
 
 

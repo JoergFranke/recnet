@@ -75,7 +75,7 @@ prm_optimization["use_dropout"   ] = False       # False, True
 prm_optimization["dropout_level" ] = 0.5
 prm_optimization["regularization"] = False       # False, L2, ( L1 )
 prm_optimization["reg_factor"    ] = 0.01
-prm_optimization["optimization"  ] = "adadelta"  # sgd, nm_rmsprop, rmsprop, nesterov_momentum, adadelta
+prm_optimization["optimization"  ] = "nesterov_momentum"  # sgd, nm_rmsprop, rmsprop, nesterov_momentum, adadelta
 prm_optimization["noisy_input"   ] = False       # False, True
 prm_optimization["noise_level"   ] = 0.6
 prm_optimization["loss_function" ] = "cross_entropy" # w2_cross_entropy, cross_entropy
@@ -114,7 +114,7 @@ for i in xrange(prm_optimization["epochs"]):
 
     for j in batch_order:
 
-        train_error[j], net_out = train_fn( train_mb_set_x[batch_permut[j]],
+        net_out, train_error[j] = train_fn( train_mb_set_x[batch_permut[j]],
                                             train_mb_set_y[batch_permut[j]],
                                             train_mb_set_m[batch_permut[j]]
                                             )

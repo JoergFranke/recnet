@@ -53,7 +53,7 @@ class rnnModel(modelMaster):
 
         ######           Create model parameters
         ########################################
-        tpo = OrderedDict() #theano params optimization
+        tpo = OrderedDict() #theano optimization parameter
         for key, value in p_optima.items():
             if not isinstance(value,str):
                 tpo[key] = theano.shared(name=key, value=np.asarray(value, dtype=theano.config.floatX))
@@ -70,7 +70,7 @@ class rnnModel(modelMaster):
         ######                     Create layers
         ########################################
         layer = []
-        for i in xrange(p_struct["hidden_layer"]):
+        for i in range(p_struct["hidden_layer"]):
             if p_struct["bi_directional"]:
                 layer.append(BLSTMlayer(rng,trng, p_struct["net_size"][i:i+1][0], p_struct["net_size"][i+1:i+2][0], p_struct["batch_size"], old_weights[i]))
             else:
@@ -97,7 +97,7 @@ class rnnModel(modelMaster):
         ## training part
         t_signal = []
         t_signal.append(self.X_tv2)
-        for l in xrange(p_struct["hidden_layer"]):
+        for l in range(p_struct["hidden_layer"]):
             t_signal.append(layer[l].sequence_iteration(t_signal[l],self.M_tv2, tpo["use_dropout"],tpo["dropout_level"]))
 
             if p_struct["identity_func"] and l >= 1:
@@ -108,7 +108,7 @@ class rnnModel(modelMaster):
         ## validation/test part
         v_signal = []
         v_signal.append(self.X_tv2_v)
-        for l in xrange(p_struct["hidden_layer"]):
+        for l in range(p_struct["hidden_layer"]):
             v_signal.append(layer[l].sequence_iteration(v_signal[l],self.M_tv2, use_dropout=0))
 
             if p_struct["identity_func"] and l >= 1:
@@ -122,10 +122,10 @@ class rnnModel(modelMaster):
         def regularization(weights):
             w_error = 0
             for w in weights:
-                w_error = w_error + tpo["reg_factor"]  * T.square(T.mean(T.sqr(w)))
+                w_error = w_error + p_optima["reg_factor"]  * T.square(T.mean(T.sqr(w)))
             return w_error
 
-        if tpo["regularization"]:
+        if p_optima["regularization"]:
             self.t_error = o_error + regularization(self.all_weights)
         else:
             self.t_error = o_error
@@ -147,7 +147,7 @@ class rnnModel(modelMaster):
     ########################################
     def get_training_function(self):
         train_fn = theano.function(inputs=[self.X_tv2, self.Y_tv2, self.M_tv2],
-                                   outputs=[self.t_error, self.t_net_out],
+                                   outputs=[self.t_net_out, self.t_error],
                                    updates=self.updates,
                                    allow_input_downcast=True
                                    #mode='DebugMode',

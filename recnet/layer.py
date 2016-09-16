@@ -26,16 +26,18 @@ class layerMaster:
                                self.ortho_weight(rng, ndim),
                                self.ortho_weight(rng, ndim),
                                self.ortho_weight(rng, ndim)], axis=1)
-        return W
-        #return rng.uniform(-np.sqrt(1./n_out), np.sqrt(1./n_out), (n_out, 4*n_out))
+        #return W
+        ##return rng.uniform(-np.sqrt(1./n_out), np.sqrt(1./n_out), (n_out, 4*n_out))
+        return rng.uniform(-0.1, 0.1, (ndim, 4*ndim))
 
     def init_peephole_weight(self, rng, ndim):
         #return rng.uniform(-0.1,0.1, ndim)
         return rng.uniform(-np.sqrt(1./ndim), np.sqrt(1./ndim), ndim)
 
     def init_input_weight(self, rng, n_in, n_out):
-        #return rng.normal(0, 2./(n_in+n_out), (n_in, n_out))
-        return rng.uniform(-np.sqrt(1./n_in), np.sqrt(1./n_in), (n_in, n_out))
+        ##return rng.normal(0, 2./(n_in+n_out), (n_in, n_out))
+        #return rng.uniform(-np.sqrt(1./n_in), np.sqrt(1./n_in), (n_in, n_out))
+        return rng.uniform(-0.1, 0.1, (n_in, n_out))
 
 
 
@@ -53,7 +55,7 @@ class LSTMlayer(layerMaster):
         - one function for each step, one for each sequence
     """
 
-    def __init__(self, rng, trng, n_in, n_out, n_batches, old_weights=None,go_backwards=False): #, params_structure, layer_no ):
+    def __init__(self, rng, trng, n_in, n_out, n_batches, old_weights=None,go_backwards=False): #, prm_structure, layer_no ):
 
         # Parameters
         self.go_backwards = go_backwards
@@ -137,9 +139,8 @@ class LSTMlayer(layerMaster):
                              in_seq)
 
         w_in_seq = T.add( T.dot(in_seq_d, self.weights[5]) , self.weights[6] )
-        # todo test if its make a difference self.t_params['b_ifco'] or elf.weights[4]
-        # self.n_out is not working instead of t_n_out
         t_n_out = self.weights[4].shape[0]/4
+
 
 
         [out_seq, cell_seq], updates = theano.scan(
@@ -148,7 +149,7 @@ class LSTMlayer(layerMaster):
                                                 outputs_info=[self.t_ol_t00, self.t_cs_t00],
                                                 non_sequences=self.weights[:5]+[t_n_out],
                                                 go_backwards = self.go_backwards,
-                                                #truncate_gradient=50,
+                                                truncate_gradient=-1,
                                                 #n_steps=50,
                                                 strict=True,
                                                 allow_gc=False,
@@ -195,11 +196,11 @@ class BLSTMlayer(layerMaster):
 ######                     Softmax Layer
 ########################################
 class softmaxLayer(layerMaster):
-    def __init__(self, rng,trng, params_structure, layer_no, old_weights=None):
+    def __init__(self, rng,trng, prm_structure, layer_no, old_weights=None):
 
         # Parameters
-        self.n_in = params_structure["net_size"][layer_no-1:layer_no][0]
-        self.n_out = params_structure["net_size"][layer_no:layer_no+1][0]
+        self.n_in = prm_structure["net_size"][layer_no-1:layer_no][0]
+        self.n_out = prm_structure["net_size"][layer_no:layer_no+1][0]
 
         #output layer
         w_out_np2 = self.init_input_weight(rng, self.n_in, self.n_out)
@@ -232,6 +233,7 @@ class softmaxLayer(layerMaster):
                                             p=dropout_value, n=1,
                                             dtype=t_w_out.dtype)),
                              t_w_out)
+
         net_o = T.add( T.dot(signal , d_w_out) , t_b_out)
         output = T.nnet.softmax(net_o)
 
@@ -241,6 +243,6 @@ class softmaxLayer(layerMaster):
         return output
 
     def softmax(self, output, mask,use_dropout=0,dropout_value=0.5):
-        params = [self.t_w_out, self.t_b_out, use_dropout,dropout_value]
-        result, updates = theano.map(self._drop_out_softmax, [output, mask], params)
+        prm = [self.t_w_out, self.t_b_out, use_dropout,dropout_value]
+        result, updates = theano.map(self._drop_out_softmax, [output, mask], prm)
         return result

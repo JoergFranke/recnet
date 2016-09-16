@@ -65,7 +65,7 @@ class nesterov_momentum:
         for v, w in zip(self.t_velocity, weights):
             gradient = T.grad(o_error ,w)
             new_velocity = tpo["momentum"] * v - tpo["learn_rate"] * gradient
-            new_weights = w + new_velocity
+            new_weights = w - tpo["momentum"] * v + (1 + tpo["momentum"]) * new_velocity
             updates.append((w, new_weights))
             updates.append((v, new_velocity))
         return updates
@@ -136,6 +136,32 @@ class adadelta:
             updates.append((d, new_ada_d))
 
         return updates
+
+
+######                          Momentum
+########################################
+class momentum:
+    def __init__(self, rng,  weights):
+
+        velocity_np = []
+        for w in weights:
+            velocity_np.append(np.zeros(w.get_value().shape ))
+
+        self.t_velocity = []
+        for c in velocity_np:
+            self.t_velocity.append(theano.shared(value=c.astype(T.config.floatX)))
+
+    def fit(self, weights, o_error, tpo):
+
+        updates = []
+        for v, w in zip(self.t_velocity, weights):
+            gradient = T.grad(o_error ,w)
+            new_velocity = tpo["momentum"] * v - tpo["learn_rate"] * gradient
+            new_weights = w + new_velocity
+            updates.append((w, new_weights))
+            updates.append((v, new_velocity))
+        return updates
+
 
 
 ######                       Vanilla SGD
