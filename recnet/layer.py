@@ -44,7 +44,7 @@ class layerMaster:
 
 ######                        LSTM Layer
 ########################################
-class LSTMlayer(layerMaster):
+class LSTM(layerMaster):
     """
     Long short term memory layer
 
@@ -158,9 +158,42 @@ class LSTMlayer(layerMaster):
 
         return (out_seq)
 
+######          Bidirectional LSTM Layer
+########################################
+class BLSTM(layerMaster):
+
+    def __init__(self, rng, trng, n_in, n_out, n_batches, old_weights=None):
+
+        # Number of forward/backward hidden nodes
+        assert n_out % 2 == 0, "Hidden layer number have to be even in case of BLSTM"
+
+        n_out = n_out / 2
+
+        if not old_weights == None:
+            forward_weights = old_weights[:old_weights.__len__() / 2]
+            backward_weights = old_weights[old_weights.__len__() / 2:]
+
+            self.forward_layer = LSTM(rng, trng, n_in, n_out, n_batches, forward_weights, False)
+            self.backward_layer = LSTM(rng, trng, n_in, n_out, n_batches, backward_weights, True)
+        else:
+            self.forward_layer = LSTM(rng, trng, n_in, n_out, n_batches)
+            self.backward_layer = LSTM(rng, trng, n_in, n_out, n_batches, go_backwards=True)
+
+        self.weights = self.forward_layer.weights + self.backward_layer.weights
+
+    def sequence_iteration(self, in_seq, mask, use_dropout, dropout_value=1):
+
+        out_seq_f = self.forward_layer.sequence_iteration(in_seq, mask, use_dropout, dropout_value)
+        out_seq_b = self.backward_layer.sequence_iteration(in_seq, mask, use_dropout, dropout_value)
+
+        out_sig = T.concatenate([out_seq_f, out_seq_b[::-1]], axis=2)
+
+        return (out_sig)
+
+
 ######                        GRU Layer
 ########################################
-class GRUlayer(layerMaster):
+class GRU(layerMaster):
     """
     Gated recurrent unit layer
 
@@ -260,9 +293,42 @@ class GRUlayer(layerMaster):
 
         return(out_seq)
 
+######          Bidirectional GRU Layer
+########################################
+class BGRU(layerMaster):
+
+    def __init__(self, rng, trng, n_in, n_out, n_batches, old_weights=None):
+
+        # Number of forward/backward hidden nodes
+        assert n_out % 2 == 0, "Hidden layer number have to be even in case of BGRU"
+
+        n_out = n_out / 2
+
+        if not old_weights == None:
+            forward_weights = old_weights[:old_weights.__len__() / 2]
+            backward_weights = old_weights[old_weights.__len__() / 2:]
+
+            self.forward_layer = GRU(rng, trng, n_in, n_out, n_batches, forward_weights, False)
+            self.backward_layer = GRU(rng, trng, n_in, n_out, n_batches, backward_weights, True)
+        else:
+            self.forward_layer = GRU(rng, trng, n_in, n_out, n_batches)
+            self.backward_layer = GRU(rng, trng, n_in, n_out, n_batches, go_backwards=True)
+
+        self.weights = self.forward_layer.weights + self.backward_layer.weights
+
+    def sequence_iteration(self, in_seq, mask, use_dropout, dropout_value=1):
+
+        out_seq_f = self.forward_layer.sequence_iteration(in_seq, mask, use_dropout, dropout_value)
+        out_seq_b = self.backward_layer.sequence_iteration(in_seq, mask, use_dropout, dropout_value)
+
+        out_sig = T.concatenate([out_seq_f, out_seq_b[::-1]], axis=2)
+
+        return (out_sig)
+
+
 ######      LSTM without peepholes Layer
 ########################################
-class LSTMnPlayer(layerMaster):
+class LSTMnp(layerMaster):
     """
     Long short term memory layer without peepholes
 
@@ -372,43 +438,43 @@ class LSTMnPlayer(layerMaster):
         return (out_seq)
 
 
-######          Bidirectional LSTM Layer
+
+######  Bidirectional LSTM without peephole Layer
 ########################################
-class BLSTMlayer(layerMaster):
+class BLSTMnp(layerMaster):
 
     def __init__(self, rng, trng, n_in, n_out, n_batches, old_weights=None):
 
         # Number of forward/backward hidden nodes
-        assert n_out % 2 == 0, "Hidden layer number have to be even in case of BLSTM"
+        assert n_out % 2 == 0, "Hidden layer number have to be even in case of BGRU"
 
         n_out = n_out / 2
 
         if not old_weights == None:
-            forward_weights = old_weights[:old_weights.__len__()/2]
-            backward_weights = old_weights[old_weights.__len__()/2:]
+            forward_weights = old_weights[:old_weights.__len__() / 2]
+            backward_weights = old_weights[old_weights.__len__() / 2:]
 
-            self.forward_layer  = LSTMlayer(rng, trng, n_in, n_out, n_batches, forward_weights, False)
-            self.backward_layer = LSTMlayer(rng, trng, n_in, n_out, n_batches, backward_weights, True)
+            self.forward_layer = LSTMnp(rng, trng, n_in, n_out, n_batches, forward_weights, False)
+            self.backward_layer = LSTMnp(rng, trng, n_in, n_out, n_batches, backward_weights, True)
         else:
-            self.forward_layer  = LSTMlayer(rng, trng, n_in, n_out, n_batches)
-            self.backward_layer = LSTMlayer(rng, trng, n_in, n_out, n_batches, go_backwards=True)
+            self.forward_layer = LSTMnp(rng, trng, n_in, n_out, n_batches)
+            self.backward_layer = LSTMnp(rng, trng, n_in, n_out, n_batches, go_backwards=True)
 
         self.weights = self.forward_layer.weights + self.backward_layer.weights
 
-    def sequence_iteration(self, in_seq,mask, use_dropout,dropout_value=1):
+    def sequence_iteration(self, in_seq, mask, use_dropout, dropout_value=1):
 
-        out_seq_f = self.forward_layer.sequence_iteration(in_seq,mask, use_dropout,dropout_value)
-        out_seq_b = self.backward_layer.sequence_iteration(in_seq,mask, use_dropout,dropout_value)
+        out_seq_f = self.forward_layer.sequence_iteration(in_seq, mask, use_dropout, dropout_value)
+        out_seq_b = self.backward_layer.sequence_iteration(in_seq, mask, use_dropout, dropout_value)
 
-        out_sig = T.concatenate([out_seq_f,out_seq_b[::-1]], axis=2)
+        out_sig = T.concatenate([out_seq_f, out_seq_b[::-1]], axis=2)
 
-        return(out_sig)
-
+        return (out_sig)
 
 
 ######                     Softmax Layer
 ########################################
-class softmaxLayer(layerMaster):
+class softmax(layerMaster):
     def __init__(self, rng,trng, prm_structure, layer_no, old_weights=None):
 
         # Parameters

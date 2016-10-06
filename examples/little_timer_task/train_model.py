@@ -56,6 +56,7 @@ print "# Loading duration: ",time.time()-time_0 ," sec"
 
 #### Hyper parameter
 prm_structure["net_size"      ] = [n_in,10, n_out]
+prm_structure["net_unit_type" ] = ['input', 'GRU', 'softmax']
 prm_structure["hidden_layer"  ] = prm_structure["net_size"].__len__() - 2
 prm_structure["bi_directional"] = False
 prm_structure["identity_func" ] = False
@@ -75,7 +76,7 @@ prm_optimization["use_dropout"   ] = False       # False, True
 prm_optimization["dropout_level" ] = 0.5
 prm_optimization["regularization"] = False       # False, L2, ( L1 )
 prm_optimization["reg_factor"    ] = 0.01
-prm_optimization["optimization"  ] = "nesterov_momentum"  # sgd, nm_rmsprop, rmsprop, nesterov_momentum, adadelta
+prm_optimization["optimization"  ] = "adadelta"  # sgd, nm_rmsprop, rmsprop, nesterov_momentum, adadelta
 prm_optimization["noisy_input"   ] = False       # False, True
 prm_optimization["noise_level"   ] = 0.6
 prm_optimization["loss_function" ] = "cross_entropy" # w2_cross_entropy, cross_entropy

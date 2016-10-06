@@ -12,7 +12,8 @@ import numpy as np
 from collections import OrderedDict
 
 import error_function
-from layer import BLSTMlayer, LSTMlayer, softmaxLayer, LSTMnPlayer, GRUlayer
+import layer
+from layer import softmax
 import update_function
 from model_master import modelMaster
 
@@ -69,16 +70,20 @@ class rnnModel(modelMaster):
 
         ######                     Create layers
         ########################################
-        layer = []
+        network_layer = []
         for i in range(p_struct["hidden_layer"]):
-            if p_struct["bi_directional"]:
-                layer.append(BLSTMlayer(rng,trng, p_struct["net_size"][i:i+1][0], p_struct["net_size"][i+1:i+2][0], p_struct["batch_size"], old_weights[i]))
-            else:
-                layer.append(GRUlayer(rng,trng, p_struct["net_size"][i:i+1][0], p_struct["net_size"][i+1:i+2][0], p_struct["batch_size"], old_weights[i]))
+            unit_ = getattr(layer, p_struct["net_unit_type"][i+1])
+            network_layer.append(unit_(rng, trng, p_struct["net_size"][i:i + 1][0], p_struct["net_size"][i + 1:i + 2][0], p_struct["batch_size"], old_weights[i]))
+            #if p_struct["bi_directional"]:
 
-        output_layer = softmaxLayer(rng,trng, p_struct,p_struct["hidden_layer"]+1, old_weights[-1])
+            #    network_layer.append(BLSTMlayer(rng,trng, p_struct["net_size"][i:i+1][0], p_struct["net_size"][i+1:i+2][0], p_struct["batch_size"], old_weights[i]))
+            #else:
+            #    unit_ = getattr(layer, "GRUlayer")
+            #    network_layer.append(unit_(rng,trng, p_struct["net_size"][i:i+1][0], p_struct["net_size"][i+1:i+2][0], p_struct["batch_size"], old_weights[i]))
 
-        self.layer_weights = [l.weights for l in layer] + [output_layer.weights]
+        output_layer = softmax(rng,trng, p_struct,p_struct["hidden_layer"]+1, old_weights[-1])
+
+        self.layer_weights = [l.weights for l in network_layer] + [output_layer.weights]
         self.all_weights = sum([l for l in self.layer_weights],[])
 
 
@@ -98,7 +103,7 @@ class rnnModel(modelMaster):
         t_signal = []
         t_signal.append(self.X_tv2)
         for l in range(p_struct["hidden_layer"]):
-            t_signal.append(layer[l].sequence_iteration(t_signal[l],self.M_tv2, tpo["use_dropout"],tpo["dropout_level"]))
+            t_signal.append(network_layer[l].sequence_iteration(t_signal[l],self.M_tv2, tpo["use_dropout"],tpo["dropout_level"]))
 
             if p_struct["identity_func"] and l >= 1:
                 t_signal[l+1] = t_signal[l+1] + t_signal[l]
@@ -109,7 +114,7 @@ class rnnModel(modelMaster):
         v_signal = []
         v_signal.append(self.X_tv2_v)
         for l in range(p_struct["hidden_layer"]):
-            v_signal.append(layer[l].sequence_iteration(v_signal[l],self.M_tv2, use_dropout=0))
+            v_signal.append(network_layer[l].sequence_iteration(v_signal[l],self.M_tv2, use_dropout=0))
 
             if p_struct["identity_func"] and l >= 1:
                 v_signal[l+1] = v_signal[l+1] + v_signal[l]
