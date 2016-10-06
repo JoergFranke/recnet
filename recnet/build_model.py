@@ -12,7 +12,7 @@ import numpy as np
 from collections import OrderedDict
 
 import error_function
-from layer import BLSTMlayer, LSTMlayer, softmaxLayer
+from layer import BLSTMlayer, LSTMlayer, softmaxLayer, LSTMnPlayer, GRUlayer
 import update_function
 from model_master import modelMaster
 
@@ -74,7 +74,7 @@ class rnnModel(modelMaster):
             if p_struct["bi_directional"]:
                 layer.append(BLSTMlayer(rng,trng, p_struct["net_size"][i:i+1][0], p_struct["net_size"][i+1:i+2][0], p_struct["batch_size"], old_weights[i]))
             else:
-                layer.append(LSTMlayer(rng,trng, p_struct["net_size"][i:i+1][0], p_struct["net_size"][i+1:i+2][0], p_struct["batch_size"], old_weights[i]))
+                layer.append(GRUlayer(rng,trng, p_struct["net_size"][i:i+1][0], p_struct["net_size"][i+1:i+2][0], p_struct["batch_size"], old_weights[i]))
 
         output_layer = softmaxLayer(rng,trng, p_struct,p_struct["hidden_layer"]+1, old_weights[-1])
 
