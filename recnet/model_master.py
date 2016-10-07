@@ -7,9 +7,11 @@ This file contains a master class with support functions like load models, dump 
 ########################################
 import klepto
 import numpy as np
+from collections import OrderedDict
 import datetime
 import time
 import os.path
+import sys
 
 
 
@@ -151,3 +153,40 @@ class modelMaster:
                 self.fobj.write(str_obj+ "\n")
             self.fobj.write("###" + "\n")
             self.fobj.close()
+
+
+######    Supervise structure parameters
+########################################
+    def prm_structure_supervise(self, prm_given):
+
+        prm_structure = OrderedDict()
+
+        if prm_given["batch_size"] > 0:
+            prm_structure["batch_size"] = prm_given
+        else:
+            #self.pub("Batch size below 1")
+            sys.exit("Parameter error")
+
+        if (sys.version_info[0] == 2 and  isinstance(prm_given["corpus_name"   ], basestring)) or \
+            (sys.version_info[0] == 3 and isinstance(prm_given["corpus_name"   ], str)):
+            prm_structure["corpus_name"   ] = prm_given["corpus_name"   ]
+        else:
+            #self.pub("Batch size below 1")
+            sys.exit("Parameter error")
+
+        # todo add tests
+
+        prm_structure["data_location" ] = prm_given["data_location" ]
+        prm_structure["net_size"      ] = prm_given["net_size"      ]
+        prm_structure["net_unit_type" ] = prm_given["net_unit_type" ]
+        prm_structure["hidden_layer"  ] = prm_given["hidden_layer"  ]
+        prm_structure["bi_directional"] = prm_given["bi_directional"]
+        prm_structure["identity_func" ] = prm_given["identity_func" ]
+        prm_structure["train_set_len" ] = prm_given["train_set_len" ]
+        prm_structure["valid_set_len" ] = prm_given["valid_set_len" ]
+        if "log" not in os.listdir(os.getcwd()):
+            os.mkdir("log")
+        prm_structure["output_location"] = prm_given["output_location"]
+        prm_structure["output_type"    ] = prm_given["output_type"    ]
+
+        return prm_structure

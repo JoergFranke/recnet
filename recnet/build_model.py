@@ -40,7 +40,7 @@ class rnnModel(modelMaster):
 
     def build_model(self, p_struct, p_optima, rng, trng, old_weights=None):
 
-        self.p_struct = p_struct        # params_structure
+        self.p_struct = self.prm_structure_supervise(p_struct)        # params_structure
         self.p_optima = p_optima        # params_optimization
 
 
