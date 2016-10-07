@@ -12,7 +12,8 @@
 the opportunity to check out easily new ideas and to implement the latest research.
 
 __Current implemented features:__
-- bidirectional LSTM Layers
+- uni/bidirectional LSTMs (with and without peepholes)
+- uni/bidirectional GRUs
 - Softmax
 - RMSprop
 - AdaDelta
