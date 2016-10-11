@@ -279,6 +279,8 @@ class GRU(layerMaster):
                                             dtype=in_seq.dtype)),
                              in_seq)
 
+        # todo in_sig * W_in_sig auseerhalb der scan function berechene
+
         out_seq, updates = theano.scan(
                                                 fn=self.t_forward_step,
                                                 sequences=[mask, in_seq_d],
