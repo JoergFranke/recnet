@@ -12,7 +12,7 @@ import datetime
 import time
 import os.path
 import sys
-
+from parameter_supervisor import prmSupervisor
 
 
 #### Master class with support functions
@@ -20,6 +20,9 @@ import sys
 class modelMaster:
 
     def __init__(self, p_struct, p_optima, rng, trng, load=False, data_location=None, new_batch_size=None):
+
+        self.prm = prmSupervisor()
+
 
         if not load:
             self.build_model(p_struct, p_optima, rng, trng, np.repeat(None, p_struct['hidden_layer']+1))
