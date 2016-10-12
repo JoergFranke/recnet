@@ -25,6 +25,32 @@ from recnet.build_model import rnnModel
 from recnet.data_handler import load_minibatches
 
 
+### 1. Step: Create new model
+
+### 2. Step: Pass data to model
+
+train_x
+train_y
+
+valid_x
+valid_y
+
+
+
+### 3. Step: Define parameters
+
+### 4. Step: Build model functions
+
+### 5. Step: Train model
+
+### 5.1: Create minibatches
+
+### 5.2: Train model with minibatch
+
+### 5.3: Plot insample error during training
+
+### 5.4: Plot validation error during training
+
 ###### GLOBAL TIMER
 time_0 = time.time()
 
