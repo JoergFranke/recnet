@@ -19,6 +19,7 @@ import numpy as np
 import sklearn.metrics
 import time
 from collections import OrderedDict
+import klepto
 
 from recnet.build_model import rnnModel
 from recnet.data_handler import load_minibatches
@@ -56,7 +57,7 @@ print "# Loading duration: ",time.time()-time_0 ," sec"
 
 #### Hyper parameter
 prm_structure["net_size"      ] = [n_in,10, n_out]
-prm_structure["net_unit_type" ] = ['input', 'GRU', 'softmax']
+prm_structure["net_unit_type" ] = ['input', 'tanh', 'softmax']
 prm_structure["hidden_layer"  ] = prm_structure["net_size"].__len__() - 2
 prm_structure["bi_directional"] = False
 prm_structure["identity_func" ] = False
@@ -103,6 +104,37 @@ lstm.pub("Start training")
 
 batch_order = np.arange(0,prm_structure["train_set_len"])
 
+
+################################ NEW DATA HANDLING
+file_name = "data_set/little-timer_train.klepto"
+d = klepto.archives.file_archive(file_name, cached=True,serialized=True)
+d.load()
+train_data_x = d['x']
+train_data_y = d['y']
+d.clear()
+
+
+train_data_x_len = [i.__len__() for i in train_data_x]
+train_data_y_len = [i.__len__() for i in train_data_y]
+assert np.array_equal(train_data_x_len, train_data_y_len), "x and y sequences have not the same length"
+
+prm_structure["x_length"] = train_data_x[0].shape[1]
+prm_structure["y_length"] = train_data_y[0].shape[1]
+
+lstm.p_struct["batch_size"] = 10
+lstm.p_struct["train_set_len" ] = train_data_x.__len__()
+lstm.p_struct["batch_quantity"] = int(np.trunc(lstm.p_struct["train_set_len" ]/lstm.p_struct["batch_size"]))
+
+
+sample_order = np.arange(0,lstm.p_struct["train_set_len" ])
+sample_order = rng.permutation(sample_order)
+
+##################################################
+batch_size = lstm.p_struct["batch_size"]
+x_length = train_data_x[0].shape[1] #prm_structure["x_length"]
+y_length = train_data_y[0].shape[1] # prm_structure["y_length"]
+##################################################
+
 for i in xrange(prm_optimization["epochs"]):
     time_training_start = time.time()
     time_training_iteration = time_training_start
@@ -113,12 +145,37 @@ for i in xrange(prm_optimization["epochs"]):
     train_error = np.zeros(prm_structure["train_set_len" ])
     batch_permut = rng.permutation(batch_order)
 
-    for j in batch_order:
 
-        net_out, train_error[j] = train_fn( train_mb_set_x[batch_permut[j]],
-                                            train_mb_set_y[batch_permut[j]],
-                                            train_mb_set_m[batch_permut[j]]
+    for j in xrange(lstm.p_struct["batch_quantity"]):
+
+        ### build minibatch
+        sample_selection = sample_order[ j*batch_size:j*batch_size+batch_size ]
+        max_seq_len = np.max(  [train_data_x[i].__len__() for i in sample_selection])
+
+        mb_train_x = np.zeros([max_seq_len, batch_size, x_length])
+        mb_train_y = np.zeros([max_seq_len, batch_size, y_length])
+        mb_mask = np.zeros([max_seq_len, batch_size, 1])
+
+        for k in xrange(batch_size):
+            s = sample_selection[k]
+            sample_length =  train_data_x_len[s]
+            mb_train_x[:sample_length,k,:] = train_data_x[s][:sample_length]
+            mb_train_y[:sample_length,k,:] = train_data_y[s][:sample_length]
+            mb_mask[:sample_length,k,:] = np.ones([sample_length,1])
+
+        ### build minibatch end
+
+
+        net_out, train_error[j] = train_fn( mb_train_x,
+                                            mb_train_y,
+                                            mb_mask
                                             )
+
+    # for j in batch_order:
+    #     net_out, train_error[j] = train_fn( train_mb_set_x[batch_permut[j]],
+    #                                         train_mb_set_y[batch_permut[j]],
+    #                                         train_mb_set_m[batch_permut[j]]
+    #                                         )
 
         #Insample error
         if ( j%50) == 0 :
