@@ -64,8 +64,8 @@ class nesterov_momentum:
         updates = []
         for v, w in zip(self.t_velocity, weights):
             gradient = T.grad(o_error ,w)
-            new_velocity = tpo["momentum"] * v - tpo["learn_rate"] * gradient
-            new_weights = w - tpo["momentum"] * v + (1 + tpo["momentum"]) * new_velocity
+            new_velocity = tpo["momentum_rate"] * v - tpo["learn_rate"] * gradient
+            new_weights = w - tpo["momentum_rate"] * v + (1 + tpo["momentum_rate"]) * new_velocity
             updates.append((w, new_weights))
             updates.append((v, new_velocity))
         return updates
@@ -156,7 +156,7 @@ class momentum:
         updates = []
         for v, w in zip(self.t_velocity, weights):
             gradient = T.grad(o_error ,w)
-            new_velocity = tpo["momentum"] * v - tpo["learn_rate"] * gradient
+            new_velocity = tpo["momentum_rate"] * v - tpo["learn_rate"] * gradient
             new_weights = w + new_velocity
             updates.append((w, new_weights))
             updates.append((v, new_velocity))

@@ -7,6 +7,8 @@ This file contains a master class with support functions like load models, dump 
 ########################################
 import klepto
 import numpy as np
+import theano
+from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 from collections import OrderedDict
 import datetime
 import time
@@ -19,17 +21,18 @@ from parameter_supervisor import prmSupervisor
 ########################################
 class modelMaster:
 
-    def __init__(self, p_struct, p_optima, rng, trng, load=False, data_location=None, new_batch_size=None):
+    def __init__(self, load=False, data_location=None, new_batch_size=None):
 
         self.prm = prmSupervisor()
 
 
         if not load:
-            self.build_model(p_struct, p_optima, rng, trng, np.repeat(None, p_struct['hidden_layer']+1))
+            pass
+            #self.build_model()
             # self.p_struct = p_struct
             # self.p_optima = p_optima
-            self.p_struct["file_name"] = self.make_filename()
-            self.p_struct["weight_numb"] = self.__calc_numb_weights(self.all_weights)
+
+            #self.p_struct["weight_numb"] = self.__calc_numb_weights(self.all_weights)
 
         else:
             print("load params")
@@ -39,17 +42,45 @@ class modelMaster:
                 struct["batch_size"] = new_batch_size
 
 
-            self.build_model(struct, optima, rng, trng, old_weights)
+            self.build_model(struct, optima, old_weights)
 
-            self.p_struct["file_name"] = self.make_filename()
+            self.prm.basic["file_name"] = self.make_filename()
             self.pub("load " + data_location)
+
+
+    def pass_parameter_dict(self, parameter):
+        self.prm.pass_basic_dict(parameter)
+        self.prm.pass_data_dict(parameter)
+        self.prm.pass_structure_dict(parameter)
+        self.prm.pass_optimize_dict(parameter)
+
+        self.prm.basic["file_name"] = self.make_filename()
+        self.generate_random_streams()
+
+
+    def generate_random_streams(self):
+        self.rng = np.random.RandomState(self.prm.optimize["random_seed"])
+        self.trng = RandomStreams(self.prm.optimize["random_seed"])
+
+
+    def get_train_date(self, train_x, train_y):
+        pass
+        #self.prm.data['train_data_location'] = #todo
+
+
+    def get_valid_data(self, valid_x, valid_y):
+        pass
+        #todo
+
+
+
 
 
     ######       Dump weights in kelpto file
     ########################################
     def dump(self):
 
-        data_location = self.p_struct["file_name"] + ".prm"
+        data_location = self.prm.basic["file_name"] + ".prm"
         self.pub("save " + data_location)
         d = klepto.archives.file_archive(data_location, cached=True,serialized=True)
         d['layer_weights'] = [[np.asarray(w.eval()) for w in layer] for layer in self.layer_weights]
@@ -58,7 +89,7 @@ class modelMaster:
         #d['monitor'] = self.training_error
         d.dump()
         d.clear()
-
+        # todo
 
     ######     Load weights form kelpto file
     ########################################
@@ -72,13 +103,13 @@ class modelMaster:
         struct = d['p_struct']
         optima = d['p_optima']
         d.clear()
-
+        # todo
         return weights, struct, optima
 
 
     ######       Calculate number of weights
     ########################################
-    def __calc_numb_weights(self, weights):
+    def calc_numb_weights(self, weights):
         numb_weights = 0
         for w in weights:
             wn =  w.get_value().shape
@@ -93,17 +124,17 @@ class modelMaster:
     ########################################
     def make_filename(self):
         day_str = time.strftime("%d-%m-%Y")
-        net_str = "-".join(str(e) for e in self.p_struct["net_size"])
-        if(self.p_struct["bi_directional"]):
+        net_str = "-".join(str(e) for e in self.prm.struct["net_size"])
+        if(self.prm.struct["bi_directional"]):
             bi_str = '-bi'
         else:
             bi_str = ''
         numb = 1
-        fname =  self.p_struct['output_location'] + "n-" + net_str + bi_str + "_d-" + day_str + "_v-" + str(numb)
+        fname =  self.prm.basic['output_location'] + "n-" + net_str + bi_str + "_d-" + day_str + "_v-" + str(numb)
 
         while(os.path.isfile(fname + ".log")):
             numb +=1
-            fname =  self.p_struct['output_location'] + "n-" + net_str + bi_str + "_d-" + day_str + "_v-" + str(numb)
+            fname =  self.prm.basic['output_location'] + "n-" + net_str + bi_str + "_d-" + day_str + "_v-" + str(numb)
 
         return fname
 
@@ -111,10 +142,10 @@ class modelMaster:
     ######      Manages write/print commands
     ########################################
     def pub(self, text):
-        if(self.p_struct["output_type"]=="console" or self.p_struct["output_type"]=="both"):
+        if(self.prm.basic["output_type"]=="console" or self.prm.basic["output_type"]=="both"):
             print text
-        if(self.p_struct["output_type"]=="file" or self.p_struct["output_type"]=="both"):
-            self.fobj = open(self.p_struct["file_name"]  + ".log", "a")
+        if(self.prm.basic["output_type"]=="file" or self.prm.basic["output_type"]=="both"):
+            self.fobj = open(self.prm.basic["file_name"]  + ".log", "a")
             self.fobj.write(str(text) + "\n")
             self.fobj.close()
 
@@ -122,22 +153,22 @@ class modelMaster:
     ######           Writes model parameters
     ########################################
     def print_model_params(self):
-        if(self.p_struct["output_type"]=="console" or self.p_struct["output_type"]=="both"):
+        if(self.prm.basic["output_type"]=="console" or self.prm.basic["output_type"]=="both"):
             print "###"
             print "####### Boundary Detection with use of Long Short term Memories ########"
             print "###"
             print "# Start Datetime: ", datetime.datetime.today()
             print "###"
             print "# Network Structure"
-            for kk, pp in self.p_struct.iteritems():
+            for kk, pp in self.prm.struct.iteritems():
                 print kk, ": ", pp
             print "###"
             print "# Optimization Parameters"
-            for kk, pp in self.p_optima.iteritems():
+            for kk, pp in self.prm.optimize.iteritems():
                 print kk, ": ", pp
             print "###"
-        if(self.p_struct["output_type"]=="file" or self.p_struct["output_type"]=="both"):
-            self.fobj = open(self.p_struct["file_name"] + ".log", "a")
+        if(self.prm.basic["output_type"]=="file" or self.prm.basic["output_type"]=="both"):
+            self.fobj = open(self.prm.basic["file_name"] + ".log", "a")
 
             self.fobj.write( "###" + "\n")
             self.fobj.write( "####### Boundary Detection with use of Long Short term Memories ########" + "\n")
@@ -146,50 +177,15 @@ class modelMaster:
             self.fobj.write("# Start Datetime: "+ date_time + "\n" )
             self.fobj.write( "###" + "\n")
             self.fobj.write( "# Network Structure" + "\n")
-            for kk, pp in self.p_struct.iteritems():
+            for kk, pp in self.prm.struct.iteritems():
                 str_obj = str(kk) + ": "+ str(pp)
                 self.fobj.write(str_obj+ "\n")
             self.fobj.write( "###" + "\n")
             self.fobj.write( "# Optimization Parameters" + "\n")
-            for kk, pp in self.p_optima.iteritems():
+            for kk, pp in self.prm.optimize.iteritems():
                 str_obj = str(kk) + ": "+ str(pp)
                 self.fobj.write(str_obj+ "\n")
             self.fobj.write("###" + "\n")
             self.fobj.close()
 
 
-######    Supervise structure parameters
-########################################
-    def prm_structure_supervise(self, prm_given):
-
-        prm_structure = OrderedDict()
-
-        if prm_given["batch_size"] > 0:
-            prm_structure["batch_size"] = prm_given
-        else:
-            #self.pub("Batch size below 1")
-            sys.exit("Parameter error")
-
-        if (sys.version_info[0] == 2 and  isinstance(prm_given["corpus_name"   ], basestring)) or \
-            (sys.version_info[0] == 3 and isinstance(prm_given["corpus_name"   ], str)):
-            prm_structure["corpus_name"   ] = prm_given["corpus_name"   ]
-        else:
-            #self.pub("Batch size below 1")
-            sys.exit("Parameter error")
-
-        # todo add tests
-
-        prm_structure["data_location" ] = prm_given["data_location" ]
-        prm_structure["net_size"      ] = prm_given["net_size"      ]
-        prm_structure["net_unit_type" ] = prm_given["net_unit_type" ]
-        prm_structure["hidden_layer"  ] = prm_given["hidden_layer"  ]
-        prm_structure["bi_directional"] = prm_given["bi_directional"]
-        prm_structure["identity_func" ] = prm_given["identity_func" ]
-        prm_structure["train_set_len" ] = prm_given["train_set_len" ]
-        prm_structure["valid_set_len" ] = prm_given["valid_set_len" ]
-        if "log" not in os.listdir(os.getcwd()):
-            os.mkdir("log")
-        prm_structure["output_location"] = prm_given["output_location"]
-        prm_structure["output_type"    ] = prm_given["output_type"    ]
-
-        return prm_structure

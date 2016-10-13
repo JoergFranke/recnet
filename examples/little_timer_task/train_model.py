@@ -26,21 +26,66 @@ from recnet.data_handler import load_minibatches
 
 
 ### 1. Step: Create new model
-
-### 2. Step: Pass data to model
-
-train_x
-train_y
-
-valid_x
-valid_y
+model = rnnModel()
 
 
 
-### 3. Step: Define parameters
+
+
+### 2. Step: Define parameters
+parameter = OrderedDict()
+parameter["minibatch_location"] = "minibatch"
+parameter["output_location"] = "log"
+parameter["output_type"    ] = "both"        # console, file, both
+
+parameter["train_data_name"] = "little-timer_train.klepto"
+parameter["valid_data_name"] = "little-timer_valid.klepto"
+parameter["data_location"] = "data_set/"
+
+parameter["batch_size" ] = 10 #todo is data no structure
+parameter["net_size"      ] = [2, 10, 2]
+parameter["net_unit_type" ] = ['input', 'LSTM', 'softmax']
+parameter["net_act_type" ] = ['-', 'tanh', '-']
+parameter["bi_directional"] = False
+
+parameter["random_seed"   ] = 211
+parameter["epochs"        ] = 5
+parameter["learn_rate"    ] = 0.0001
+parameter["momentum_rate" ] = 0.9
+parameter["decay_rate"    ] = 0.9
+parameter["use_dropout"   ] = False       # False, True
+parameter["dropout_level" ] = 0.5
+parameter["regularization"] = False       # False, L2, ( L1 )
+parameter["reg_factor"    ] = 0.01
+parameter["optimization"  ] = "adadelta"  # sgd, nm_rmsprop, rmsprop, nesterov_momentum, adadelta
+parameter["noisy_input"   ] = False       # False, True
+parameter["noise_level"   ] = 0.6
+parameter["loss_function" ] = "cross_entropy" # w2_cross_entropy, cross_entropy
+parameter["bound_weight"  ] = False       # False, Integer (2,12)
+
+model.pass_parameter_dict(parameter)
+
+
+
+### 3. Step: Pass data to model
+
+# train_x
+# train_y
+#
+# valid_x
+# valid_y
+
+
+# update ->
+# parameter["train_set_len" ] = train_mb_set_x.__len__()
+# parameter["valid_set_len" ] = valid_mb_set_x.__len__()
+
+
+
+
 
 ### 4. Step: Build model functions
-
+model.build_model()
 ### 5. Step: Train model
 
 ### 5.1: Create minibatches
@@ -56,79 +101,57 @@ time_0 = time.time()
 
 
 ########## RANDOM STREAMS
-prm_optimization = OrderedDict()
-prm_optimization["seed"] = 211
-rng = np.random.RandomState(prm_optimization["seed"])
-trng = RandomStreams(prm_optimization["seed"] )
+
+
+
 
 
 ###### DATA IN
 print("# Load data")
-prm_structure = OrderedDict()
-prm_structure["batch_size" ] = 10
-prm_structure["corpus_name"] = "little-timer"
-prm_structure["data_location"] = "data_set/"
 
-data_name = prm_structure["corpus_name" ] + '_train'
-train_mb_set_x,train_mb_set_y,train_mb_set_m = load_minibatches(prm_structure["data_location"], data_name, prm_structure["batch_size"])
 
-data_name = prm_structure["corpus_name" ] + '_valid'
-valid_mb_set_x,valid_mb_set_y,valid_mb_set_m = load_minibatches(prm_structure["data_location"], data_name, prm_structure["batch_size"])
+data_name = "little-timer_train"
+train_mb_set_x,train_mb_set_y,train_mb_set_m = load_minibatches(parameter["data_location"], data_name, parameter["batch_size"])
+
+data_name = "little-timer_valid"
+valid_mb_set_x,valid_mb_set_y,valid_mb_set_m = load_minibatches(parameter["data_location"], data_name, parameter["batch_size"])
 
 n_in = train_mb_set_x[0].shape[2]
 n_out = train_mb_set_y[0].shape[2]
+
+
+
+model.prm.data["train_set_len" ] = train_mb_set_x.__len__()
+model.prm.data["valid_set_len" ] = valid_mb_set_x.__len__()
 
 print "# Loading duration: ",time.time()-time_0 ," sec"
 
 
 #### Hyper parameter
-prm_structure["net_size"      ] = [n_in,10, n_out]
-prm_structure["net_unit_type" ] = ['input', 'tanh', 'softmax']
-prm_structure["hidden_layer"  ] = prm_structure["net_size"].__len__() - 2
-prm_structure["bi_directional"] = False
-prm_structure["identity_func" ] = False
-prm_structure["train_set_len" ] = train_mb_set_x.__len__()
-prm_structure["valid_set_len" ] = valid_mb_set_x.__len__()
-if "log" not in os.listdir(os.getcwd()):
-    os.mkdir("log")
-prm_structure["output_location"] = "log/"
-prm_structure["output_type"    ] = "both"        # console, file, both
 
-prm_optimization["epochs"        ] = 5
-prm_optimization["learn_rate"    ] = 0.0001
-prm_optimization["lr_decline"    ] = 0.95
-prm_optimization["momentum"      ] = 0.9
-prm_optimization["decay_rate"    ] = 0.9
-prm_optimization["use_dropout"   ] = False       # False, True
-prm_optimization["dropout_level" ] = 0.5
-prm_optimization["regularization"] = False       # False, L2, ( L1 )
-prm_optimization["reg_factor"    ] = 0.01
-prm_optimization["optimization"  ] = "adadelta"  # sgd, nm_rmsprop, rmsprop, nesterov_momentum, adadelta
-prm_optimization["noisy_input"   ] = False       # False, True
-prm_optimization["noise_level"   ] = 0.6
-prm_optimization["loss_function" ] = "cross_entropy" # w2_cross_entropy, cross_entropy
-prm_optimization["bound_weight"  ] = False       # False, Integer (2,12)
+
+
 
 
 ###### Build model
 
-lstm = rnnModel(prm_structure, prm_optimization, rng, trng)
 
-lstm.print_model_params()
-lstm.pub("# Build model")
+
+model.print_model_params()
+model.pub("# Build model")
 
 time_1 = time.time()
-lstm.pub("Model build time"+ str(time_1-time_0) + "sec")
+model.pub("Model build time"+ str(time_1-time_0) + "sec")
 
-train_fn    = lstm.get_training_function()
-valid_fn    = lstm.get_validation_function()
-forward_fn  = lstm.get_forward_function()
+train_fn    = model.get_training_function()
+valid_fn    = model.get_validation_function()
+forward_fn  = model.get_forward_function()
 
 
 ###### START TRAINING
-lstm.pub("Start training")
+model.pub("Start training")
 
-batch_order = np.arange(0,prm_structure["train_set_len"])
+batch_order = np.arange(0,model.prm.data["train_set_len"])
 
 
 ################################ NEW DATA HANDLING
@@ -144,35 +167,35 @@ train_data_x_len = [i.__len__() for i in train_data_x]
 train_data_y_len = [i.__len__() for i in train_data_y]
 assert np.array_equal(train_data_x_len, train_data_y_len), "x and y sequences have not the same length"
 
-prm_structure["x_length"] = train_data_x[0].shape[1]
-prm_structure["y_length"] = train_data_y[0].shape[1]
+model.prm.struct["x_length"] = train_data_x[0].shape[1]
+model.prm.struct["y_length"] = train_data_y[0].shape[1]
 
-lstm.p_struct["batch_size"] = 10
-lstm.p_struct["train_set_len" ] = train_data_x.__len__()
-lstm.p_struct["batch_quantity"] = int(np.trunc(lstm.p_struct["train_set_len" ]/lstm.p_struct["batch_size"]))
+model.prm.struct["batch_size"] = 10
+model.prm.data["train_set_len" ] = train_data_x.__len__()
+model.prm.struct["batch_quantity"] = int(np.trunc(model.prm.struct["train_set_len" ]/model.prm.struct["batch_size"]))
 
 
-sample_order = np.arange(0,lstm.p_struct["train_set_len" ])
-sample_order = rng.permutation(sample_order)
+sample_order = np.arange(0,model.prm.data["train_set_len" ])
+sample_order = model.rng.permutation(sample_order)
 
 ##################################################
-batch_size = lstm.p_struct["batch_size"]
-x_length = train_data_x[0].shape[1] #prm_structure["x_length"]
-y_length = train_data_y[0].shape[1] # prm_structure["y_length"]
+batch_size = model.prm.struct["batch_size"]
+x_length = train_data_x[0].shape[1] #model.prm.struct["x_length"]
+y_length = train_data_y[0].shape[1] # model.prm.struct["y_length"]
 ##################################################
 
-for i in xrange(prm_optimization["epochs"]):
+for i in xrange(model.prm.optimize["epochs"]):
     time_training_start = time.time()
     time_training_iteration = time_training_start
-    lstm.pub("------------------------------------------")
-    lstm.pub(str(i)+" Epoch, Training run")
+    model.pub("------------------------------------------")
+    model.pub(str(i)+" Epoch, Training run")
 
 
-    train_error = np.zeros(prm_structure["train_set_len" ])
-    batch_permut = rng.permutation(batch_order)
+    train_error = np.zeros(model.prm.data["train_set_len" ])
+    batch_permut = model.rng.permutation(batch_order)
 
 
-    for j in xrange(lstm.p_struct["batch_quantity"]):
+    for j in xrange(model.prm.struct["batch_quantity"]):
 
         ### build minibatch
         sample_selection = sample_order[ j*batch_size:j*batch_size+batch_size ]
@@ -205,44 +228,44 @@ for i in xrange(prm_optimization["epochs"]):
 
         #Insample error
         if ( j%50) == 0 :
-            lstm.pub("counter: " + "{:3.0f}".format(j)
+            model.pub("counter: " + "{:3.0f}".format(j)
                    + "  time: " + "{:5.2f}".format(time.time()-time_training_iteration) + "sec"
                    + "  error: " + "{:6.4f}".format(train_error[j]))
             time_training_iteration = time.time()
 
         #Validation
-        if ( (j%500) == 0 or j == prm_structure["train_set_len" ]-1 ) and j>0:
-            lstm.pub("###########################################")
-            lstm.pub("## epoch validation at " + str(i) + "/" + str(j))
+        if ( (j%500) == 0 or j == model.prm.data["train_set_len" ]-1 ) and j>0:
+            model.pub("###########################################")
+            model.pub("## epoch validation at " + str(i) + "/" + str(j))
 
-            v_error = np.zeros([prm_structure["valid_set_len"]])
-            ce_error = np.zeros([prm_structure["valid_set_len"]*prm_structure["batch_size"]])
-            auc_error = np.zeros([prm_structure["valid_set_len"]*prm_structure["batch_size"]])
+            v_error = np.zeros([model.prm.data["valid_set_len"]])
+            ce_error = np.zeros([model.prm.data["valid_set_len"]*model.prm.struct["batch_size"]])
+            auc_error = np.zeros([model.prm.data["valid_set_len"]*model.prm.struct["batch_size"]])
 
-            for v in np.arange(0,prm_structure["valid_set_len"]):
+            for v in np.arange(0,model.prm.data["valid_set_len"]):
                 v_net_out_, v_error[v] = valid_fn(valid_mb_set_x[v],valid_mb_set_y[v],valid_mb_set_m[v])
 
-                for b in np.arange(0,prm_structure["batch_size"]):
+                for b in np.arange(0,model.prm.struct["batch_size"]):
                     true_out = valid_mb_set_y[v][:,b,:]
                     code_out = v_net_out_[:,b,:]
 
-                    count = v * prm_structure["batch_size"] + b
+                    count = v * model.prm.struct["batch_size"] + b
 
                     ce_error[count] = sklearn.metrics.log_loss( true_out,code_out)
                     auc_error[count] = sklearn.metrics.roc_auc_score( true_out,code_out)
 
-            lstm.pub("## cross entropy theano  : " + "{0:.4f}".format(np.mean(v_error)))
-            lstm.pub("## cross entropy sklearn : " + "{0:.4f}".format(np.mean(ce_error)))
-            lstm.pub("## area under the curve  : " + "{0:.4f}".format(np.mean(auc_error)))
-            lstm.pub("###########################################")
+            model.pub("## cross entropy theano  : " + "{0:.4f}".format(np.mean(v_error)))
+            model.pub("## cross entropy sklearn : " + "{0:.4f}".format(np.mean(ce_error)))
+            model.pub("## area under the curve  : " + "{0:.4f}".format(np.mean(auc_error)))
+            model.pub("###########################################")
 
-            lstm.dump() #save current weights
+            model.dump() #save current weights
 
-    lstm.pub("###########################################")
-    lstm.pub("Insample Error: " + str(np.mean(train_error)))
-    lstm.pub("Epoch training duration: "+ str(time.time()-time_training_start) + "sec")
+    model.pub("###########################################")
+    model.pub("Insample Error: " + str(np.mean(train_error)))
+    model.pub("Epoch training duration: "+ str(time.time()-time_training_start) + "sec")
 
 #Finale
-lstm.pub("## ||||||||||||||||||||||||||||||||||||||||")
+model.pub("## ||||||||||||||||||||||||||||||||||||||||")
 
 

@@ -38,10 +38,7 @@ theano.config.scan.allow_gc = False
 class rnnModel(modelMaster):
 
 
-    def build_model(self, p_struct, p_optima, rng, trng, old_weights=None):
-
-        self.p_struct = self.prm_structure_supervise(p_struct)        # params_structure
-        self.p_optima = p_optima        # params_optimization
+    def build_model(self, old_weights=None):
 
 
         ######            Create model variables
@@ -55,15 +52,15 @@ class rnnModel(modelMaster):
         ######           Create model parameters
         ########################################
         tpo = OrderedDict() #theano optimization parameter
-        for key, value in p_optima.items():
+        for key, value in self.prm.optimize.items():
             if not isinstance(value,str):
                 tpo[key] = theano.shared(name=key, value=np.asarray(value, dtype=theano.config.floatX))
 
 
         ###### Add noise to input if noisy_input
         ########################################
-        if p_optima["noisy_input"]:
-            self.X_tv2 = self.X_tv2 + trng.normal(size=self.X_tv2.shape, avg=0, std=tpo["noise_level"])
+        if self.prm.optimize["noisy_input"]:
+            self.X_tv2 = self.X_tv2 + self.trng.normal(size=self.X_tv2.shape, avg=0, std=tpo["noise_level"])
         else:
             self.X_tv2 = self.X_tv2
 
@@ -71,28 +68,28 @@ class rnnModel(modelMaster):
         ######                     Create layers
         ########################################
         network_layer = []
-        for i in range(p_struct["hidden_layer"]):
-            unit_ = getattr(layer, p_struct["net_unit_type"][i+1])
-            network_layer.append(unit_(rng, trng, p_struct["net_size"][i:i + 1][0], p_struct["net_size"][i + 1:i + 2][0], p_struct["batch_size"], old_weights[i]))
-            #if p_struct["bi_directional"]:
+        for i in range(self.prm.struct["hidden_layer"]):
+            unit_ = getattr(layer, self.prm.struct["net_unit_type"][i+1])
+            network_layer.append(unit_(self.rng, self.trng, self.prm.struct["net_size"][i:i + 1][0], self.prm.struct["net_size"][i + 1:i + 2][0], self.prm.struct["batch_size"],))#todo old_weights[i]))
+            #if self.prm.struct["bi_directional"]:
 
-            #    network_layer.append(BLSTMlayer(rng,trng, p_struct["net_size"][i:i+1][0], p_struct["net_size"][i+1:i+2][0], p_struct["batch_size"], old_weights[i]))
+            #    network_layer.append(BLSTMlayer(self.rng,self.trng, self.prm.struct["net_size"][i:i+1][0], self.prm.struct["net_size"][i+1:i+2][0], self.prm.struct["batch_size"], old_weights[i]))
             #else:
             #    unit_ = getattr(layer, "GRUlayer")
-            #    network_layer.append(unit_(rng,trng, p_struct["net_size"][i:i+1][0], p_struct["net_size"][i+1:i+2][0], p_struct["batch_size"], old_weights[i]))
+            #    network_layer.append(unit_(self.rng,self.trng, self.prm.struct["net_size"][i:i+1][0], self.prm.struct["net_size"][i+1:i+2][0], self.prm.struct["batch_size"], old_weights[i]))
 
-        output_layer = softmax(rng,trng, p_struct,p_struct["hidden_layer"]+1, old_weights[-1])
+        output_layer = softmax(self.rng,self.trng, self.prm.struct,self.prm.struct["hidden_layer"]+1,) #todo old_weights[-1])
 
         self.layer_weights = [l.weights for l in network_layer] + [output_layer.weights]
         self.all_weights = sum([l for l in self.layer_weights],[])
-
+        self.prm.struct["weight_numb"] = self.calc_numb_weights(self.all_weights)
 
         ######             Choose error function
         ########################################
         try:
-            loss_function_ = getattr(error_function, p_optima["loss_function"])
+            loss_function_ = getattr(error_function, self.prm.optimize["loss_function"])
         except AttributeError:
-            raise NotImplementedError("Class `{}` does not implement `{}`".format(error_function.__name__, p_optima["loss_function"]))
+            raise NotImplementedError("Class `{}` does not implement `{}`".format(error_function.__name__, self.prm.optimize["loss_function"]))
 
         loss_function = loss_function_() #w2_cross_entropy() #cross_entropy() #
 
@@ -102,23 +99,23 @@ class rnnModel(modelMaster):
         ## training part
         t_signal = []
         t_signal.append(self.X_tv2)
-        for l in range(p_struct["hidden_layer"]):
+        for l in range(self.prm.struct["hidden_layer"]):
             t_signal.append(network_layer[l].sequence_iteration(t_signal[l],self.M_tv2, tpo["use_dropout"],tpo["dropout_level"]))
 
-            if p_struct["identity_func"] and l >= 1:
+            if self.prm.struct["identity_func"] and l >= 1:
                 t_signal[l+1] = t_signal[l+1] + t_signal[l]
-        self.t_net_out = output_layer.softmax(t_signal[p_struct["hidden_layer"]],self.M_tv2, tpo["use_dropout"],tpo["dropout_level"])
+        self.t_net_out = output_layer.softmax(t_signal[self.prm.struct["hidden_layer"]],self.M_tv2, tpo["use_dropout"],tpo["dropout_level"])
         o_error = loss_function.output_error(self.t_net_out,  self.Y_tv2, tpo["bound_weight"])
 
         ## validation/test part
         v_signal = []
         v_signal.append(self.X_tv2_v)
-        for l in range(p_struct["hidden_layer"]):
+        for l in range(self.prm.struct["hidden_layer"]):
             v_signal.append(network_layer[l].sequence_iteration(v_signal[l],self.M_tv2, use_dropout=0))
 
-            if p_struct["identity_func"] and l >= 1:
+            if self.prm.struct["identity_func"] and l >= 1:
                 v_signal[l+1] = v_signal[l+1] + v_signal[l]
-        self.v_net_out = output_layer.softmax(v_signal[p_struct["hidden_layer"]],self.M_tv2,use_dropout=0)
+        self.v_net_out = output_layer.softmax(v_signal[self.prm.struct["hidden_layer"]],self.M_tv2,use_dropout=0)
         self.v_error = loss_function.output_error(self.v_net_out,  self.Y_tv2 , tpo["bound_weight"])
 
 
@@ -127,10 +124,10 @@ class rnnModel(modelMaster):
         def regularization(weights):
             w_error = 0
             for w in weights:
-                w_error = w_error + p_optima["reg_factor"]  * T.square(T.mean(T.sqr(w)))
+                w_error = w_error + self.prm.optimize["reg_factor"]  * T.square(T.mean(T.sqr(w)))
             return w_error
 
-        if p_optima["regularization"]:
+        if self.prm.optimize["regularization"]:
             self.t_error = o_error + regularization(self.all_weights)
         else:
             self.t_error = o_error
@@ -139,11 +136,11 @@ class rnnModel(modelMaster):
         ######                    Call optimizer
         ########################################
         try:
-            optimizer_ = getattr(update_function, p_optima["optimization"])
+            optimizer_ = getattr(update_function, self.prm.optimize["optimization"])
         except AttributeError:
-            raise NotImplementedError("Class `{}` does not implement `{}`".format(update_function.__name__, p_optima["optimization"]))
+            raise NotImplementedError("Class `{}` does not implement `{}`".format(update_function.__name__, self.prm.optimize["optimization"]))
 
-        optimizer = optimizer_(rng, self.all_weights)
+        optimizer = optimizer_(self.rng, self.all_weights)
 
         self.updates = optimizer.fit(self.all_weights,self.t_error, tpo)
 
