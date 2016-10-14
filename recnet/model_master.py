@@ -14,17 +14,18 @@ import datetime
 import time
 import os.path
 import sys
-from parameter_supervisor import prmSupervisor
+from parameter_supervisor import ParameterSupervisor
+from mini_batch_handler import MiniBatchHandler
 
 
 #### Master class with support functions
 ########################################
-class modelMaster:
+class ModelMaster:
 
     def __init__(self, load=False, data_location=None, new_batch_size=None):
 
-        self.prm = prmSupervisor()
-
+        self.prm = ParameterSupervisor()
+        self.mbh = MiniBatchHandler(self.rng, self.prm.data, self.prm.struct)
 
         if not load:
             pass

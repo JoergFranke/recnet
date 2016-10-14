@@ -34,15 +34,15 @@ model = rnnModel()
 
 ### 2. Step: Define parameters
 parameter = OrderedDict()
-parameter["minibatch_location"] = "minibatch"
 parameter["output_location"] = "log"
 parameter["output_type"    ] = "both"        # console, file, both
 
 parameter["train_data_name"] = "little-timer_train.klepto"
 parameter["valid_data_name"] = "little-timer_valid.klepto"
 parameter["data_location"] = "data_set/"
+parameter["batch_size" ] = 10
+parameter["mini_batch_location"] = "mini_batch"
 
-parameter["batch_size" ] = 10 #todo is data no structure
 parameter["net_size"      ] = [2, 10, 2]
 parameter["net_unit_type" ] = ['input', 'LSTM', 'softmax']
 parameter["net_act_type" ] = ['-', 'tanh', '-']
@@ -67,13 +67,9 @@ model.pass_parameter_dict(parameter)
 
 
 
-### 3. Step: Pass data to model
+### 3. Step: Check data_sets
 
-# train_x
-# train_y
-#
-# valid_x
-# valid_y
+model.mbh.check_out_data_set()
 
 
 # update ->
@@ -140,6 +136,7 @@ print "# Loading duration: ",time.time()-time_0 ," sec"
 model.print_model_params()
 model.pub("# Build model")
 
+
 time_1 = time.time()
 model.pub("Model build time"+ str(time_1-time_0) + "sec")
 
@@ -167,19 +164,19 @@ train_data_x_len = [i.__len__() for i in train_data_x]
 train_data_y_len = [i.__len__() for i in train_data_y]
 assert np.array_equal(train_data_x_len, train_data_y_len), "x and y sequences have not the same length"
 
-model.prm.struct["x_length"] = train_data_x[0].shape[1]
-model.prm.struct["y_length"] = train_data_y[0].shape[1]
+model.prm.data["x_size"] = train_data_x[0].shape[1]
+model.prm.data["y_size"] = train_data_y[0].shape[1]
 
-model.prm.struct["batch_size"] = 10
+model.prm.data["batch_size"] = 10
 model.prm.data["train_set_len" ] = train_data_x.__len__()
-model.prm.struct["batch_quantity"] = int(np.trunc(model.prm.struct["train_set_len" ]/model.prm.struct["batch_size"]))
+model.prm.data["batch_quantity"] = int(np.trunc(model.prm.data["train_set_len" ]/model.prm.data["batch_size"]))
 
 
 sample_order = np.arange(0,model.prm.data["train_set_len" ])
 sample_order = model.rng.permutation(sample_order)
 
 ##################################################
-batch_size = model.prm.struct["batch_size"]
+batch_size = model.prm.data["batch_size"]
 x_length = train_data_x[0].shape[1] #model.prm.struct["x_length"]
 y_length = train_data_y[0].shape[1] # model.prm.struct["y_length"]
 ##################################################
@@ -195,7 +192,7 @@ for i in xrange(model.prm.optimize["epochs"]):
     batch_permut = model.rng.permutation(batch_order)
 
 
-    for j in xrange(model.prm.struct["batch_quantity"]):
+    for j in xrange(model.prm.data["batch_quantity"]):
 
         ### build minibatch
         sample_selection = sample_order[ j*batch_size:j*batch_size+batch_size ]
@@ -239,17 +236,17 @@ for i in xrange(model.prm.optimize["epochs"]):
             model.pub("## epoch validation at " + str(i) + "/" + str(j))
 
             v_error = np.zeros([model.prm.data["valid_set_len"]])
-            ce_error = np.zeros([model.prm.data["valid_set_len"]*model.prm.struct["batch_size"]])
-            auc_error = np.zeros([model.prm.data["valid_set_len"]*model.prm.struct["batch_size"]])
+            ce_error = np.zeros([model.prm.data["valid_set_len"]*model.prm.data["batch_size"]])
+            auc_error = np.zeros([model.prm.data["valid_set_len"]*model.prm.data["batch_size"]])
 
             for v in np.arange(0,model.prm.data["valid_set_len"]):
                 v_net_out_, v_error[v] = valid_fn(valid_mb_set_x[v],valid_mb_set_y[v],valid_mb_set_m[v])
 
-                for b in np.arange(0,model.prm.struct["batch_size"]):
+                for b in np.arange(0,model.prm.data["batch_size"]):
                     true_out = valid_mb_set_y[v][:,b,:]
                     code_out = v_net_out_[:,b,:]
 
-                    count = v * model.prm.struct["batch_size"] + b
+                    count = v * model.prm.data["batch_size"] + b
 
                     ce_error[count] = sklearn.metrics.log_loss( true_out,code_out)
                     auc_error[count] = sklearn.metrics.roc_auc_score( true_out,code_out)

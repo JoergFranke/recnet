@@ -15,7 +15,7 @@ import error_function
 import layer
 from layer import softmax
 import update_function
-from model_master import modelMaster
+from model_master import ModelMaster
 
 
 ######                     Theano Config
@@ -35,7 +35,7 @@ theano.config.scan.allow_gc = False
 #theano.config.exception_verbosity='high'
 
 
-class rnnModel(modelMaster):
+class rnnModel(ModelMaster):
 
 
     def build_model(self, old_weights=None):
@@ -70,7 +70,7 @@ class rnnModel(modelMaster):
         network_layer = []
         for i in range(self.prm.struct["hidden_layer"]):
             unit_ = getattr(layer, self.prm.struct["net_unit_type"][i+1])
-            network_layer.append(unit_(self.rng, self.trng, self.prm.struct["net_size"][i:i + 1][0], self.prm.struct["net_size"][i + 1:i + 2][0], self.prm.struct["batch_size"],))#todo old_weights[i]))
+            network_layer.append(unit_(self.rng, self.trng, self.prm.struct["net_size"][i:i + 1][0], self.prm.struct["net_size"][i + 1:i + 2][0], self.prm.data["batch_size"],))#todo old_weights[i]))
             #if self.prm.struct["bi_directional"]:
 
             #    network_layer.append(BLSTMlayer(self.rng,self.trng, self.prm.struct["net_size"][i:i+1][0], self.prm.struct["net_size"][i+1:i+2][0], self.prm.struct["batch_size"], old_weights[i]))

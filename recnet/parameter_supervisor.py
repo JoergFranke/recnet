@@ -14,7 +14,7 @@ import os.path
 import sys
 
 
-class prmSupervisor:
+class ParameterSupervisor:
 
     def __init__(self):
         self.basic = OrderedDict()
@@ -48,46 +48,53 @@ class prmSupervisor:
         if self.basic["output_location"] not in os.listdir(os.getcwd()):
             os.mkdir(self.basic["output_location"])
 
-        if "minibatch_location" in prm_basic:
-            self.basic["minibatch_location"] = prm_basic["minibatch_location"]
+
+
+    def pass_data_dict(self, prm_data):
+
+        if "batch_size" in prm_data:
+            if prm_data["batch_size"] > 0:
+                self.data["batch_size"] = prm_data["batch_size"]
+            else:
+                raise Warning("Wrong batch size")
         else:
-            self.basic["minibatch_location"] = "minibatch"
+            raise Warning("No batch size")
 
-        if self.basic["minibatch_location"] not in os.listdir(os.getcwd()):
-            os.mkdir(self.basic["minibatch_location"])
-
-    def pass_data_dict(self, prm_basic):
-
-        if "data_location" in prm_basic:
-            self.basic["data_location"] = prm_basic["data_location"]
+        if "data_location" in prm_data:
+            self.data["data_location"] = prm_data["data_location"]
         else:
             raise Warning("data_location is missing")
 
-        if "train_data_name" in prm_basic:
-            self.basic["train_data_name"] = prm_basic["train_data_name"]
+        if "train_data_name" in prm_data:
+            self.data["train_data_name"] = prm_data["train_data_name"]
         else:
             raise Warning("train_data_name is missing")
 
-        if "valid_data_name" in prm_basic:
-            self.basic["valid_data_name"] = prm_basic["valid_data_name"]
+        if "valid_data_name" in prm_data:
+            self.data["valid_data_name"] = prm_data["valid_data_name"]
         else:
             raise Warning("valid_data_name is missing")
 
         self.data["train_set_len" ] = 0
         self.data["valid_set_len" ] = 0
+        self.data["test_set_len" ] = 0
+        self.data["x_size"] = 0
+        self.data["y_size"] = 0
+        self.data["batch_quantity" ] = 0
+        self.data["checked_data"] = False
+
+        if "mini_batch_location" in prm_data:
+            self.basic["mini_batch_location"] = prm_data["mini_batch_location"]
+        else:
+            self.basic["mini_batch_location"] = "mini_batch"
+
+        if self.basic["mini_batch_location"] not in os.listdir(os.getcwd()):
+            os.mkdir(self.basic["mini_batch_location"])
 
 
 
 
     def pass_structure_dict(self, prm_structure):
-
-        if "batch_size" in prm_structure:
-            if prm_structure["batch_size"] > 0:
-                self.struct["batch_size"] = prm_structure["batch_size"]
-            else:
-                raise Warning("Wrong batch size")
-        else:
-            raise Warning("No batch size")
 
         if "net_size" in prm_structure:
             self.struct["net_size"      ] = prm_structure["net_size"]
