@@ -24,8 +24,9 @@ class ModelMaster:
 
     def __init__(self, load=False, data_location=None, new_batch_size=None):
 
+
         self.prm = ParameterSupervisor()
-        self.mbh = MiniBatchHandler(self.rng, self.prm.data, self.prm.struct)
+
 
         if not load:
             pass
@@ -63,6 +64,8 @@ class ModelMaster:
         self.rng = np.random.RandomState(self.prm.optimize["random_seed"])
         self.trng = RandomStreams(self.prm.optimize["random_seed"])
 
+        self.mbh = MiniBatchHandler(self.rng, self.prm.data, self.prm.struct)
+
 
     def get_train_date(self, train_x, train_y):
         pass
@@ -85,12 +88,14 @@ class ModelMaster:
         self.pub("save " + data_location)
         d = klepto.archives.file_archive(data_location, cached=True,serialized=True)
         d['layer_weights'] = [[np.asarray(w.eval()) for w in layer] for layer in self.layer_weights]
-        d['p_struct'] = self.p_struct
-        d['p_optima'] = self.p_optima
+        d['p_basic'] = self.prm.basic
+        d['p_data'] = self.prm.data
+        d['p_struct'] = self.prm.struct
+        d['p_optimize'] = self.prm.optimize
         #d['monitor'] = self.training_error
         d.dump()
         d.clear()
-        # todo
+
 
     ######     Load weights form kelpto file
     ########################################
@@ -101,11 +106,13 @@ class ModelMaster:
         d = klepto.archives.file_archive(data_location, cached=True,serialized=True)
         d.load()
         weights = d['layer_weights']
-        struct = d['p_struct']
-        optima = d['p_optima']
+        basic   = d['p_basic'   ]
+        data   = d['p_data'    ]
+        struct  = d['p_struct'  ]
+        optimize= d['p_optimize']
         d.clear()
         # todo
-        return weights, struct, optima
+        return weights, basic, data,struct,optimize
 
 
     ######       Calculate number of weights
@@ -159,6 +166,10 @@ class ModelMaster:
             print "####### Boundary Detection with use of Long Short term Memories ########"
             print "###"
             print "# Start Datetime: ", datetime.datetime.today()
+            print "###"
+            print "# Network Data"
+            for kk, pp in self.prm.data.iteritems():
+                print kk, ": ", pp
             print "###"
             print "# Network Structure"
             for kk, pp in self.prm.struct.iteritems():

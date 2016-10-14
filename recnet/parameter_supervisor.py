@@ -80,16 +80,15 @@ class ParameterSupervisor:
         self.data["test_set_len" ] = 0
         self.data["x_size"] = 0
         self.data["y_size"] = 0
-        self.data["batch_quantity" ] = 0
         self.data["checked_data"] = False
 
         if "mini_batch_location" in prm_data:
-            self.basic["mini_batch_location"] = prm_data["mini_batch_location"]
+            self.data["mini_batch_location"] = prm_data["mini_batch_location"]
         else:
-            self.basic["mini_batch_location"] = "mini_batch"
+            self.data["mini_batch_location"] = "mini_batch"
 
-        if self.basic["mini_batch_location"] not in os.listdir(os.getcwd()):
-            os.mkdir(self.basic["mini_batch_location"])
+        if self.data["mini_batch_location"] not in os.listdir(os.getcwd()):
+            os.mkdir(self.data["mini_batch_location"])
 
 
 

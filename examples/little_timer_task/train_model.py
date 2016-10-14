@@ -69,6 +69,8 @@ model.pass_parameter_dict(parameter)
 
 ### 3. Step: Check data_sets
 
+#model.generate_random_streams()
+
 model.mbh.check_out_data_set()
 
 
@@ -96,38 +98,6 @@ model.build_model()
 time_0 = time.time()
 
 
-########## RANDOM STREAMS
-
-
-
-
-
-###### DATA IN
-print("# Load data")
-
-
-data_name = "little-timer_train"
-train_mb_set_x,train_mb_set_y,train_mb_set_m = load_minibatches(parameter["data_location"], data_name, parameter["batch_size"])
-
-data_name = "little-timer_valid"
-valid_mb_set_x,valid_mb_set_y,valid_mb_set_m = load_minibatches(parameter["data_location"], data_name, parameter["batch_size"])
-
-n_in = train_mb_set_x[0].shape[2]
-n_out = train_mb_set_y[0].shape[2]
-
-
-
-model.prm.data["train_set_len" ] = train_mb_set_x.__len__()
-model.prm.data["valid_set_len" ] = valid_mb_set_x.__len__()
-
-print "# Loading duration: ",time.time()-time_0 ," sec"
-
-
-#### Hyper parameter
-
-
-
-
 
 ###### Build model
 
@@ -148,38 +118,11 @@ forward_fn  = model.get_forward_function()
 ###### START TRAINING
 model.pub("Start training")
 
-batch_order = np.arange(0,model.prm.data["train_set_len"])
 
 
-################################ NEW DATA HANDLING
-file_name = "data_set/little-timer_train.klepto"
-d = klepto.archives.file_archive(file_name, cached=True,serialized=True)
-d.load()
-train_data_x = d['x']
-train_data_y = d['y']
-d.clear()
-
-
-train_data_x_len = [i.__len__() for i in train_data_x]
-train_data_y_len = [i.__len__() for i in train_data_y]
-assert np.array_equal(train_data_x_len, train_data_y_len), "x and y sequences have not the same length"
-
-model.prm.data["x_size"] = train_data_x[0].shape[1]
-model.prm.data["y_size"] = train_data_y[0].shape[1]
-
-model.prm.data["batch_size"] = 10
-model.prm.data["train_set_len" ] = train_data_x.__len__()
-model.prm.data["batch_quantity"] = int(np.trunc(model.prm.data["train_set_len" ]/model.prm.data["batch_size"]))
-
-
-sample_order = np.arange(0,model.prm.data["train_set_len" ])
-sample_order = model.rng.permutation(sample_order)
-
-##################################################
-batch_size = model.prm.data["batch_size"]
-x_length = train_data_x[0].shape[1] #model.prm.struct["x_length"]
-y_length = train_data_y[0].shape[1] # model.prm.struct["y_length"]
-##################################################
+model.mbh.create_mini_batches("train")
+model.mbh.create_mini_batches("valid")
+valid_mb_set_x, valid_mb_set_y, valid_mb_set_m = model.mbh.load_mini_batches("valid")
 
 for i in xrange(model.prm.optimize["epochs"]):
     time_training_start = time.time()
@@ -188,40 +131,23 @@ for i in xrange(model.prm.optimize["epochs"]):
     model.pub(str(i)+" Epoch, Training run")
 
 
+    mb_train_x, mb_train_y, mb_mask = model.mbh.load_mini_batches("train")
+
     train_error = np.zeros(model.prm.data["train_set_len" ])
-    batch_permut = model.rng.permutation(batch_order)
 
 
-    for j in xrange(model.prm.data["batch_quantity"]):
-
-        ### build minibatch
-        sample_selection = sample_order[ j*batch_size:j*batch_size+batch_size ]
-        max_seq_len = np.max(  [train_data_x[i].__len__() for i in sample_selection])
-
-        mb_train_x = np.zeros([max_seq_len, batch_size, x_length])
-        mb_train_y = np.zeros([max_seq_len, batch_size, y_length])
-        mb_mask = np.zeros([max_seq_len, batch_size, 1])
-
-        for k in xrange(batch_size):
-            s = sample_selection[k]
-            sample_length =  train_data_x_len[s]
-            mb_train_x[:sample_length,k,:] = train_data_x[s][:sample_length]
-            mb_train_y[:sample_length,k,:] = train_data_y[s][:sample_length]
-            mb_mask[:sample_length,k,:] = np.ones([sample_length,1])
-
-        ### build minibatch end
+    print(mb_train_x.__len__())
 
 
-        net_out, train_error[j] = train_fn( mb_train_x,
-                                            mb_train_y,
-                                            mb_mask
+    for j in xrange(model.prm.data["train_batch_quantity"]):
+
+
+
+
+        net_out, train_error[j] = train_fn( mb_train_x[j],
+                                            mb_train_y[j],
+                                            mb_mask[j]
                                             )
-
-    # for j in batch_order:
-    #     net_out, train_error[j] = train_fn( train_mb_set_x[batch_permut[j]],
-    #                                         train_mb_set_y[batch_permut[j]],
-    #                                         train_mb_set_m[batch_permut[j]]
-    #                                         )
 
         #Insample error
         if ( j%50) == 0 :
@@ -235,11 +161,11 @@ for i in xrange(model.prm.optimize["epochs"]):
             model.pub("###########################################")
             model.pub("## epoch validation at " + str(i) + "/" + str(j))
 
-            v_error = np.zeros([model.prm.data["valid_set_len"]])
-            ce_error = np.zeros([model.prm.data["valid_set_len"]*model.prm.data["batch_size"]])
-            auc_error = np.zeros([model.prm.data["valid_set_len"]*model.prm.data["batch_size"]])
+            v_error = np.zeros([model.prm.data["valid_batch_quantity"]])
+            ce_error = np.zeros([model.prm.data["valid_batch_quantity"]*model.prm.data["batch_size"]])
+            auc_error = np.zeros([model.prm.data["valid_batch_quantity"]*model.prm.data["batch_size"]])
 
-            for v in np.arange(0,model.prm.data["valid_set_len"]):
+            for v in np.arange(0,model.prm.data["valid_batch_quantity"]):
                 v_net_out_, v_error[v] = valid_fn(valid_mb_set_x[v],valid_mb_set_y[v],valid_mb_set_m[v])
 
                 for b in np.arange(0,model.prm.data["batch_size"]):
@@ -257,6 +183,7 @@ for i in xrange(model.prm.optimize["epochs"]):
             model.pub("###########################################")
 
             model.dump() #save current weights
+
 
     model.pub("###########################################")
     model.pub("Insample Error: " + str(np.mean(train_error)))
