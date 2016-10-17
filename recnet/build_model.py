@@ -82,7 +82,7 @@ class rnnModel(ModelMaster):
 
         self.layer_weights = [l.weights for l in network_layer] + [output_layer.weights]
         self.all_weights = sum([l for l in self.layer_weights],[])
-        self.prm.struct["weight_numb"] = self.calc_numb_weights(self.all_weights)
+
 
         ######             Choose error function
         ########################################

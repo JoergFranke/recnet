@@ -15,7 +15,8 @@ import theano
 
 class MiniBatchHandler:
 
-    def __init__(self,rng, prm_data, prm_struct):
+    def __init__(self,rng, prm_data, prm_struct, pub):
+        self.pub = pub
         self.rng = rng
         self.prm_data = prm_data
         self.prm_struct = prm_struct
@@ -68,6 +69,8 @@ class MiniBatchHandler:
 
         self.prm_data["checked_data"] = True
 
+        self.pub("#MBH: data check completed")
+
 
     def create_mini_batches(self, set):
 
@@ -76,6 +79,9 @@ class MiniBatchHandler:
 
         if set != "train" and set != "valid":
             raise Warning("set must be train or valid")
+
+        if os.path.isfile(self.prm_data["mini_batch_location"] + "/mb_of_" + self.prm_data[set + "_data_name"]):
+            self.delete_mini_batches(set)
 
         file_name = self.prm_data["data_location"] + self.prm_data[set + "_data_name"]
         d = klepto.archives.file_archive(file_name, cached=True,serialized=True)

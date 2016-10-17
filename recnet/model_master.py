@@ -5,6 +5,7 @@ This file contains a master class with support functions like load models, dump 
 
 ######                           Imports
 ########################################
+from abc import ABCMeta, abstractmethod
 import klepto
 import numpy as np
 import theano
@@ -20,34 +21,47 @@ from mini_batch_handler import MiniBatchHandler
 
 #### Master class with support functions
 ########################################
-class ModelMaster:
+class ModelMaster(object):
 
-    def __init__(self, load=False, data_location=None, new_batch_size=None):
+    __metaclass__ = ABCMeta
+
+    def __init__(self, parameter):
 
 
         self.prm = ParameterSupervisor()
 
+        self.pass_parameter_dict(parameter)
 
-        if not load:
-            pass
-            #self.build_model()
-            # self.p_struct = p_struct
-            # self.p_optima = p_optima
+        self.generate_random_streams()
 
-            #self.p_struct["weight_numb"] = self.__calc_numb_weights(self.all_weights)
+        self.build_model()
 
-        else:
-            print("load params")
+        self.prm.struct["weight_numb"] = self.calc_numb_weights(self.all_weights)
+
+        self.print_model_params()
+
+
+
+        self.mbh = MiniBatchHandler(self.rng, self.prm.data, self.prm.struct, self.pub)
+
+
+        if self.prm.basic["load_model"]:
+
+            print("load params") #todo
             old_weights, struct, optima = self.load(data_location)
 
-            if new_batch_size != None:
-                struct["batch_size"] = new_batch_size
+            #if new_batch_size != None:
+            #    struct["batch_size"] = new_batch_size
 
 
             self.build_model(struct, optima, old_weights)
 
             self.prm.basic["file_name"] = self.make_filename()
-            self.pub("load " + data_location)
+            #self.pub("load " + data_location)
+
+    @abstractmethod
+    def build_model(self, old_weights=None):
+        pass
 
 
     def pass_parameter_dict(self, parameter):
@@ -57,25 +71,12 @@ class ModelMaster:
         self.prm.pass_optimize_dict(parameter)
 
         self.prm.basic["file_name"] = self.make_filename()
-        self.generate_random_streams()
+
 
 
     def generate_random_streams(self):
         self.rng = np.random.RandomState(self.prm.optimize["random_seed"])
         self.trng = RandomStreams(self.prm.optimize["random_seed"])
-
-        self.mbh = MiniBatchHandler(self.rng, self.prm.data, self.prm.struct)
-
-
-    def get_train_date(self, train_x, train_y):
-        pass
-        #self.prm.data['train_data_location'] = #todo
-
-
-    def get_valid_data(self, valid_x, valid_y):
-        pass
-        #todo
-
 
 
 
@@ -160,10 +161,10 @@ class ModelMaster:
 
     ######           Writes model parameters
     ########################################
-    def print_model_params(self):
+    def print_model_params(self): #todo simplify
         if(self.prm.basic["output_type"]=="console" or self.prm.basic["output_type"]=="both"):
             print "###"
-            print "####### Boundary Detection with use of Long Short term Memories ########"
+            print "####### RecNet - Recurrent Neural Network Framework ########"
             print "###"
             print "# Start Datetime: ", datetime.datetime.today()
             print "###"
@@ -183,7 +184,7 @@ class ModelMaster:
             self.fobj = open(self.prm.basic["file_name"] + ".log", "a")
 
             self.fobj.write( "###" + "\n")
-            self.fobj.write( "####### Boundary Detection with use of Long Short term Memories ########" + "\n")
+            self.fobj.write( "####### RecNet - Recurrent Neural Network Framework ########" + "\n")
             self.fobj.write( "###" + "\n")
             date_time = str(datetime.datetime.today())
             self.fobj.write("# Start Datetime: "+ date_time + "\n" )

@@ -48,6 +48,23 @@ class ParameterSupervisor:
         if self.basic["output_location"] not in os.listdir(os.getcwd()):
             os.mkdir(self.basic["output_location"])
 
+        if "load_model" in prm_basic:
+            self.basic["load_model"] = prm_basic["load_model"]
+            if self.basic["load_model"] == True:
+                if "model_location" in prm_basic:
+                    self.basic["model_location"] = prm_basic["model_location"]
+                else:
+                    raise Warning("Model loction is missing")
+
+                if "model_name" in prm_basic:
+                    self.basic["model_name"] = prm_basic["model_name"]
+                else:
+                    raise Warning("Model name is missing")
+        else:
+            self.basic["load_model"] = False
+
+
+
 
 
     def pass_data_dict(self, prm_data):

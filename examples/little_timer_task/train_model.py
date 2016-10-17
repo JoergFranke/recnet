@@ -25,14 +25,13 @@ from recnet.build_model import rnnModel
 from recnet.data_handler import load_minibatches
 
 
-### 1. Step: Create new model
-model = rnnModel()
 
 
 
 
 
-### 2. Step: Define parameters
+
+### 1. Step: Define parameters
 parameter = OrderedDict()
 parameter["output_location"] = "log"
 parameter["output_type"    ] = "both"        # console, file, both
@@ -63,8 +62,10 @@ parameter["noise_level"   ] = 0.6
 parameter["loss_function" ] = "cross_entropy" # w2_cross_entropy, cross_entropy
 parameter["bound_weight"  ] = False       # False, Integer (2,12)
 
-model.pass_parameter_dict(parameter)
 
+
+### 2. Step: Create new model
+model = rnnModel(parameter)
 
 
 ### 3. Step: Check data_sets
@@ -83,7 +84,7 @@ model.mbh.check_out_data_set()
 
 
 ### 4. Step: Build model functions
-model.build_model()
+
 ### 5. Step: Train model
 
 ### 5.1: Create minibatches
@@ -103,7 +104,7 @@ time_0 = time.time()
 
 
 
-model.print_model_params()
+
 model.pub("# Build model")
 
 
@@ -120,7 +121,7 @@ model.pub("Start training")
 
 
 
-model.mbh.create_mini_batches("train")
+
 model.mbh.create_mini_batches("valid")
 valid_mb_set_x, valid_mb_set_y, valid_mb_set_m = model.mbh.load_mini_batches("valid")
 
@@ -131,12 +132,11 @@ for i in xrange(model.prm.optimize["epochs"]):
     model.pub(str(i)+" Epoch, Training run")
 
 
+    model.mbh.create_mini_batches("train")
     mb_train_x, mb_train_y, mb_mask = model.mbh.load_mini_batches("train")
 
+
     train_error = np.zeros(model.prm.data["train_set_len" ])
-
-
-    print(mb_train_x.__len__())
 
 
     for j in xrange(model.prm.data["train_batch_quantity"]):
