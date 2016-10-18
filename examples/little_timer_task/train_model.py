@@ -22,7 +22,7 @@ from collections import OrderedDict
 import klepto
 
 from recnet.build_model import rnnModel
-from recnet.data_handler import load_minibatches
+
 
 
 
@@ -33,7 +33,7 @@ from recnet.data_handler import load_minibatches
 
 ### 1. Step: Define parameters
 parameter = OrderedDict()
-parameter["output_location"] = "log"
+parameter["output_location"] = "log" #todo location mit folder/
 parameter["output_type"    ] = "both"        # console, file, both
 
 parameter["train_data_name"] = "little-timer_train.klepto"
@@ -68,20 +68,6 @@ parameter["bound_weight"  ] = False       # False, Integer (2,12)
 model = rnnModel(parameter)
 
 
-### 3. Step: Check data_sets
-
-#model.generate_random_streams()
-
-model.mbh.check_out_data_set()
-
-
-# update ->
-# parameter["train_set_len" ] = train_mb_set_x.__len__()
-# parameter["valid_set_len" ] = valid_mb_set_x.__len__()
-
-
-
-
 
 ### 4. Step: Build model functions
 
@@ -100,20 +86,12 @@ time_0 = time.time()
 
 
 
-###### Build model
-
-
-
-
-model.pub("# Build model")
-
-
-time_1 = time.time()
-model.pub("Model build time"+ str(time_1-time_0) + "sec")
 
 train_fn    = model.get_training_function()
 valid_fn    = model.get_validation_function()
 forward_fn  = model.get_forward_function()
+
+
 
 
 ###### START TRAINING
