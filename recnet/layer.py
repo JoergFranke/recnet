@@ -215,7 +215,7 @@ class LSTM(layerMaster):
                                                 dtype=in_seq.dtype)),
                             in_seq)
 
-        w_in_seq = T.add(T.dot(in_seq_d, self.weights[5]), self.weights[6]) #todo is +b correct?
+        w_in_seq = T.add(T.dot(in_seq_d, self.weights[5]), self.weights[6])
         t_n_out = self.weights[4].shape[0] / 4
 
         [out_seq, cell_seq], updates = theano.scan(

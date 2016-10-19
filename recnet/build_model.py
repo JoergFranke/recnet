@@ -70,7 +70,7 @@ class rnnModel(ModelMaster):
         network_layer = []
         for i in range(self.prm.struct["hidden_layer"]):
             unit_ = getattr(layer, self.prm.struct["net_unit_type"][i+1])
-            network_layer.append(unit_(self.rng, self.trng, self.prm.struct["net_size"][i:i + 1][0], self.prm.struct["net_size"][i + 1:i + 2][0], self.prm.data["batch_size"],))#todo old_weights[i]))
+            network_layer.append(unit_(self.rng, self.trng, self.prm.struct["net_size"][i:i + 1][0], self.prm.struct["net_size"][i + 1:i + 2][0], self.prm.data["batch_size"],old_weights[i]))
             #if self.prm.struct["bi_directional"]:
 
             #    network_layer.append(BLSTMlayer(self.rng,self.trng, self.prm.struct["net_size"][i:i+1][0], self.prm.struct["net_size"][i+1:i+2][0], self.prm.struct["batch_size"], old_weights[i]))
@@ -78,7 +78,7 @@ class rnnModel(ModelMaster):
             #    unit_ = getattr(layer, "GRUlayer")
             #    network_layer.append(unit_(self.rng,self.trng, self.prm.struct["net_size"][i:i+1][0], self.prm.struct["net_size"][i+1:i+2][0], self.prm.struct["batch_size"], old_weights[i]))
 
-        output_layer = softmax(self.rng,self.trng, self.prm.struct,self.prm.struct["hidden_layer"]+1,) #todo old_weights[-1])
+        output_layer = softmax(self.rng,self.trng, self.prm.struct,self.prm.struct["hidden_layer"]+1, old_weights[-1])
 
         self.layer_weights = [l.weights for l in network_layer] + [output_layer.weights]
         self.all_weights = sum([l for l in self.layer_weights],[])

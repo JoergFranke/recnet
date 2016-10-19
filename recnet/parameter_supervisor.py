@@ -49,10 +49,18 @@ class ParameterSupervisor:
         if "output_location" in prm_basic:
             self.basic["output_location"] = prm_basic["output_location"]
         else:
-            self.basic["output_location"] = "log"
+            self.basic["output_location"] = "log/"
 
-        if self.basic["output_location"] not in os.listdir(os.getcwd()):
+        if self.basic["output_location"][:-1] not in os.listdir(os.getcwd()):
             os.mkdir(self.basic["output_location"])
+
+        if "model_location" in prm_basic:
+            self.basic["model_location"] = prm_basic["model_location"]
+        else:
+            self.basic["model_location"] = "model_save/"
+
+        if self.basic["model_location"][:-1] not in os.listdir(os.getcwd()):
+            os.mkdir(self.basic["model_location"])
 
         if "load_model" in prm_basic:
             self.basic["load_model"] = prm_basic["load_model"]
@@ -91,26 +99,31 @@ class ParameterSupervisor:
         if "train_data_name" in prm_data:
             self.data["train_data_name"] = prm_data["train_data_name"]
         else:
-            raise Warning("train_data_name is missing")
+            self.data["train_data_name"] = None
 
         if "valid_data_name" in prm_data:
             self.data["valid_data_name"] = prm_data["valid_data_name"]
         else:
-            raise Warning("valid_data_name is missing")
+            self.data["valid_data_name"] = None
+
+        if "test_data_name" in prm_data:
+            self.data["test_data_name"] = prm_data["test_data_name"]
+        else:
+            self.data["test_data_name"] = None
 
         self.data["train_set_len" ] = 0
         self.data["valid_set_len" ] = 0
         self.data["test_set_len" ] = 0
         self.data["x_size"] = 0
         self.data["y_size"] = 0
-        self.data["checked_data"] = False
+        self.data["checked_data"] = {'train': False, 'valid': False, 'test': False}
 
         if "mini_batch_location" in prm_data:
             self.data["mini_batch_location"] = prm_data["mini_batch_location"]
         else:
-            self.data["mini_batch_location"] = "mini_batch"
+            self.data["mini_batch_location"] = "mini_batch/"
 
-        if self.data["mini_batch_location"] not in os.listdir(os.getcwd()):
+        if self.data["mini_batch_location"][:-1] not in os.listdir(os.getcwd()):
             os.mkdir(self.data["mini_batch_location"])
 
 
