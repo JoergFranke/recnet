@@ -37,6 +37,17 @@ class ParameterSupervisor:
         self.pass_structure_dict(parameter)
         self.pass_optimize_dict(parameter)
 
+    def overwrite_parameter_dict(self, parameter):
+        for kk, pp in parameter.iteritems():
+            if kk in self.basic:
+                self.basic[kk] = pp
+            if kk in self.data:
+                self.data[kk] = pp
+            if kk in self.struct:
+                self.struct[kk] = pp
+            if kk in self.optimize:
+                self.optimize[kk] = pp
+
 
     def pass_basic_dict(self, prm_basic):
 

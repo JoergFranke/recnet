@@ -171,9 +171,6 @@ class LSTM(layerMaster):
         self.t_ol_t00 = theano.shared(name='ol_b_t00', value=ol_t00_np1.astype(T.config.floatX))
         self.t_cs_t00 = theano.shared(name='cs_b_t00', value=cs_t00_np1.astype(T.config.floatX))
 
-        # # Outputs & cell states
-        # self.t_o = T.matrix('ol', dtype=theano.config.floatX)
-        # self.t_cs = T.vector('cs', dtype=theano.config.floatX)
 
     def t_forward_step(self, mask, cur_w_in_sig, pre_out_sig, pre_cell_sig, w_ig_c, w_fg_c, w_og_c, w_ifco, b_ifco,
                        t_n_out):
@@ -216,7 +213,7 @@ class LSTM(layerMaster):
                             in_seq)
 
         w_in_seq = T.add(T.dot(in_seq_d, self.weights[5]), self.weights[6])
-        t_n_out = self.weights[4].shape[0] / 4
+        t_n_out = self.weights[6].shape[0] / 4
 
         [out_seq, cell_seq], updates = theano.scan(
                                                     fn=self.t_forward_step,
@@ -287,18 +284,19 @@ class GRU(layerMaster):
 
             np_weights = OrderedDict()
 
+            # Input weights for reset/update gate and update weights
+            np_weights['w_rzup'] = rng.uniform(-0.1, 0.1,(n_in, 3 * n_out))
+            np_weights['b_rzup'] = np.zeros(3 * n_out)
+
             # reset gate
-            np_weights['w_r'] =  rng.uniform(-0.1, 0.1, (n_in, n_out))
             np_weights['u_r'] = rng.uniform(-0.1, 0.1, (n_out, n_out))
-            np_weights['b_r'] =  np.zeros(n_out) #rng.uniform(-0.1, 0.1, (1, n_out))
+
             # update gate
-            np_weights['w_z'] = rng.uniform(-0.1, 0.1, (n_in, n_out))
             np_weights['u_z'] = rng.uniform(-0.1, 0.1, (n_out, n_out))
-            np_weights['b_z'] = np.zeros(n_out) #rng.uniform(-0.1, 0.1, (1, n_out))
+
             # update weights
-            np_weights['w_up'] = rng.uniform(-0.1, 0.1, (n_in, n_out))
             np_weights['u_up'] = rng.uniform(-0.1, 0.1, (n_out, n_out))
-            np_weights['b_up'] = np.zeros(n_out) #rng.uniform(-0.1, 0.1, (1, n_out))
+
 
             self.weights = []
             for kk, pp in np_weights.items():
@@ -312,18 +310,9 @@ class GRU(layerMaster):
 
         #Init last output and cell state
         ol_t00_np1 = np.zeros([n_batches,n_out]).astype(dtype=theano.config.floatX)
-        #cs_t00_np1 = np.zeros([n_batches,n_out]).astype(dtype=theano.config.floatX)
         self.t_ol_t00 = theano.shared(name='ol_b_t00', value=ol_t00_np1.astype(T.config.floatX))
-        #self.t_cs_t00 = theano.shared(name='cs_b_t00', value=cs_t00_np1.astype(T.config.floatX))
 
-        #Outputs & cell states
-        #self.t_o = T.matrix('ol', dtype=theano.config.floatX)
-        #self.t_cs = T.vector('cs', dtype=theano.config.floatX)
-
-
-
-
-    def t_forward_step(self,mask, in_sig, h_pre, w_r, u_r,b_r, w_z, u_z, b_z, w_up, u_up, b_up):
+    def t_forward_step(self,mask, rzup_in_sig, h_pre, u_r,u_z, u_up, t_n_out):
 
 
 
@@ -331,10 +320,10 @@ class GRU(layerMaster):
         gate_act = T.nnet.hard_sigmoid
 
 
-        r = gate_act( T.add( T.add( T.dot(in_sig, w_r) , T.dot( h_pre, u_r) ) , b_r ))
-        z = gate_act( T.add( T.add( T.dot(in_sig, w_z) , T.dot(h_pre, u_z) ), b_z))
+        r = gate_act( T.add( rzup_in_sig[:, 0:t_n_out] , T.dot( h_pre, u_r) ) )
+        z = gate_act( T.add( rzup_in_sig[:, t_n_out:2 * t_n_out] , T.dot(h_pre, u_z) ))
 
-        h_update = signal_act( T.add( T.add( T.dot(in_sig, w_up) , T.dot( T.mul( h_pre, r), u_up) ), b_up))
+        h_update = signal_act( T.add( rzup_in_sig[:, 2*t_n_out:3*t_n_out] , T.dot( T.mul( h_pre, r), u_up) ))
 
         h_new = T.add( (1.-z) * h_pre , z * h_update )
 
@@ -353,13 +342,14 @@ class GRU(layerMaster):
                                             dtype=in_seq.dtype)),
                              in_seq)
 
-        # todo in_sig * W_in_sig auseerhalb der scan function berechene
+        rz_in_seq =  T.add( T.dot(in_seq_d, self.weights[0]) , self.weights[1] )
+        t_n_out = self.weights[1].shape[0] / 3
 
         out_seq, updates = theano.scan(
                                         fn=self.t_forward_step,
-                                        sequences=[mask, in_seq_d],
+                                        sequences=[mask, rz_in_seq],  # in_seq_d],
                                         outputs_info=[self.t_ol_t00],
-                                        non_sequences=[i for i in self.weights], #+[t_n_out],
+                                        non_sequences=[i for i in self.weights][2:] + [t_n_out],
                                         go_backwards = self.go_backwards,
                                         truncate_gradient=-1,
                                         #n_steps=50,

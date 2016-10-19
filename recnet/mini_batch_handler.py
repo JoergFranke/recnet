@@ -108,7 +108,7 @@ class MiniBatchHandler:
         if set != "train" and set != "valid" and set != "test":
             raise Warning("set must be 'train' or 'valid' or 'test'")
 
-        if os.path.isfile(self.prm_data["mini_batch_location"] + "/mb_of_" + self.prm_data[set + "_data_name"]):
+        if os.path.isfile(self.prm_data["mini_batch_location"] + "mb_of_" + self.prm_data[set + "_data_name"]):
             self.delete_mini_batches(set)
 
         file_name = self.prm_data["data_location"] + self.prm_data[set + "_data_name"]
@@ -152,7 +152,7 @@ class MiniBatchHandler:
             data_mb_y.append(mb_train_y.astype(theano.config.floatX))
             data_mask.append(mb_mask.astype(theano.config.floatX))
 
-        file_name = self.prm_data["mini_batch_location"] + "/mb_of_" + self.prm_data[set + "_data_name"]
+        file_name = self.prm_data["mini_batch_location"] + "mb_of_" + self.prm_data[set + "_data_name"]
         d = klepto.archives.file_archive(file_name, cached=True,serialized=True)
         d['x'] = data_mb_x
         d['y'] = data_mb_y
@@ -163,11 +163,11 @@ class MiniBatchHandler:
 
 
     def delete_mini_batches(self, set):
-        file_name = self.prm_data["mini_batch_location"] + "/mb_of_" + self.prm_data[set + "_data_name"]
+        file_name = self.prm_data["mini_batch_location"] + "mb_of_" + self.prm_data[set + "_data_name"]
         os.remove(file_name)
 
     def load_mini_batches(self, set):
-        file_name = self.prm_data["mini_batch_location"] + "/mb_of_" + self.prm_data[set + "_data_name"]
+        file_name = self.prm_data["mini_batch_location"] + "mb_of_" + self.prm_data[set + "_data_name"]
         d = klepto.archives.file_archive(file_name, cached=True,serialized=True)
         d.load()
         data_mb_set_x = d['x']

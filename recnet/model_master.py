@@ -48,6 +48,16 @@ class ModelMaster(object):
                 self.prm.struct = struct
                 self.prm.optimize = optimize
 
+                self.prm.data["train_data_name"] = None
+                self.prm.data["valid_data_name"] = None
+                self.prm.data["test_data_name"] = None
+                self.prm.data["train_set_len" ] = 0
+                self.prm.data["valid_set_len" ] = 0
+                self.prm.data["test_set_len" ] = 0
+                self.prm.data["x_size"] = 0
+                self.prm.data["y_size"] = 0
+                self.prm.data["checked_data"] = {'train': False, 'valid': False, 'test': False}
+                self.prm.overwrite_parameter_dict(parameter)
 
 
             else:
@@ -90,7 +100,7 @@ class ModelMaster(object):
     ########################################
     def dump(self):
 
-        data_location = self.prm.basic["model_location"] + self.prm.basic["file_name"] + ".prm"
+        data_location = self.prm.basic["model_location"] + self.prm.basic["model_name"] + ".prm"
         self.pub("save " + data_location)
         d = klepto.archives.file_archive(data_location, cached=True,serialized=True)
         d['layer_weights'] = [[np.asarray(w.eval()) for w in layer] for layer in self.layer_weights]
@@ -161,7 +171,7 @@ class ModelMaster(object):
         if(self.prm.basic["output_type"]=="console" or self.prm.basic["output_type"]=="both"):
             print text
         if(self.prm.basic["output_type"]=="file" or self.prm.basic["output_type"]=="both"):
-            self.fobj = open(self.prm.basic["model_name"]  + ".log", "a")
+            self.fobj = open(self.prm.basic["model_location"] + self.prm.basic["model_name"]  + ".log", "a")
             self.fobj.write(str(text) + "\n")
             self.fobj.close()
 
