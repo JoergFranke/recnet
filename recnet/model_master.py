@@ -41,23 +41,15 @@ class ModelMaster(object):
                 if not "model_name" in parameter:
                     raise Warning("Model name is missing")
 
-                old_weights, basic, data,struct,optimize = self.load(parameter["model_location"] + parameter["model_name"])
+                old_weights, basic, struct,optimize = self.load(parameter["model_location"] + parameter["model_name"])
 
                 self.prm.basic = basic
-                self.prm.data = data
+                #self.prm.data = data
                 self.prm.struct = struct
                 self.prm.optimize = optimize
 
-                self.prm.data["train_data_name"] = None
-                self.prm.data["valid_data_name"] = None
-                self.prm.data["test_data_name"] = None
-                self.prm.data["train_set_len" ] = 0
-                self.prm.data["valid_set_len" ] = 0
-                self.prm.data["test_set_len" ] = 0
-                self.prm.data["x_size"] = 0
-                self.prm.data["y_size"] = 0
-                self.prm.data["checked_data"] = {'train': False, 'valid': False, 'test': False}
                 self.prm.overwrite_parameter_dict(parameter)
+                self.prm.pass_data_dict(parameter)
 
 
             else:
@@ -105,7 +97,7 @@ class ModelMaster(object):
         d = klepto.archives.file_archive(data_location, cached=True,serialized=True)
         d['layer_weights'] = [[np.asarray(w.eval()) for w in layer] for layer in self.layer_weights]
         d['p_basic'] = self.prm.basic
-        d['p_data'] = self.prm.data
+        #d['p_data'] = self.prm.data
         d['p_struct'] = self.prm.struct
         d['p_optimize'] = self.prm.optimize
         #d['monitor'] = self.training_error
@@ -124,12 +116,12 @@ class ModelMaster(object):
         d.load()
         weights = d['layer_weights']
         basic = d['p_basic']
-        data = d['p_data']
+        #data = d['p_data']
         struct = d['p_struct']
         optimize= d['p_optimize']
         d.clear()
 
-        return weights, basic, data,struct,optimize
+        return weights, basic, struct,optimize
 
 
     ######       Calculate number of weights
@@ -158,7 +150,7 @@ class ModelMaster(object):
         numb = 1
         fname =  type_str + "_" + net_str + bi_str + "_d-" + day_str + "_v-" + str(numb)
 
-        while(os.path.isfile(fname + ".log")):
+        while(os.path.isfile(self.prm.basic["output_location"] + fname + ".log")):
             numb +=1
             fname =  type_str + "_" + net_str + bi_str + "_d-" + day_str + "_v-" + str(numb)
 
@@ -171,7 +163,7 @@ class ModelMaster(object):
         if(self.prm.basic["output_type"]=="console" or self.prm.basic["output_type"]=="both"):
             print text
         if(self.prm.basic["output_type"]=="file" or self.prm.basic["output_type"]=="both"):
-            self.fobj = open(self.prm.basic["model_location"] + self.prm.basic["model_name"]  + ".log", "a")
+            self.fobj = open(self.prm.basic["output_location"] + self.prm.basic["model_name"]  + ".log", "a")
             self.fobj.write(str(text) + "\n")
             self.fobj.close()
 
