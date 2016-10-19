@@ -16,6 +16,7 @@ import layer
 from layer import softmax
 import update_function
 from model_master import ModelMaster
+from layer_pool.super_layer import SuperLayer
 
 
 ######                     Theano Config
@@ -68,9 +69,13 @@ class rnnModel(ModelMaster):
         ######                     Create layers
         ########################################
         network_layer = []
-        for i in range(self.prm.struct["hidden_layer"]):
-            unit_ = getattr(layer, self.prm.struct["net_unit_type"][i+1])
-            network_layer.append(unit_(self.rng, self.trng, self.prm.struct["net_size"][i:i + 1][0], self.prm.struct["net_size"][i + 1:i + 2][0], self.prm.data["batch_size"],old_weights[i]))
+        for i in np.arange(1, self.prm.struct["hidden_layer"]+1):
+
+            network_layer.append(SuperLayer(self.rng,self.trng, self.prm.struct,self.prm.data, i, old_weights[i-1]))
+
+
+            #unit_ = getattr(layer, self.prm.struct["net_unit_type"][i])
+            #network_layer.append(unit_(self.rng, self.trng, self.prm.struct["net_size"][i:i + 1][0], self.prm.struct["net_size"][i + 1:i + 2][0], self.prm.data["batch_size"],old_weights[i]))
             #if self.prm.struct["bi_directional"]:
 
             #    network_layer.append(BLSTMlayer(self.rng,self.trng, self.prm.struct["net_size"][i:i+1][0], self.prm.struct["net_size"][i+1:i+2][0], self.prm.struct["batch_size"], old_weights[i]))
@@ -78,7 +83,7 @@ class rnnModel(ModelMaster):
             #    unit_ = getattr(layer, "GRUlayer")
             #    network_layer.append(unit_(self.rng,self.trng, self.prm.struct["net_size"][i:i+1][0], self.prm.struct["net_size"][i+1:i+2][0], self.prm.struct["batch_size"], old_weights[i]))
 
-        output_layer = softmax(self.rng,self.trng, self.prm.struct,self.prm.struct["hidden_layer"]+1, old_weights[-1])
+        output_layer = SuperLayer(self.rng,self.trng, self.prm.struct,self.prm.data, self.prm.struct["hidden_layer"]+1, old_weights[-1])
 
         self.layer_weights = [l.weights for l in network_layer] + [output_layer.weights]
         self.all_weights = sum([l for l in self.layer_weights],[])
@@ -104,7 +109,7 @@ class rnnModel(ModelMaster):
 
             if self.prm.struct["identity_func"] and l >= 1:
                 t_signal[l+1] = t_signal[l+1] + t_signal[l]
-        self.t_net_out = output_layer.softmax(t_signal[self.prm.struct["hidden_layer"]],self.M_tv2, tpo["use_dropout"],tpo["dropout_level"])
+        self.t_net_out = output_layer.sequence_iteration(t_signal[self.prm.struct["hidden_layer"]],self.M_tv2, tpo["use_dropout"],tpo["dropout_level"])
         o_error = loss_function.output_error(self.t_net_out,  self.Y_tv2, tpo["bound_weight"])
 
         ## validation/test part
@@ -115,7 +120,7 @@ class rnnModel(ModelMaster):
 
             if self.prm.struct["identity_func"] and l >= 1:
                 v_signal[l+1] = v_signal[l+1] + v_signal[l]
-        self.v_net_out = output_layer.softmax(v_signal[self.prm.struct["hidden_layer"]],self.M_tv2,use_dropout=0)
+        self.v_net_out = output_layer.sequence_iteration(v_signal[self.prm.struct["hidden_layer"]],self.M_tv2,use_dropout=0)
         self.v_error = loss_function.output_error(self.v_net_out,  self.Y_tv2 , tpo["bound_weight"])
 
 

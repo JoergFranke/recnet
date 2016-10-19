@@ -12,27 +12,17 @@ from collections import OrderedDict
 from layer_master import LayerMaster
 
 
-
-
-
-
-
-
-
-
-
-
 ######                     Softmax Layer
 ########################################
 class softmax(LayerMaster):
-    def __init__(self, rng,trng, prm_structure, layer_no, old_weights=None):
+    def __init__(self, rng, trng, n_in, n_out, n_batches=None, old_weights=None): #self, rng,trng, prm_structure, layer_no, old_weights=None):
 
         # Parameters
-        self.n_in = prm_structure["net_size"][layer_no-1:layer_no][0]
-        self.n_out = prm_structure["net_size"][layer_no:layer_no+1][0]
+        self.n_in = n_in
+        self.n_out = n_out
 
         #output layer
-        w_out_np2 = self.init_input_weight(rng, self.n_in, self.n_out)
+        w_out_np2 = self.rec_uniform_sqrt(rng, self.n_in, self.n_out)
         b_out_np2 = np.zeros(self.n_out)
 
 

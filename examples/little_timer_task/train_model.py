@@ -34,7 +34,7 @@ from recnet.build_model import rnnModel
 ### 1. Step: Define parameters
 parameter = OrderedDict()
 parameter["output_location"] = "log/"
-parameter["output_type"    ] = "both"        # console, file, both
+parameter["output_type"    ] = "console"        # console, file, both
 
 parameter["train_data_name"] = "little-timer_train.klepto"
 parameter["valid_data_name"] = "little-timer_valid.klepto"
@@ -42,9 +42,10 @@ parameter["data_location"] = "data_set/"
 parameter["batch_size" ] = 10
 parameter["mini_batch_location"] = "mini_batch/"
 
-parameter["net_size"      ] = [2, 10, 2]
-parameter["net_unit_type" ] = ['input', 'LSTM', 'softmax']
-parameter["net_act_type" ] = ['-', 'tanh', '-']
+parameter["net_size"      ] = [2, 10,10, 2]
+parameter["net_unit_type" ] = ['input', 'tanh','ReLu', 'softmax']
+#parameter["net_act_type" ] = ['-', 'tanh', '-']
+parameter["net_arch" ] = ['-', 'bi','bi', 'ff']
 parameter["bi_directional"] = False
 
 parameter["random_seed"   ] = 211

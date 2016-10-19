@@ -171,7 +171,19 @@ class ParameterSupervisor:
         else:
             self.struct["net_act_type" ] = ['tanh' for i in xrange(prm_structure["net_size"].__len__())]
 
+        if "net_arch" in prm_structure:
+            self.struct["net_arch"      ] = prm_structure["net_arch"]
+            if  prm_structure["net_arch"].__len__() != self.struct["net_size" ].__len__():
+                raise Warning("Net size and net architecture have no equal length")
+        else:
+            raise Warning("No network architecture 'net_arch' ")
+
         self.struct["weight_numb"] = 0
+
+        # if "weight_initialize" in prm_structure:
+        #     self.struct["weight_initialize"] = prm_structure["weight_initialize"]
+        # else:
+        #     self.struct["weight_initialize"] = "uniform_sqrt"
 
         if "bi_directional" in prm_structure:
             self.struct["bi_directional"] = prm_structure["bi_directional"]
