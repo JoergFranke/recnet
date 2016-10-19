@@ -1,11 +1,11 @@
 __author__ = 'Joerg Franke'
 """
-This file contains a master class with support functions like load models, dump and print.
+This file contains a supervision for parameters and contains all dictionaries (basic, data, structure, optimization)
+which are necessary to build and train a model.
 """
 
 ######                           Imports
 ########################################
-import klepto
 import numpy as np
 from collections import OrderedDict
 import datetime
@@ -14,6 +14,8 @@ import os.path
 import sys
 
 
+######        Parameter Supervisor Class
+########################################
 class ParameterSupervisor:
 
     def __init__(self):
@@ -23,6 +25,8 @@ class ParameterSupervisor:
         self.optimize = OrderedDict()
 
 
+    ###### Method for testing strings an locations (under construction)
+    ########################################
     def is_string(self, string):
         if (sys.version_info[0] == 2 and  isinstance(string, basestring)) or \
             (sys.version_info[0] == 3 and isinstance(string, str)):
@@ -31,12 +35,17 @@ class ParameterSupervisor:
             return False
 
 
+    ###### Passes parameters in all dictionaries
+    ########################################
     def pass_all_parameter_dict(self, parameter):
         self.pass_basic_dict(parameter)
         self.pass_data_dict(parameter)
         self.pass_structure_dict(parameter)
         self.pass_optimize_dict(parameter)
 
+
+    ###### Overwrite old parameters with new ones
+    ########################################
     def overwrite_parameter_dict(self, parameter):
         for kk, pp in parameter.iteritems():
             if kk in self.basic:
@@ -49,8 +58,9 @@ class ParameterSupervisor:
                 self.optimize[kk] = pp
 
 
+    ###### Passes parameters in basic dictionary
+    ########################################
     def pass_basic_dict(self, prm_basic):
-
 
         if "output_type" in prm_basic:
             self.basic["output_type"] = prm_basic["output_type"]
@@ -89,9 +99,8 @@ class ParameterSupervisor:
             self.basic["load_model"] = False
 
 
-
-
-
+    ###### Passes parameters in data dictionary
+    ########################################
     def pass_data_dict(self, prm_data):
 
         if "batch_size" in prm_data:
@@ -138,8 +147,8 @@ class ParameterSupervisor:
             os.mkdir(self.data["mini_batch_location"])
 
 
-
-
+    ##### Passes parameters in structure dictionary
+    ########################################
     def pass_structure_dict(self, prm_structure):
 
         if "net_size" in prm_structure:
@@ -175,7 +184,8 @@ class ParameterSupervisor:
             self.struct["identity_func"] = False
 
 
-
+    ##### Passes parameters in optimize dictionary
+    ########################################
     def pass_optimize_dict(self, prm_optimization):
 
         if "random_seed" in prm_optimization:

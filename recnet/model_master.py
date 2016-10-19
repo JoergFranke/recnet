@@ -19,7 +19,7 @@ from parameter_supervisor import ParameterSupervisor
 from mini_batch_handler import MiniBatchHandler
 
 
-#### Master class with support functions
+#### Master class with support and abstract methods
 ########################################
 class ModelMaster(object):
 
