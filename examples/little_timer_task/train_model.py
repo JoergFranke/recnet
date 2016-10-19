@@ -44,9 +44,9 @@ parameter["mini_batch_location"] = "mini_batch/"
 
 parameter["net_size"      ] = [2, 10,10, 2]
 parameter["net_unit_type" ] = ['input', 'tanh','ReLu', 'softmax']
-#parameter["net_act_type" ] = ['-', 'tanh', '-']
+#parameter["net_act_type" ] = ['-', 'tanh', '-'] # todo implement
 parameter["net_arch" ] = ['-', 'bi','bi', 'ff']
-parameter["bi_directional"] = False
+
 
 parameter["random_seed"   ] = 211
 parameter["epochs"        ] = 5

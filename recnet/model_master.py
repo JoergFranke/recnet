@@ -131,7 +131,7 @@ class ModelMaster(object):
         day_str = time.strftime("%d-%m-%Y")
         net_str = "-".join(str(e) for e in self.prm.struct["net_size"])
         type_str = "-".join([str(e) for e in self.prm.struct["net_unit_type"]][1:])
-        if(self.prm.struct["bi_directional"]):
+        if 'bi' in self.prm.struct["net_arch"]:
             bi_str = '_bi'
         else:
             bi_str = ''

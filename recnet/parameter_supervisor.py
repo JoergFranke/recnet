@@ -185,12 +185,12 @@ class ParameterSupervisor:
         # else:
         #     self.struct["weight_initialize"] = "uniform_sqrt"
 
-        if "bi_directional" in prm_structure:
-            self.struct["bi_directional"] = prm_structure["bi_directional"]
-        else:
-            self.struct["bi_directional"] = False
+        # if "bi_directional" in prm_structure:
+        #     self.struct["bi_directional"] = prm_structure["bi_directional"]
+        # else:
+        #     self.struct["bi_directional"] = False todo tidy up
 
-        if "identity_func" in prm_structure:
+        if "identity_func" in prm_structure: #(currently corrupted)
             self.struct["identity_func"] = prm_structure["identity_func"]
         else:
             self.struct["identity_func"] = False
