@@ -27,12 +27,7 @@ class ModelMaster(object):
 
     def __init__(self, parameter):
 
-
         self.prm = ParameterSupervisor()
-
-
-
-
 
         if "model_location" in parameter:
             if parameter["model_location"]:
@@ -44,20 +39,18 @@ class ModelMaster(object):
                 old_weights, basic, struct,optimize = self.load(parameter["model_location"] + parameter["model_name"])
 
                 self.prm.basic = basic
-                #self.prm.data = data
                 self.prm.struct = struct
                 self.prm.optimize = optimize
 
                 self.prm.overwrite_parameter_dict(parameter)
                 self.prm.pass_data_dict(parameter)
 
-
             else:
-                self.prm.pass_parameter_dict(parameter)
+                self.prm.pass_all_parameter_dict(parameter)
                 old_weights = np.repeat(None,self.prm.struct["net_size"].__len__())
 
         else:
-            self.prm.pass_parameter_dict(parameter)
+            self.prm.pass_all_parameter_dict(parameter)
             old_weights = np.repeat(None,self.prm.struct["net_size"].__len__())
 
         self.generate_random_streams()
@@ -72,20 +65,18 @@ class ModelMaster(object):
         self.pub(" #-- Build model --#")
 
 
-
-
-
-
+    ######       Abstract build model method
+    ########################################
     @abstractmethod
     def build_model(self, old_weights=None):
         pass
 
 
+    ######           Generate random streams
+    ########################################
     def generate_random_streams(self):
         self.rng = np.random.RandomState(self.prm.optimize["random_seed"])
         self.trng = RandomStreams(self.prm.optimize["random_seed"])
-
-
 
 
     ######       Dump weights in kelpto file
@@ -97,10 +88,8 @@ class ModelMaster(object):
         d = klepto.archives.file_archive(data_location, cached=True,serialized=True)
         d['layer_weights'] = [[np.asarray(w.eval()) for w in layer] for layer in self.layer_weights]
         d['p_basic'] = self.prm.basic
-        #d['p_data'] = self.prm.data
         d['p_struct'] = self.prm.struct
         d['p_optimize'] = self.prm.optimize
-        #d['monitor'] = self.training_error
         d.dump()
         d.clear()
 
@@ -116,7 +105,6 @@ class ModelMaster(object):
         d.load()
         weights = d['layer_weights']
         basic = d['p_basic']
-        #data = d['p_data']
         struct = d['p_struct']
         optimize= d['p_optimize']
         d.clear()

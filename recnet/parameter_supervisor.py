@@ -31,7 +31,7 @@ class ParameterSupervisor:
             return False
 
 
-    def pass_parameter_dict(self, parameter):
+    def pass_all_parameter_dict(self, parameter):
         self.pass_basic_dict(parameter)
         self.pass_data_dict(parameter)
         self.pass_structure_dict(parameter)

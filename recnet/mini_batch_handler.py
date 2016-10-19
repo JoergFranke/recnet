@@ -13,6 +13,8 @@ import numpy as np
 import theano
 
 
+######          Mini Batch Handler Class
+########################################
 class MiniBatchHandler:
 
     def __init__(self,rng, prm_data, prm_struct, pub):
@@ -22,7 +24,8 @@ class MiniBatchHandler:
         self.prm_struct = prm_struct
 
 
-
+    ###### Check out if data exists and is consistent
+    ########################################
     def check_out_data_set(self):
 
         if self.prm_data["train_data_name"] != None:
@@ -100,6 +103,8 @@ class MiniBatchHandler:
         self.pub("#MBH: data check completed")
 
 
+    ###### Create mini batches and storage them in klepto files
+    ########################################
     def create_mini_batches(self, set):
 
         if self.prm_data["checked_data"][set] == False:
@@ -122,8 +127,6 @@ class MiniBatchHandler:
         self.prm_data[set + "_data_y_len"]= [i.__len__() for i in data_set_y]
         if not np.array_equal(self.prm_data[set + "_data_x_len"], self.prm_data[set + "_data_y_len"]):
             raise Warning(set + " x and y sequences have not the same length")
-
-
 
         sample_order = np.arange(0,self.prm_data[set + "_set_len" ])
         sample_order = self.rng.permutation(sample_order)
@@ -161,11 +164,15 @@ class MiniBatchHandler:
         d.clear()
 
 
-
+    ###### Delete stored mini batch klepto files
+    ########################################
     def delete_mini_batches(self, set):
         file_name = self.prm_data["mini_batch_location"] + "mb_of_" + self.prm_data[set + "_data_name"]
         os.remove(file_name)
 
+
+    ######  Load from mini batch klepto file
+    ########################################
     def load_mini_batches(self, set):
         file_name = self.prm_data["mini_batch_location"] + "mb_of_" + self.prm_data[set + "_data_name"]
         d = klepto.archives.file_archive(file_name, cached=True,serialized=True)
@@ -174,5 +181,4 @@ class MiniBatchHandler:
         data_mb_set_y = d['y']
         data_mb_set_m = d['m']
         d.clear()
-
         return data_mb_set_x, data_mb_set_y, data_mb_set_m

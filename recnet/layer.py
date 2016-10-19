@@ -5,7 +5,7 @@ This file contains the implementation of different recurrent layers.
 
 ######                           Imports
 ########################################
-
+from abc import ABCMeta, abstractmethod
 import numpy as np
 import theano
 import theano.tensor as T
@@ -15,7 +15,24 @@ from collections import OrderedDict
 ########################################
 #Glorot, Xavier, and Yoshua Bengio. "Understanding the difficulty of training deep feedforward neural networks."
 # Aistats. Vol. 9. 2010.
-class layerMaster:
+
+class layerMaster(object):
+
+    __metaclass__ = ABCMeta
+
+    ######              Abstract init method
+    ########################################
+    @abstractmethod
+    def __init__(self):
+        pass
+
+    ###### Abstract sequenceiteration method
+    ########################################
+    @abstractmethod
+    def sequence_iteration(self):
+        pass
+
+
 
     def ortho_weight(self, rng, ndim):
         W = rng.randn(ndim, ndim)
@@ -39,7 +56,6 @@ class layerMaster:
         ##return rng.normal(0, 2./(n_in+n_out), (n_in, n_out))
         #return rng.uniform(-np.sqrt(1./n_in), np.sqrt(1./n_in), (n_in, n_out))
         return rng.uniform(-0.1, 0.1, (n_in, n_out))
-
 
 
 ######                        tanh Layer
