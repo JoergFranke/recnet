@@ -49,7 +49,8 @@ python setup.py install
 
 ## How to use it
 
-- Please provide our data in form of two lists and storage it in a klepto file. One list contains sequences of features
+###### 1.
+Please provide our data in form of two lists and storage it in a klepto file. One list contains sequences of features
 and another the corresponding targets. Each element of the list should be a matrix with shape `sequence length | feature/target size` .
 
 ```bash
@@ -60,16 +61,15 @@ and another the corresponding targets. Each element of the list should be a matr
     d.clear()
 ```
 
-- Define the parameters for the recurrent neural network
+###### 2.
+Define the parameters for the recurrent neural network
 
 | Parameter           | Description                                        | Value          |
 | ------------------- | ---------------------------------------------------| ---------------- |
-
 | train_data_name     | Name of the training data set | String |
 | valid_data_name     | Name of the validation data set | String |
 | data_location     | Path/dictionary to the data set in kelpto files | Path |
 | batch_size     | Size of the mini batches | Integer >=1 |
-
 | net_size            | input size, size of each hidden layer, output size | List of integer |
 | net_unit_type       | unit type of each layer (input, GRU, LSTM, conv, GRU_ln ...) | List of unit types |
 | net_act_type        | activation function of each layer (tanh, relu, softplus) | List of activation functions |
@@ -85,7 +85,7 @@ and another the corresponding targets. Each element of the list should be a matr
 
 *View documentation for full list of RecNet parameters*
 
-
+###### 3.
 - The framework contains the `rnnModel` which provides functions to train, validate and test the model.
 The `rnnModel` takes the parameters.
 ```bash
