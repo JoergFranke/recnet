@@ -19,6 +19,12 @@ class LayerMaster(object):
     def sequence_iteration(self):
         pass
 
+    def ln(self, x, b, s):
+        _eps = 1e-5
+        output = (x - x.mean(1)[:,None]) / T.sqrt((x.var(1)[:,None] + _eps))
+        output = s[None, :] * output + b[None,:]
+        return output
+
     def sqr_ortho(self, rng, ndim):
         W = rng.randn(ndim, ndim)
         u, s, v = np.linalg.svd(W)

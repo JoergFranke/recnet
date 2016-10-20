@@ -43,8 +43,8 @@ parameter["batch_size" ] = 10
 parameter["mini_batch_location"] = "mini_batch/"
 
 parameter["net_size"      ] = [2, 10, 2]
-parameter["net_unit_type" ] = ['input', 'GRU', 'softmax']
-parameter["net_act_type" ] = ['-', 'relu', '-']
+parameter["net_unit_type" ] = ['input', 'GRU_ln', 'softmax']
+parameter["net_act_type" ] = ['-', 'tanh', '-']
 parameter["net_arch" ] = ['-', 'bi', 'ff']
 
 

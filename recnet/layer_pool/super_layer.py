@@ -6,7 +6,7 @@ __author__ = 'joerg'
 import theano.tensor as T
 import output_layer
 import recurrent_layer
-
+import ln_reccurent_layer
 
 
 
@@ -29,12 +29,17 @@ class SuperLayer:
         n_batches = prm_data["batch_size"]
 
         output_layer_list = ["softmax",]
-        recurrent_layer_list = ["conv", "LSTM", "LSTMnp", "GRU"]
+        recurrent_layer_list = ["conv", "LSTM", "LSTMp", "GRU"]
+        ln_recurrent_layer_list = ["conv_ln", "LSTM_ln", "LSTMp_ln", "GRU_ln"]
 
         if unit_type in output_layer_list:
             layer_ = getattr(output_layer, unit_type)
         elif unit_type in recurrent_layer_list:
             layer_ = getattr(recurrent_layer, unit_type)
+        elif unit_type in ln_recurrent_layer_list:
+            layer_ = getattr(ln_reccurent_layer, unit_type)
+        else:
+            raise Warning("Unit type unknown ('net_unit_type')")
 
 
         if activation_type == "tanh":
