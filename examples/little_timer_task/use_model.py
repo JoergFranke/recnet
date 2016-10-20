@@ -18,61 +18,50 @@ import numpy as np
 import sklearn.metrics
 from collections import OrderedDict
 import matplotlib.pyplot as plt
-
 from recnet.build_model import rnnModel
-
 
 ### 1. Step: Define parameters
 parameter = OrderedDict()
 parameter["load_model"] = True
 parameter["model_location"] = "model_save/"
-
-###### LOAD MODEL
 ################################################################################
 ########################### ADD NAME FROM TRAINED MODEL HERE ! #################
 parameter["model_name"] = "**********************************.prm"
-parameter["model_name"] = "GRU_ln-LSTMp-conv_ln-softmax_2-10-20-16-2_bi_d-20-10-2016_v-1.prm"
-
 parameter["batch_size" ] = 5
-
-
 parameter["data_location"] = "data_set/"
 parameter["test_data_name"] = "little-timer_test.klepto"
 
-
-
-
-
+### 2. Step: Build model and get a forward function
 model = rnnModel(parameter)
-
 forward_fn = model.get_forward_function()
 
+
+### 3. Step: Get mini batches from your test data set
 model.mbh.create_mini_batches("test")
 test_mb_set_x, test_mb_set_y, test_mb_set_m = model.mbh.load_mini_batches("test")
 
 
-###### TEST MODEL
-ce_error = np.zeros([model.prm.data["test_batch_quantity"]*model.prm.data["batch_size"]])
+### 4. Step: Define your model test
+cross_entropy_error = np.zeros([model.prm.data["test_batch_quantity"]*model.prm.data["batch_size"]])
 auc_error = np.zeros([model.prm.data["test_batch_quantity"]*model.prm.data["batch_size"]])
 
+#iterate over batches
 for v in np.arange(0, model.prm.data["test_batch_quantity"]):
+    #get network output
     v_net_out_ = forward_fn(test_mb_set_x[v], test_mb_set_m[v])[0]
-
+    #iterate over batch size
     for b in np.arange(0,model.prm.data["batch_size"]):
+        #calculate error
         true_out = test_mb_set_y[v][:, b, :]
         code_out = v_net_out_[:, b, :]
-
         count = v * model.prm.data["batch_size"] + b
-
-        ce_error[count] = sklearn.metrics.log_loss(true_out, code_out)
+        cross_entropy_error[count] = sklearn.metrics.log_loss(true_out, code_out)
         auc_error[count] = sklearn.metrics.roc_auc_score(true_out, code_out)
 
-
-print("## cross entropy sklearn : " + "{0:.4f}".format(np.mean(ce_error)))
+print("## cross entropy sklearn : " + "{0:.4f}".format(np.mean(cross_entropy_error)))
 print("## area under the curve  : " + "{0:.4f}".format(np.mean(auc_error)))
 
-
-###### PLOT SAMPLE
+# Plot results
 sample_no = 0
 batch = 0
 net_out = forward_fn(test_mb_set_x[sample_no], test_mb_set_m[sample_no])[0]
@@ -97,7 +86,6 @@ plt.legend(loc='upper right',frameon=True)
 plt.ylim([0,1.1])
 plt.xlim([0,80])
 plt.show()
-
 
 ### Delete mini batches
 model.mbh.delete_mini_batches("test")

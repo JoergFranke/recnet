@@ -14,54 +14,32 @@ os.environ["THEANO_FLAGS"] = t_flags
 
 
 ######         IMPORTS          ######
-from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 import numpy as np
 import sklearn.metrics
 import time
 from collections import OrderedDict
-import klepto
-
 from recnet.build_model import rnnModel
-
-
-
-
-
-
-
 
 
 ### 1. Step: Define parameters
 parameter = OrderedDict()
-parameter["output_location"] = "log/"
-parameter["output_type"    ] = "console"        # console, file, both
-
 parameter["train_data_name"] = "little-timer_train.klepto"
 parameter["valid_data_name"] = "little-timer_valid.klepto"
 parameter["data_location"] = "data_set/"
 parameter["batch_size" ] = 10
-parameter["mini_batch_location"] = "mini_batch/"
 
-parameter["net_size"      ] = [      2,       10,      20,         16,         2]
-parameter["net_unit_type" ] = ['input', 'GRU_ln', 'LSTMp',  'conv_ln', 'softmax']
-parameter["net_act_type"  ] = [    '-',   'tanh',  'tanh', 'tanh',       '-']
-parameter["net_arch"      ] = [    '-',     'bi',   'uni',        'bi',     'ff']
+parameter["net_size"      ] = [      2,     10,         2]
+parameter["net_unit_type" ] = ['input', 'LSTM', 'softmax']
+parameter["net_act_type"  ] = [    '-',  'tanh',      '-']
+parameter["net_arch"      ] = [    '-',    'bi',     'ff']
 
-
-parameter["random_seed"   ] = 211
 parameter["epochs"        ] = 5
 parameter["learn_rate"    ] = 0.0001
-parameter["momentum_rate" ] = 0.9
-parameter["decay_rate"    ] = 0.9
 parameter["use_dropout"   ] = False       # False, True
-parameter["dropout_level" ] = 0.5
-parameter["regularization"] = False       # False, L2, ( L1 )
-parameter["reg_factor"    ] = 0.01
+parameter["regularization"] = False       # False, L2,  L1
 parameter["optimization"  ] = "adadelta"  # sgd, nm_rmsprop, rmsprop, nesterov_momentum, adadelta
 parameter["noisy_input"   ] = False       # False, True
-parameter["noise_level"   ] = 0.6
 parameter["loss_function" ] = "cross_entropy" # w2_cross_entropy, cross_entropy
-parameter["bound_weight"  ] = False       # False, Integer (2,12)
 
 
 
@@ -69,18 +47,20 @@ parameter["bound_weight"  ] = False       # False, Integer (2,12)
 model = rnnModel(parameter)
 
 
+### 3. Step: Build model functions
+train_fn    = model.get_training_function()
+valid_fn    = model.get_validation_function()
 
-### 4. Step: Build model functions
 
-### 5. Step: Train model
+### 4. Step: Train model
 
-### 5.1: Create minibatches
+### 4.1: Create minibatches
 
-### 5.2: Train model with minibatch
+### 4.2: Train model with minibatch
 
-### 5.3: Plot insample error during training
+### 4.3: Plot insample error during training
 
-### 5.4: Plot validation error during training
+### 4.4: Plot validation error during training
 
 ###### GLOBAL TIMER
 time_0 = time.time()
@@ -88,9 +68,8 @@ time_0 = time.time()
 
 
 
-train_fn    = model.get_training_function()
-valid_fn    = model.get_validation_function()
-forward_fn  = model.get_forward_function()
+
+
 
 
 

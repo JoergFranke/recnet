@@ -194,7 +194,7 @@ class ParameterSupervisor:
         if "random_seed" in prm_optimization:
             self.optimize["random_seed"] = prm_optimization["random_seed"]
         else:
-            self.optimize["random_seed"] = 1234
+            self.optimize["random_seed"] = np.random.randint(1000)
 
         if "epochs" in prm_optimization:
             self.optimize["epochs"] = prm_optimization["epochs"]

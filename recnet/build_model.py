@@ -12,8 +12,6 @@ import numpy as np
 from collections import OrderedDict
 
 import error_function
-import layer
-from layer import softmax
 import update_function
 from model_master import ModelMaster
 from layer_pool.super_layer import SuperLayer
