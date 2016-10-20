@@ -9,9 +9,6 @@
 | net_unit_type       | unit type of each layer (input, GRU, LSTM, conv, GRU_ln ...) | List of unit types |
 | net_act_type        | activation function of each layer (tanh, relu, softplus) | List of activation functions |
 | net_arch            | architecture of each layer (unidirectional, bidirectional, feed forward)  | List of architectures |
-
-
-
 | output_location     | Path/dictionary for saving the log/prm files | Path |
 | output_type         | Log during training in console, log-file or both | "console"/"file"/"both" |
 | epochs             | Number of epochs to train                          | Integer          |

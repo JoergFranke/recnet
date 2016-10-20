@@ -42,7 +42,6 @@ parameter["noisy_input"   ] = False       # False, True
 parameter["loss_function" ] = "cross_entropy" # w2_cross_entropy, cross_entropy
 
 
-
 ### 2. Step: Create new model
 model = rnnModel(parameter)
 
@@ -53,68 +52,40 @@ valid_fn    = model.get_validation_function()
 
 
 ### 4. Step: Train model
-
-### 4.1: Create minibatches
-
-### 4.2: Train model with minibatch
-
-### 4.3: Plot insample error during training
-
-### 4.4: Plot validation error during training
-
-###### GLOBAL TIMER
-time_0 = time.time()
-
-
-
-
-
-
-
-
-
-
-###### START TRAINING
 model.pub("Start training")
 
-
-
-
+### 4.1: Create minibatches for validation set
 model.mbh.create_mini_batches("valid")
 valid_mb_set_x, valid_mb_set_y, valid_mb_set_m = model.mbh.load_mini_batches("valid")
 
+### 4.2: Start epoch loop
 for i in xrange(model.prm.optimize["epochs"]):
-    time_training_start = time.time()
-    time_training_iteration = time_training_start
     model.pub("------------------------------------------")
     model.pub(str(i)+" Epoch, Training run")
-
-
+    time_0 = time.time()
+    time_1 = time.time()
+    ### 4.3: Create minibatches for training set
     model.mbh.create_mini_batches("train")
     mb_train_x, mb_train_y, mb_mask = model.mbh.load_mini_batches("train")
 
-
+    ### 4.4: Iterate over mini batches
     train_error = np.zeros(model.prm.data["train_set_len" ])
-
-
     for j in xrange(model.prm.data["train_batch_quantity"]):
 
-
-
-
+        ### 4.5: Train with one mini batch
         net_out, train_error[j] = train_fn( mb_train_x[j],
                                             mb_train_y[j],
                                             mb_mask[j]
                                             )
 
-        #Insample error
+        ### 4.6: Print training error
         if ( j%50) == 0 :
             model.pub("counter: " + "{:3.0f}".format(j)
-                   + "  time: " + "{:5.2f}".format(time.time()-time_training_iteration) + "sec"
+                   + "  time: " + "{:5.2f}".format(time.time()-time_0) + "sec"
                    + "  error: " + "{:6.4f}".format(train_error[j]))
-            time_training_iteration = time.time()
+            time_0 = time.time()
 
-        #Validation
+        ### 4.7: Print validation error
         if ( (j%500) == 0 or j == model.prm.data["train_set_len" ]-1 ) and j>0:
             model.pub("###########################################")
             model.pub("## epoch validation at " + str(i) + "/" + str(j))
@@ -140,12 +111,12 @@ for i in xrange(model.prm.optimize["epochs"]):
             model.pub("## area under the curve  : " + "{0:.4f}".format(np.mean(auc_error)))
             model.pub("###########################################")
 
-            model.dump() #save current weights
-
+            ### 4.8: Save current model
+            model.dump()
 
     model.pub("###########################################")
     model.pub("Insample Error: " + str(np.mean(train_error)))
-    model.pub("Epoch training duration: "+ str(time.time()-time_training_start) + "sec")
+    model.pub("Epoch training duration: "+ str(time.time()-time_1) + "sec")
 
 #Finale
 model.pub("## ||||||||||||||||||||||||||||||||||||||||")
