@@ -1,4 +1,4 @@
-__author__ = 'joerg'
+__author__ = 'Joerg Franke'
 """
 This file contains the implementation of different layer normalized recurrent layers.
 """
@@ -181,7 +181,7 @@ class LSTMp_ln(LayerMaster):
         preact = T.add(cur_w_in_sig_ln, pre_w_out_sig_ln, b_ifco)
 
         inner_act = self.activation  # T.nnet.hard_sigmoid T.tanh
-        gate_act = T.nnet.sigmoid  # T.nnet.hard_sigmoid
+        gate_act = self.sigmoid()  # T.nnet.hard_sigmoid
 
         # Input Gate
         ig_t1 = gate_act(T.add(preact[:, 0:t_n_out], T.mul(pre_cell_sig, w_ig_c)))
@@ -314,7 +314,7 @@ class LSTM_ln(LayerMaster):
 
 
         inner_act = self.activation # T.nnet.hard_sigmoid #T.tanh # T.nnet.hard_sigmoid T.tanh
-        gate_act = T.nnet.hard_sigmoid  # T.nnet.hard_sigmoid #T.nnet.sigmoid
+        gate_act = self.sigmoid()  # T.nnet.hard_sigmoid #T.nnet.sigmoid
 
         # Input Gate
         ig_t1 = gate_act(preact[:, 0:t_n_out])
@@ -426,7 +426,7 @@ class GRU_ln(LayerMaster):
 
 
         signal_act = self.activation
-        gate_act = T.nnet.sigmoid #T.nnet.hard_sigmoid
+        gate_act = self.sigmoid()
 
         rzup_in_sig_ln = self.ln(rzup_in_sig, ln_b1, ln_s1)
 

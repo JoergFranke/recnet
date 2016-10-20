@@ -1,4 +1,4 @@
-__author__ = 'joerg'
+__author__ = 'Joerg Franke'
 """
 This file contains the implementation of different recurrent layers.
 """
@@ -152,8 +152,8 @@ class LSTMp(LayerMaster):
 
         ifco = T.add(T.dot(pre_out_sig, w_ifco), b_ifco)
 
-        inner_act = self.activation  # T.nnet.hard_sigmoid #T.tanh # T.nnet.hard_sigmoid T.tanh
-        gate_act = T.nnet.hard_sigmoid  # T.nnet.hard_sigmoid #T.nnet.sigmoid
+        inner_act = self.activation
+        gate_act = self.sigmoid()
 
         # Input Gate
         ig_t1 = gate_act(T.add(ifco[:, 0:t_n_out], T.mul(pre_cell_sig, w_ig_c), cur_w_in_sig[:, 0:t_n_out]))
@@ -265,8 +265,8 @@ class LSTM(LayerMaster):
 
         ifco = T.add(T.dot(pre_out_sig, w_ifco), b_ifco)
 
-        inner_act = self.activation # T.nnet.hard_sigmoid #T.tanh # T.nnet.hard_sigmoid T.tanh
-        gate_act = T.nnet.hard_sigmoid  # T.nnet.hard_sigmoid #T.nnet.sigmoid
+        inner_act = self.activation
+        gate_act = self.sigmoid()
 
         # Input Gate
         ig_t1 = gate_act(T.add(ifco[:, 0:t_n_out], cur_w_in_sig[:, 0:t_n_out]))
@@ -377,7 +377,7 @@ class GRU(LayerMaster):
 
 
         signal_act = self.activation
-        gate_act = T.nnet.sigmoid #T.nnet.hard_sigmoid
+        gate_act = self.sigmoid()
 
         preact = T.dot( h_pre, u_rz)
 

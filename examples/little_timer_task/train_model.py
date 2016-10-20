@@ -42,10 +42,10 @@ parameter["data_location"] = "data_set/"
 parameter["batch_size" ] = 10
 parameter["mini_batch_location"] = "mini_batch/"
 
-parameter["net_size"      ] = [2, 10, 2]
-parameter["net_unit_type" ] = ['input', 'GRU_ln', 'softmax']
-parameter["net_act_type" ] = ['-', 'tanh', '-']
-parameter["net_arch" ] = ['-', 'bi', 'ff']
+parameter["net_size"      ] = [      2,       10,      20,         16,         2]
+parameter["net_unit_type" ] = ['input', 'GRU_ln', 'LSTMp',  'conv_ln', 'softmax']
+parameter["net_act_type"  ] = [    '-',   'tanh',  'tanh', 'tanh',       '-']
+parameter["net_arch"      ] = [    '-',     'bi',   'uni',        'bi',     'ff']
 
 
 parameter["random_seed"   ] = 211

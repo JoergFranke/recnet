@@ -31,7 +31,7 @@ parameter["model_location"] = "model_save/"
 ################################################################################
 ########################### ADD NAME FROM TRAINED MODEL HERE ! #################
 parameter["model_name"] = "**********************************.prm"
-parameter["model_name"] = "LSTM-softmax_2-10-2_d-19-10-2016_v-2.prm"
+parameter["model_name"] = "GRU_ln-LSTMp-conv_ln-softmax_2-10-20-16-2_bi_d-20-10-2016_v-1.prm"
 
 parameter["batch_size" ] = 5
 

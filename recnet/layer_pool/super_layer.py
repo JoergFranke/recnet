@@ -1,4 +1,4 @@
-__author__ = 'joerg'
+__author__ = 'Joerg Franke'
 
 
 ######                           Imports
@@ -10,9 +10,8 @@ import ln_reccurent_layer
 
 
 
-
-
-
+###### Super layer class covers all unit types
+########################################
 class SuperLayer:
 
     def __init__(self, rng,trng, prm_structure,prm_data, layer_no, old_weights=None):
@@ -44,6 +43,8 @@ class SuperLayer:
 
         if activation_type == "tanh":
             activation = T.tanh
+        elif activation_type == "softplus":
+            activation = T.nnet.softplus
         elif activation_type == "relu":
             activation = T.nnet.relu
         else:

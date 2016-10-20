@@ -1,13 +1,12 @@
-__author__ = 'joerg'
+__author__ = 'Joerg Franke'
 
 
 ######                           Imports
 ########################################
-from abc import ABCMeta, abstractmethod
 import numpy as np
 import theano
 import theano.tensor as T
-from collections import OrderedDict
+
 
 from layer_master import LayerMaster
 

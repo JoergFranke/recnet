@@ -1,4 +1,4 @@
-__author__ = 'joerg'
+__author__ = 'Joerg Franke'
 
 ######                           Imports
 ########################################
@@ -6,7 +6,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import theano
 import theano.tensor as T
-from collections import OrderedDict
+
 
 class LayerMaster(object):
 
@@ -18,6 +18,9 @@ class LayerMaster(object):
     @abstractmethod
     def sequence_iteration(self):
         pass
+
+    def sigmoid(self):
+        return T.nnet.hard_sigmoid # sigmoid # T.nnet.hard_sigmoid #T.nnet.sigmoid
 
     def ln(self, x, b, s):
         _eps = 1e-5
