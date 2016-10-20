@@ -15,7 +15,7 @@ from layer_master import LayerMaster
 ######                     Softmax Layer
 ########################################
 class softmax(LayerMaster):
-    def __init__(self, rng, trng, n_in, n_out, n_batches=None, old_weights=None): #self, rng,trng, prm_structure, layer_no, old_weights=None):
+    def __init__(self, rng, trng, n_in, n_out, n_batches=None, activation=None, old_weights=None): #self, rng,trng, prm_structure, layer_no, old_weights=None):
 
         # Parameters
         self.n_in = n_in

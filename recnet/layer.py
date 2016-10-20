@@ -333,16 +333,15 @@ class GRU(layerMaster):
 
 
         signal_act = T.tanh
-        gate_act = T.nnet.hard_sigmoid
+        gate_act = T.nnet.sigmoid #hard_sigmoid
 
 
-        r = gate_act( T.add( rzup_in_sig[:, 0:t_n_out] , T.dot( h_pre, u_r) ) )
+        r = gate_act( T.add( rzup_in_sig[:, 0:t_n_out] , T.dot( h_pre, u_r) ) ) #todo dot h*u zusammenlegn
         z = gate_act( T.add( rzup_in_sig[:, t_n_out:2 * t_n_out] , T.dot(h_pre, u_z) ))
 
         h_update = signal_act( T.add( rzup_in_sig[:, 2*t_n_out:3*t_n_out] , T.dot( T.mul( h_pre, r), u_up) ))
 
-        h_new = T.add( (1.-z) * h_pre , z * h_update )
-
+        h_new = T.add( (1.-z) * h_update , z * h_pre )
         mask = T.addbroadcast(mask, 1)
         out_sig =  T.add( mask * h_new   , (1. - mask) * h_pre )
 

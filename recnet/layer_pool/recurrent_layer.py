@@ -17,17 +17,18 @@ from collections import OrderedDict
 from layer_master import LayerMaster
 
 
-######                        tanh Layer
+######      Conventional recurrent layer
 ########################################
-class tanh(LayerMaster):
+class conv(LayerMaster):
     """
-    Hyperbolic tangent layer
+    Hyperbolic tangent or rectified linear unit layer
     """
 
-    def __init__(self, rng, trng, n_in, n_out, n_batches, old_weights=None,go_backwards=False):  # , prm_structure, layer_no ):
+    def __init__(self, rng, trng, n_in, n_out, n_batches, activation, old_weights=None,go_backwards=False):  # , prm_structure, layer_no ):
 
         # Parameters
         self.go_backwards = go_backwards
+        self.activation = activation
 
         # Random
         self.rng = rng
@@ -58,80 +59,7 @@ class tanh(LayerMaster):
     def t_forward_step(self, mask, cur_w_in_sig, pre_out_sig, w_hidden_hidden, b_act):
 
         pre_w_sig = T.dot(pre_out_sig, w_hidden_hidden)
-        inner_act = T.tanh
-        out_sig = inner_act(T.add(cur_w_in_sig, pre_w_sig, b_act))
-
-        mask = T.addbroadcast(mask, 1)
-        out_sig_m = mask * out_sig + (1. - mask) * pre_out_sig
-        return [out_sig_m]
-
-    def sequence_iteration(self, in_seq, mask, use_dropout, dropout_value=1):
-
-        in_seq_d = T.switch(use_dropout,
-                            (in_seq *
-                             self.trng.binomial(in_seq.shape,
-                                                p=dropout_value, n=1,
-                                                dtype=in_seq.dtype)),
-                            in_seq)
-
-        w_in_seq = T.dot(in_seq_d, self.weights[0])
-
-        out_seq, updates = theano.scan(
-                                        fn=self.t_forward_step,
-                                        sequences=[mask, w_in_seq],
-                                        outputs_info=[self.t_init_hidden],
-                                        non_sequences=self.weights[1:],
-                                        go_backwards=self.go_backwards,
-                                        truncate_gradient=-1,
-                                        # n_steps=50,
-                                        strict=True,
-                                        allow_gc=False,
-        )
-        return out_seq
-
-
-######                        ReLu Layer
-########################################
-class ReLu(LayerMaster):
-    """
-    rectified linear unit layer
-    """
-
-    def __init__(self, rng, trng, n_in, n_out, n_batches, old_weights=None,go_backwards=False):  # , prm_structure, layer_no ):
-
-        # Parameters
-        self.go_backwards = go_backwards
-
-        # Random
-        self.rng = rng
-        self.trng = trng
-
-        if old_weights == None:
-
-            np_weights = OrderedDict()
-
-            np_weights['w_in_hidden'] = self.rec_uniform_sqrt(rng, n_in, n_out)
-            np_weights['w_hidden_hidden'] = self.sqr_ortho(rng, n_out)
-            np_weights['b_act'] = np.zeros(n_out)
-
-            self.weights = []
-            for kk, pp in np_weights.items():
-                self.weights.append(theano.shared(name=kk, value=pp.astype(T.config.floatX)))
-
-        # load old weights
-        else:
-            self.weights = []
-            for pp in old_weights:
-                self.weights.append(theano.shared(value=pp.astype(T.config.floatX)))
-
-        # Init last output and cell state
-        init_hidden = np.zeros([n_batches, n_out]).astype(dtype=theano.config.floatX)
-        self.t_init_hidden = theano.shared(name='init_hidden', value=init_hidden.astype(T.config.floatX))
-
-    def t_forward_step(self, mask, cur_w_in_sig, pre_out_sig, w_hidden_hidden, b_act):
-
-        pre_w_sig = T.dot(pre_out_sig, w_hidden_hidden)
-        inner_act = T.nnet.relu
+        inner_act = self.activation
         out_sig = inner_act(T.add(cur_w_in_sig, pre_w_sig, b_act))
 
         mask = T.addbroadcast(mask, 1)
@@ -177,11 +105,12 @@ class LSTM(LayerMaster):
         - one function for each step, one for each sequence
     """
 
-    def __init__(self, rng, trng, n_in, n_out, n_batches, old_weights=None,
+    def __init__(self, rng, trng, n_in, n_out, n_batches, activation, old_weights=None,
                  go_backwards=False):  # , prm_structure, layer_no ):
 
         # Parameters
         self.go_backwards = go_backwards
+        self.activation = activation
 
         # Random
         self.rng = rng
@@ -224,7 +153,7 @@ class LSTM(LayerMaster):
 
         ifco = T.add(T.dot(pre_out_sig, w_ifco), b_ifco)
 
-        inner_act = T.tanh  # T.nnet.hard_sigmoid #T.tanh # T.nnet.hard_sigmoid T.tanh
+        inner_act = self.activation  # T.nnet.hard_sigmoid #T.tanh # T.nnet.hard_sigmoid T.tanh
         gate_act = T.nnet.hard_sigmoid  # T.nnet.hard_sigmoid #T.nnet.sigmoid
 
         # Input Gate
@@ -290,11 +219,12 @@ class LSTMnp(LayerMaster):
         - one function for each step, one for each sequence
     """
 
-    def __init__(self, rng, trng, n_in, n_out, n_batches, old_weights=None,
+    def __init__(self, rng, trng, n_in, n_out, n_batches, activation, old_weights=None,
                  go_backwards=False):  # , prm_structure, layer_no ):
 
         # Parameters
         self.go_backwards = go_backwards
+        self.activation = activation
 
         # Random
         self.rng = rng
@@ -336,7 +266,7 @@ class LSTMnp(LayerMaster):
 
         ifco = T.add(T.dot(pre_out_sig, w_ifco), b_ifco)
 
-        inner_act = T.tanh  # T.nnet.hard_sigmoid #T.tanh # T.nnet.hard_sigmoid T.tanh
+        inner_act = self.activation # T.nnet.hard_sigmoid #T.tanh # T.nnet.hard_sigmoid T.tanh
         gate_act = T.nnet.hard_sigmoid  # T.nnet.hard_sigmoid #T.nnet.sigmoid
 
         # Input Gate
@@ -398,10 +328,11 @@ class GRU(LayerMaster):
     key ideas of implementation:
     """
 
-    def __init__(self, rng, trng, n_in, n_out, n_batches, old_weights=None,go_backwards=False): #, prm_structure, layer_no ):
+    def __init__(self, rng, trng, n_in, n_out, n_batches, activation, old_weights=None,go_backwards=False): #, prm_structure, layer_no ):
 
         # Parameters
         self.go_backwards = go_backwards
+        self.activation = activation
 
         # Random
         self.rng = rng
@@ -415,11 +346,14 @@ class GRU(LayerMaster):
             np_weights['w_rzup'] = self.rec_uniform_sqrt(rng,n_in, 3 * n_out ) # rng.uniform(-0.1, 0.1,(n_in, 3 * n_out))
             np_weights['b_rzup'] = np.zeros(3 * n_out)
 
+            # reset and update gate
+            np_weights['u_rz'] = self.rec_ortho(rng, n_out, 2) #self.uniform(-0.1, 0.1, (n_out, n_out))
+
             # reset gate
-            np_weights['u_r'] = self.sqr_ortho(rng, n_out) #self.uniform(-0.1, 0.1, (n_out, n_out))
+            #np_weights['u_r'] = self.sqr_ortho(rng, n_out) #self.uniform(-0.1, 0.1, (n_out, n_out))
 
             # update gate
-            np_weights['u_z'] = self.sqr_ortho(rng, n_out) #rng.uniform(-0.1, 0.1, (n_out, n_out))
+            #np_weights['u_z'] = self.sqr_ortho(rng, n_out) #rng.uniform(-0.1, 0.1, (n_out, n_out))
 
             # update weights
             np_weights['u_up'] = self.sqr_ortho(rng, n_out) #rng.uniform(-0.1, 0.1, (n_out, n_out))
@@ -439,20 +373,22 @@ class GRU(LayerMaster):
         ol_t00_np1 = np.zeros([n_batches,n_out]).astype(dtype=theano.config.floatX)
         self.t_ol_t00 = theano.shared(name='ol_b_t00', value=ol_t00_np1.astype(T.config.floatX))
 
-    def t_forward_step(self,mask, rzup_in_sig, h_pre, u_r,u_z, u_up, t_n_out):
+    def t_forward_step(self,mask, rzup_in_sig, h_pre, u_rz, u_up, t_n_out): #u_r, u_z,
 
 
 
-        signal_act = T.tanh
-        gate_act = T.nnet.hard_sigmoid
+        signal_act = self.activation
+        gate_act = T.nnet.sigmoid #T.nnet.hard_sigmoid
+
+        preact = T.dot( h_pre, u_rz)
 
 
-        r = gate_act( T.add( rzup_in_sig[:, 0:t_n_out] , T.dot( h_pre, u_r) ) )
-        z = gate_act( T.add( rzup_in_sig[:, t_n_out:2 * t_n_out] , T.dot(h_pre, u_z) ))
+        r = gate_act( T.add( rzup_in_sig[:, 0:t_n_out] , preact[:, 0:t_n_out] )) #T.dot( h_pre, u_r) ) )
+        z = gate_act( T.add( rzup_in_sig[:, t_n_out:2 * t_n_out] , preact[:, t_n_out:2 * t_n_out] )) #T.dot(h_pre, u_z) ))
 
         h_update = signal_act( T.add( rzup_in_sig[:, 2*t_n_out:3*t_n_out] , T.dot( T.mul( h_pre, r), u_up) ))
 
-        h_new = T.add( (1.-z) * h_pre , z * h_update )
+        h_new = T.add( (1.-z) * h_update , z * h_pre )
 
         mask = T.addbroadcast(mask, 1)
         out_sig =  T.add( mask * h_new   , (1. - mask) * h_pre )

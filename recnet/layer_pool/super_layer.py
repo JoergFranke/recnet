@@ -28,17 +28,30 @@ class SuperLayer:
         self.arch = prm_structure["net_arch"][layer_no]
         n_batches = prm_data["batch_size"]
 
-        if unit_type in ["softmax",]:
+        output_layer_list = ["softmax",]
+        recurrent_layer_list = ["conv", "LSTM", "LSTMnp", "GRU"]
+
+        if unit_type in output_layer_list:
             layer_ = getattr(output_layer, unit_type)
-        elif unit_type in ["tanh", "ReLu", "LSTM", "LSTMnp", "GRU"]:
+        elif unit_type in recurrent_layer_list:
             layer_ = getattr(recurrent_layer, unit_type)
+
+
+        if activation_type == "tanh":
+            activation = T.tanh
+        elif activation_type == "relu":
+            activation = T.nnet.relu
+        else:
+            activation = None
+            if not unit_type in output_layer_list:
+                raise Warning("Activation type unknown ('net_act_type')")
 
         if self.arch == "uni" or self.arch == "ff":
             if not old_weights == None:
                 forward_weights = old_weights
-                self.forward_layer = layer_(rng, trng, n_in, n_out, n_batches, forward_weights)
+                self.forward_layer = layer_(rng, trng, n_in, n_out, n_batches, activation, forward_weights)
             else:
-                self.forward_layer = layer_(rng, trng, n_in, n_out, n_batches)
+                self.forward_layer = layer_(rng, trng, n_in, n_out, n_batches, activation)
         elif self.arch == "bi":
 
             if n_out % 2 != 0:
@@ -50,11 +63,11 @@ class SuperLayer:
                 forward_weights = old_weights[:old_weights.__len__() / 2]
                 backward_weights = old_weights[old_weights.__len__() / 2:]
 
-                self.forward_layer = layer_(rng, trng, n_in, n_out, n_batches, forward_weights)
-                self.backward_layer = layer_(rng, trng, n_in, n_out, n_batches, backward_weights, go_backwards=True)
+                self.forward_layer = layer_(rng, trng, n_in, n_out, n_batches, activation, forward_weights)
+                self.backward_layer = layer_(rng, trng, n_in, n_out, n_batches, activation, backward_weights, go_backwards=True)
             else:
-                self.forward_layer = layer_(rng, trng, n_in, n_out, n_batches)
-                self.backward_layer = layer_(rng, trng, n_in, n_out, n_batches, go_backwards=True)
+                self.forward_layer = layer_(rng, trng, n_in, n_out, n_batches, activation)
+                self.backward_layer = layer_(rng, trng, n_in, n_out, n_batches, activation, go_backwards=True)
         else:
             raise Warning("No valid net architecture (uni or bi)")
 
