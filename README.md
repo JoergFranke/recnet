@@ -29,12 +29,8 @@ __Current implemented features:__
 
 __Example of use:__
 
-<table>
-  <tr>
-    <td><a href="https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task">Little timer task</a></td>
-    <td><img src="examples/little_timer_task/sample.png"  width="250"></td>
-  </tr>
-</table>
+- [Little timer task](https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task)
+- [Phoneme Recognition](https://github.com/joergfranke/phoneme_recognition)
 
 
 ## How to install it
@@ -45,11 +41,11 @@ cd recnet
 python setup.py install
 ```
 
-*In case of error try to update setuptools and/or install as sudo.*
+*In case of error try to update pip/setuptools.*
 
 ## How to use it
 
-##### 1.
+__1.__
 Please provide our data in form of two lists and storage it in a klepto file. One list contains sequences of features
 and another the corresponding targets. Each element of the list should be a matrix with shape `sequence length | feature/target size` .
 
@@ -61,7 +57,7 @@ and another the corresponding targets. Each element of the list should be a matr
     d.clear()
 ```
 
-##### 2.
+__2.__
 Define the parameters for the recurrent neural network
 
 | Parameter           | Description                                        | Value          |
@@ -84,7 +80,7 @@ Define the parameters for the recurrent neural network
 
 *View documentation for full list of RecNet parameters*
 
-##### 3.
+__3.__
 - The framework contains the `rnnModel` which provides functions to train, validate and test the model.
 The `rnnModel` takes the parameters.
 ```bash
@@ -104,7 +100,7 @@ forward_fn  = model.get_forward_function()
 Difference between train_fn and valid_fn is no use of dropout, noise or weight update.
 
 
-- Feel free to orient oneself on the [example](https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task) provided in this repository.
+- Please feel free to orient oneself on the [example](https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task) provided in this repository.
 
 
 ## Further work
