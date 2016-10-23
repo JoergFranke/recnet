@@ -272,6 +272,7 @@ class ParameterSupervisor:
                 self.optimize["dropout_level"] = 0
         else:
             self.optimize["use_dropout"] = False
+            self.optimize["dropout_level"] = 0
 
 
         if "regularization" in prm_optimization:

@@ -1,5 +1,5 @@
 from setuptools import setup
-#from setuptools import find_packages
+from setuptools import find_packages
 #from distutils.core import setup
 
 
@@ -11,5 +11,5 @@ setup(name='recnet',
       url='https://github.com/joergfranke/recnet',
       license='MIT License',
       install_requires=['theano>=0.8.2', 'klepto==0.1.2', 'numpy>=1.11', 'six'],
-      packages=['recnet',])
+      packages=find_packages())
 
