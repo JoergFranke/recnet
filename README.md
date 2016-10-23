@@ -7,7 +7,7 @@
 [![Theano](https://img.shields.io/badge/theano-0.8.2-yellow.svg)](http://deeplearning.net/software/theano/)
 
 ## About
-*RecNet* is a framework for recurrent neural networks. It implements a deep uni/bidirectional Conventional/LSTM/GRU neural network in Python with use of the
+*RecNet* is a framework for recurrent neural networks. It implements a deep uni/bidirectional Conventional/LSTM/GRU architecture in Python with use of the
 [Theano](http://deeplearning.net/software/theano/) library. The intension is a easy to use, light weight and flat implementation with
 the opportunity to check out new ideas and to implement the latest research.
 
@@ -49,7 +49,7 @@ python setup.py install
 
 ## How to use it
 
-###### 1.
+##### 1.
 Please provide our data in form of two lists and storage it in a klepto file. One list contains sequences of features
 and another the corresponding targets. Each element of the list should be a matrix with shape `sequence length | feature/target size` .
 
@@ -61,7 +61,7 @@ and another the corresponding targets. Each element of the list should be a matr
     d.clear()
 ```
 
-###### 2.
+##### 2.
 Define the parameters for the recurrent neural network
 
 | Parameter           | Description                                        | Value          |
@@ -74,7 +74,6 @@ Define the parameters for the recurrent neural network
 | net_unit_type       | unit type of each layer (input, GRU, LSTM, conv, GRU_ln ...) | List of unit types |
 | net_act_type        | activation function of each layer (tanh, relu, softplus) | List of activation functions |
 | net_arch            | architecture of each layer (unidirectional, bidirectional, feed forward)  | List of architectures |
-
 | epochs             | Number of epochs to train                          | Integer >=1          |
 | learn_rate         | Lerning rate for optimization algorithm            | Float [0.0001...0.5] |
 | optimization       | Optimization algorithm                             | "sgd" / "rmsprop" / "nesterov_momentum" / "adadelta" |
@@ -85,7 +84,7 @@ Define the parameters for the recurrent neural network
 
 *View documentation for full list of RecNet parameters*
 
-###### 3.
+##### 3.
 - The framework contains the `rnnModel` which provides functions to train, validate and test the model.
 The `rnnModel` takes the parameters.
 ```bash
