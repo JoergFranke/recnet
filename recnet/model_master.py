@@ -56,8 +56,9 @@ class ModelMaster(object):
         self.generate_random_streams()
         self.make_modelname()
 
-        self.mbh = MiniBatchHandler(self.rng, self.prm.data, self.prm.struct, self.pub)
+        self.mbh = MiniBatchHandler(self.rng, self.prm.data, self.prm.struct)
         self.mbh.check_out_data_set()
+        self.pub("#MBH: data check completed")
 
         self.build_model(old_weights)
         self.prm.struct["weight_numb"] = self.calc_numb_weights(self.all_weights)
@@ -77,6 +78,48 @@ class ModelMaster(object):
     def generate_random_streams(self):
         self.rng = np.random.RandomState(self.prm.optimize["random_seed"])
         self.trng = RandomStreams(self.prm.optimize["random_seed"])
+
+
+    ######                  Get mini batches
+    ########################################
+    def get_mini_batches(self, set_name):
+
+        if set_name not in ['test', 'train', 'valid']:
+            raise Warning("'get_mini_batches': Wrong set name")
+
+        if "mb_of_" + self.prm.data[set_name + "_data_name"] in os.listdir(self.prm.data["mini_batch_location"][:-1]): #os.getcwd()):
+            if set_name == "train":
+                self.mbh.delete_mini_batches(set_name)
+                self.pub("#mini batch handler# delete old " + set_name + " mini batches")
+                self.mbh.create_mini_batches(set_name)
+                self.pub("#mini batch handler# create new " + set_name + " mini batches")
+        else:
+            self.mbh.create_mini_batches(set_name)
+            self.pub("#mini batch handler# create new " + set_name + " mini batches")
+
+        return self.mbh.load_mini_batches(set_name)
+
+
+    ######                Clear mini batches
+    ########################################
+    def clear_mini_batches(self, set_name):
+
+        if set_name not in ['test', 'train', 'valid']:
+            raise Warning("'clear_mini_batches': Wrong set name")
+
+        if "mb_of_" + self.prm.data[set_name + "_data_name"] in os.listdir(self.prm.data["mini_batch_location"][:-1]): #os.getcwd()):
+            self.mbh.delete_mini_batches(set_name)
+            self.pub("#mini batch handler# delete old " + set_name + " mini batches")
+
+    def get_samples_quantity(self, set_name):
+        return self.prm.data[set_name + "_batch_quantity"] *self.prm.data["batch_size"]
+
+
+    def get_batches_quantity(self, set_name):
+        return self.prm.data[set_name + "_batch_quantity"]
+
+    def get_batch_size(self):
+        return self.prm.data["batch_size"]
 
 
     ######       Dump weights in kelpto file

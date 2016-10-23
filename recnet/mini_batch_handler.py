@@ -17,8 +17,8 @@ import theano
 ########################################
 class MiniBatchHandler:
 
-    def __init__(self,rng, prm_data, prm_struct, pub):
-        self.pub = pub
+    def __init__(self,rng, prm_data, prm_struct):
+
         self.rng = rng
         self.prm_data = prm_data
         self.prm_struct = prm_struct
@@ -100,7 +100,6 @@ class MiniBatchHandler:
             except KeyError:
                 raise Warning("data_location or test_data_name wrong")
 
-        self.pub("#MBH: data check completed")
 
 
     ###### Create mini batches and storage them in klepto files
@@ -129,7 +128,8 @@ class MiniBatchHandler:
             raise Warning(set + " x and y sequences have not the same length")
 
         sample_order = np.arange(0,self.prm_data[set + "_set_len" ])
-        sample_order = self.rng.permutation(sample_order)
+        if set == "train":
+            sample_order = self.rng.permutation(sample_order)
 
         data_mb_x = []
         data_mb_y = []
