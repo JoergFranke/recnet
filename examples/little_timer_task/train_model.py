@@ -55,8 +55,7 @@ valid_fn    = model.get_validation_function()
 model.pub("Start training")
 
 ### 4.1: Create minibatches for validation set
-model.mbh.create_mini_batches("valid")
-valid_mb_set_x, valid_mb_set_y, valid_mb_set_m = model.mbh.load_mini_batches("valid")
+valid_mb_set_x, valid_mb_set_y, valid_mb_set_m = model.get_mini_batches("valid")
 
 ### 4.2: Start epoch loop
 for i in xrange(model.prm.optimize["epochs"]):
@@ -65,8 +64,7 @@ for i in xrange(model.prm.optimize["epochs"]):
     time_0 = time.time()
     time_1 = time.time()
     ### 4.3: Create minibatches for training set
-    model.mbh.create_mini_batches("train")
-    mb_train_x, mb_train_y, mb_mask = model.mbh.load_mini_batches("train")
+    mb_train_x, mb_train_y, mb_mask = model.get_mini_batches("train")
 
     ### 4.4: Iterate over mini batches
     train_error = np.zeros(model.prm.data["train_set_len" ])
