@@ -207,28 +207,28 @@ class ParameterSupervisor:
                 if not "learn_rate" in prm_optimization:
                     raise Warning("learn_rate is missing")
 
-            if prm_optimization["optimization"] == "rmsprop":
+            elif prm_optimization["optimization"] == "rmsprop":
                 self.optimize["optimization"] = prm_optimization["optimization"]
                 if not "learn_rate" in prm_optimization:
                     raise Warning("learn_rate is missing")
                 if not "decay_rate" in prm_optimization:
                     raise Warning("decay_rate is missing")
 
-            if prm_optimization["optimization"] == "momentum":
+            elif prm_optimization["optimization"] == "momentum":
                 self.optimize["optimization"] = prm_optimization["optimization"]
                 if not "learn_rate" in prm_optimization:
                     raise Warning("learn_rate is missing")
                 if not "momentum_rate" in prm_optimization:
                     raise Warning("momentum_rate is missing")
 
-            if prm_optimization["optimization"] == "nesterov_momentum":
+            elif prm_optimization["optimization"] == "nesterov_momentum":
                 self.optimize["optimization"] = prm_optimization["optimization"]
                 if  not"learn_rate" in prm_optimization:
                     raise Warning("learn_rate is missing")
                 if not "momentum_rate" in prm_optimization:
                     raise Warning("momentum_rate is missing")
 
-            if prm_optimization["optimization"] == "nm_rmsprop":
+            elif prm_optimization["optimization"] == "nm_rmsprop":
                 self.optimize["optimization"] = prm_optimization["optimization"]
                 if "learn_rate" in prm_optimization:
                     raise Warning("learn_rate is missing")
@@ -237,7 +237,7 @@ class ParameterSupervisor:
                 if not "decay_rate" in prm_optimization:
                     raise Warning("decay_rate is missing")
 
-            if prm_optimization["optimization"] == "adadelta":
+            elif prm_optimization["optimization"] == "adadelta":
                 self.optimize["optimization"] = prm_optimization["optimization"]
 
             else:

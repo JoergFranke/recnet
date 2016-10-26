@@ -43,7 +43,10 @@ class rnnModel(ModelMaster):
         ######            Create model variables
         ########################################
         self.X_tv2 = T.tensor3('X_tv2', dtype=theano.config.floatX)
-        self.Y_tv2 = T.tensor3('Y_tv2', dtype=theano.config.floatX)
+        if self.prm.optimize["loss_function"] == "CTC":
+            self.Y_tv2 = T.imatrix('Y_tv2', )
+        else:
+            self.Y_tv2 = T.tensor3('Y_tv2', dtype=theano.config.floatX)
         self.M_tv2 = T.tensor3('M_tv2', dtype=theano.config.floatX)
         self.X_tv2_v = T.tensor3('Y_tv2', dtype=theano.config.floatX)
 

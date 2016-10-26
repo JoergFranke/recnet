@@ -24,7 +24,8 @@ class softmax(LayerMaster):
         w_out_np2 = self.rec_uniform_sqrt(rng, self.n_in, self.n_out)
         b_out_np2 = np.zeros(self.n_out)
 
-
+        print("w_out_np2 ")
+        print(w_out_np2.shape)
         if old_weights == None:
             self.t_w_out = theano.shared(name='w_out', value=w_out_np2.astype(T.config.floatX))
             self.t_b_out = theano.shared(name='b_out', value=b_out_np2.astype(T.config.floatX))
@@ -55,12 +56,20 @@ class softmax(LayerMaster):
         net_o = T.add( T.dot(signal , d_w_out) , t_b_out)
         output = T.nnet.softmax(net_o)
 
-        mask = T.addbroadcast(mask, 1)
+        mask = T.addbroadcast(mask, 1) #todo rechange
         output = mask * output   + (1. - mask) * 0.1**8
 
         return output
 
+    # def sequence_iteration(self, output, mask,use_dropout=0,dropout_value=0.5):
+    #     prm = [self.t_w_out, self.t_b_out, use_dropout,dropout_value]
+    #     result, updates = theano.map(self._drop_out_softmax, [output, mask], prm)
+    #     return result #todo rechange
+
     def sequence_iteration(self, output, mask,use_dropout=0,dropout_value=0.5):
         prm = [self.t_w_out, self.t_b_out, use_dropout,dropout_value]
-        result, updates = theano.map(self._drop_out_softmax, [output, mask], prm)
+
+        result = self._drop_out_softmax(output[:,0,:], mask[:,0,:],self.t_w_out, self.t_b_out, use_dropout , 1)
+
+        #result, updates = theano.map(self._drop_out_softmax, [output, mask], prm)
         return result
