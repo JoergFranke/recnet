@@ -140,6 +140,7 @@ class CTC():
             T.eye(n, k=1) + \
             T.eye(n, k=2) * sec_diag.dimshuffle((0, 'x'))
 
+        predict = T.transpose(predict)
         pred_y = predict[:, labels]
 
         probabilities, _ = theano.scan(
@@ -150,7 +151,7 @@ class CTC():
 
         # TODO: -2 only if blank at end
         labels_probab = T.sum(probabilities[-1, -2:])
-        return -T.log(labels_probab)
+        return -T.log(labels_probab) # todo error ist extrem klein -> ctc_cost funktioniert nicht, eventuell pred.transpose
 
 
 

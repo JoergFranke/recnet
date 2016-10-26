@@ -135,7 +135,7 @@ class rnnModel(ModelMaster):
 
         self.updates = optimizer.fit(self.all_weights,self.t_error, tpo)
 
-
+        #self.gradients = optimizer.grads todo remove
     ######            BUILD THEANO FUNCTIONS
     ########################################
     def get_training_function(self):

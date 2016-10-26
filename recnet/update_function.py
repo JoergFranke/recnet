@@ -170,13 +170,35 @@ class sgd:
     def __init__(self, rng,  weights):
         pass
 
+    def get_or_compute_grads(self, loss_or_grads, params):
+        if any(not isinstance(p, theano.compile.SharedVariable) for p in params):
+            raise ValueError("params must contain shared variables only. If it "
+                             "contains arbitrary parameter expressions, then "
+                             "lasagne.utils.collect_shared_vars() may help you.")
+        if isinstance(loss_or_grads, list):
+            if not len(loss_or_grads) == len(params):
+                raise ValueError("Got %d gradient expressions for %d parameters" %
+                                 (len(loss_or_grads), len(params)))
+            return loss_or_grads
+        else:
+            return theano.grad(loss_or_grads, params)
 
     def fit(self, weights, o_error, tpo):
 
+        self.grads = self.get_or_compute_grads(o_error, weights)
+
         updates = []
-        for w in weights:
-            gradient = T.grad(o_error ,w)
-            new_weights = w - (gradient * tpo["learn_rate"])
-            updates.append((w, new_weights))
+
+        for param, grad in zip(weights, self.grads):
+            new_weights = param - tpo["learn_rate"] * grad
+            updates.append((param, new_weights))
+
+
+        # # todo rebuild
+        # updates = []
+        # for w in weights:
+        #     gradient = T.grad(o_error ,w)
+        #     new_weights = w - (gradient * tpo["learn_rate"])
+        #     updates.append((w, new_weights))
 
         return updates
