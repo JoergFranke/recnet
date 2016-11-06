@@ -106,10 +106,12 @@ class ParameterSupervisor:
         if "batch_size" in prm_data:
             if prm_data["batch_size"] > 0:
                 self.data["batch_size"] = prm_data["batch_size"]
+                self.optimize["batch_size"] = prm_data["batch_size"]
             else:
                 raise Warning("Wrong batch size")
         else:
-            raise Warning("No batch size")
+            self.data["batch_size"] = 1
+            self.optimize["batch_size"] = 1
 
         if "data_location" in prm_data:
             self.data["data_location"] = prm_data["data_location"]
@@ -309,6 +311,8 @@ class ParameterSupervisor:
             if self.optimize['loss_function'] in ['CTC', 'CTClog', 'mbCTC', 'mbCTClog']:
                 self.optimize['CTC'] = True
                 self.optimize['CTC_blank'] = self.struct["net_size"][-1]-1
+                if self.optimize['loss_function'] in ['CTC', 'CTClog'] and self.data["batch_size"] > 1:
+                    self.optimize['loss_function'] = "mb" + self.optimize['loss_function']
             else:
                 self.optimize['CTC'] = False
 

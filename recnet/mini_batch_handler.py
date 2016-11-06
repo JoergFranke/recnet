@@ -106,8 +106,10 @@ class MiniBatchHandler:
             if self.prm.optimize['CTC'] == False:
                 mb_train_y = np.zeros([max_seq_len, self.prm.data["batch_size"], self.prm.data["y_size"]])
             else:
-                #mb_train_y = np.zeros([2*max_y_len+1]) #todo rebuild 2, batch size 1, no batch dimension
-                mb_train_y = np.zeros([self.prm.data["batch_size"], 2*max_y_len+1]) #todo rebuild # in case of ctc y is [batchsize, 2*max seq length + 2] shape[1] y_seq+blanks+number_y_sqe_length
+                if self.prm.data["batch_size"] > 1:
+                    mb_train_y = np.zeros([self.prm.data["batch_size"], 2*(2*max_y_len+1)])
+                else:
+                    mb_train_y = np.zeros([self.prm.data["batch_size"], 2*max_y_len+1])
             mb_mask = np.zeros([max_seq_len, self.prm.data["batch_size"], 1])
 
             for k in range(self.prm.data["batch_size"]):
@@ -121,8 +123,11 @@ class MiniBatchHandler:
                     for char in data_set_y[s]:
                         y1 += [char, self.prm.optimize['CTC_blank']  ]
 
-                    #mb_train_y[:] = y1
-                    mb_train_y[k,:y1.__len__()] = y1 #todo rebuild 2, batch size 1, no batch dimension
+                    mb_train_y[k,:y1.__len__()] = y1
+
+                    if self.prm.data["batch_size"] > 1:
+                        half_len = mb_train_y.shape[1] / 2
+                        mb_train_y[k,half_len:half_len+y1.__len__()] = np.ones(y1.__len__())
 
 
                     #mb_train_y[k,-1] = y1.__len__() #todo waste

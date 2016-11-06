@@ -21,6 +21,7 @@ __Current implemented features:__
 - SGD, Nesterov momentum, RMSprop and AdaDelta optimization
 - Dropout Training
 - Cross-Entropy Loss and Weighted Cross-Entropy Loss
+- normal and log Connectionist Temporal Classification
 - Regularization (L1/L2)
 - Noisy Inputs
 - Mini Batch Training

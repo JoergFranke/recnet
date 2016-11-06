@@ -57,7 +57,10 @@ class rnnModel(ModelMaster):
         tpo = OrderedDict() #theano optimization parameter
         for key, value in self.prm.optimize.items():
             if not isinstance(value,str):
-                tpo[key] = theano.shared(name=key, value=np.asarray(value, dtype=theano.config.floatX))
+                if not isinstance(value, int):
+                    tpo[key] = theano.shared(name=key, value=np.asarray(value, dtype=theano.config.floatX))
+                else:
+                    tpo[key] = theano.shared(name=key, value=np.asarray(value, dtype=int))
 
 
         ###### Add noise to input if noisy_input
