@@ -106,10 +106,12 @@ class ParameterSupervisor:
         if "batch_size" in prm_data:
             if prm_data["batch_size"] > 0:
                 self.data["batch_size"] = prm_data["batch_size"]
+                self.optimize["batch_size"] = prm_data["batch_size"]
             else:
                 raise Warning("Wrong batch size")
         else:
-            raise Warning("No batch size")
+            self.data["batch_size"] = 1
+            self.optimize["batch_size"] = 1
 
         if "data_location" in prm_data:
             self.data["data_location"] = prm_data["data_location"]
@@ -207,28 +209,28 @@ class ParameterSupervisor:
                 if not "learn_rate" in prm_optimization:
                     raise Warning("learn_rate is missing")
 
-            if prm_optimization["optimization"] == "rmsprop":
+            elif prm_optimization["optimization"] == "rmsprop":
                 self.optimize["optimization"] = prm_optimization["optimization"]
                 if not "learn_rate" in prm_optimization:
                     raise Warning("learn_rate is missing")
                 if not "decay_rate" in prm_optimization:
                     raise Warning("decay_rate is missing")
 
-            if prm_optimization["optimization"] == "momentum":
+            elif prm_optimization["optimization"] == "momentum":
                 self.optimize["optimization"] = prm_optimization["optimization"]
                 if not "learn_rate" in prm_optimization:
                     raise Warning("learn_rate is missing")
                 if not "momentum_rate" in prm_optimization:
                     raise Warning("momentum_rate is missing")
 
-            if prm_optimization["optimization"] == "nesterov_momentum":
+            elif prm_optimization["optimization"] == "nesterov_momentum":
                 self.optimize["optimization"] = prm_optimization["optimization"]
                 if  not"learn_rate" in prm_optimization:
                     raise Warning("learn_rate is missing")
                 if not "momentum_rate" in prm_optimization:
                     raise Warning("momentum_rate is missing")
 
-            if prm_optimization["optimization"] == "nm_rmsprop":
+            elif prm_optimization["optimization"] == "nm_rmsprop":
                 self.optimize["optimization"] = prm_optimization["optimization"]
                 if "learn_rate" in prm_optimization:
                     raise Warning("learn_rate is missing")
@@ -237,7 +239,7 @@ class ParameterSupervisor:
                 if not "decay_rate" in prm_optimization:
                     raise Warning("decay_rate is missing")
 
-            if prm_optimization["optimization"] == "adadelta":
+            elif prm_optimization["optimization"] == "adadelta":
                 self.optimize["optimization"] = prm_optimization["optimization"]
 
             else:
@@ -283,8 +285,12 @@ class ParameterSupervisor:
                     self.optimize["reg_factor"] = prm_optimization["reg_factor"]
                 else:
                     raise Warning("Please quote reg_factor")
+            else:
+                self.optimize["reg_factor"] = 0
+
         else:
             self.optimize["regularization"] = False
+            self.optimize["reg_factor"] = 0
 
 
         if "noisy_input" in prm_optimization:
@@ -301,6 +307,14 @@ class ParameterSupervisor:
 
         if "loss_function" in prm_optimization:
             self.optimize["loss_function"] = prm_optimization["loss_function"]
+
+            if self.optimize['loss_function'] in ['CTC', 'CTClog', 'mbCTC', 'mbCTClog']:
+                self.optimize['CTC'] = True
+                self.optimize['CTC_blank'] = self.struct["net_size"][-1]-1
+                if self.optimize['loss_function'] in ['CTC', 'CTClog'] and self.data["batch_size"] > 1:
+                    self.optimize['loss_function'] = "mb" + self.optimize['loss_function']
+            else:
+                self.optimize['CTC'] = False
 
             if prm_optimization["loss_function"] == "w2_cross_entropy":
                 if "bound_weight" in prm_optimization:

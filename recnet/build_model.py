@@ -43,7 +43,11 @@ class rnnModel(ModelMaster):
         ######            Create model variables
         ########################################
         self.X_tv2 = T.tensor3('X_tv2', dtype=theano.config.floatX)
-        self.Y_tv2 = T.tensor3('Y_tv2', dtype=theano.config.floatX)
+        if self.prm.optimize["CTC"]:
+            #self.Y_tv2 = T.ivector('Y_tv2', )
+            self.Y_tv2 = T.imatrix('Y_tv2', ) #todo rebuild 2, batch size 1, no batch dimension
+        else:
+            self.Y_tv2 = T.tensor3('Y_tv2', dtype=theano.config.floatX)
         self.M_tv2 = T.tensor3('M_tv2', dtype=theano.config.floatX)
         self.X_tv2_v = T.tensor3('Y_tv2', dtype=theano.config.floatX)
 
@@ -53,7 +57,10 @@ class rnnModel(ModelMaster):
         tpo = OrderedDict() #theano optimization parameter
         for key, value in self.prm.optimize.items():
             if not isinstance(value,str):
-                tpo[key] = theano.shared(name=key, value=np.asarray(value, dtype=theano.config.floatX))
+                if not isinstance(value, int):
+                    tpo[key] = theano.shared(name=key, value=np.asarray(value, dtype=theano.config.floatX))
+                else:
+                    tpo[key] = theano.shared(name=key, value=np.asarray(value, dtype=int))
 
 
         ###### Add noise to input if noisy_input
@@ -74,14 +81,14 @@ class rnnModel(ModelMaster):
         self.all_weights = sum([l for l in self.layer_weights],[])
 
 
-        ######             Choose error function
+        ######              Choose loss function
         ########################################
         try:
             loss_function_ = getattr(error_function, self.prm.optimize["loss_function"])
         except AttributeError:
             raise NotImplementedError("Class `{}` does not implement `{}`".format(error_function.__name__, self.prm.optimize["loss_function"]))
 
-        loss_function = loss_function_() #w2_cross_entropy() #cross_entropy() #
+        loss_function = loss_function_(tpo, self.prm.data["batch_size"]) #w2_cross_entropy() #cross_entropy() #
 
 
         ######                    Connect layers
@@ -94,7 +101,7 @@ class rnnModel(ModelMaster):
             if self.prm.struct["identity_func"] and l >= 1 and l <= self.prm.struct["hidden_layer"]:
                 t_signal[l+1] = t_signal[l+1] + t_signal[l]
         self.t_net_out = t_signal[-1]
-        o_error = loss_function.output_error(self.t_net_out,  self.Y_tv2, tpo["bound_weight"])
+        o_error = loss_function.output_error(self.t_net_out,  self.Y_tv2,self.M_tv2)
 
         ## validation/test part
         v_signal = []
@@ -104,7 +111,7 @@ class rnnModel(ModelMaster):
             if self.prm.struct["identity_func"] and l >= 1 and l <= self.prm.struct["hidden_layer"]:
                 v_signal[l+1] = v_signal[l+1] + v_signal[l]
         self.v_net_out = v_signal[-1]
-        self.v_error = loss_function.output_error(self.v_net_out,  self.Y_tv2 , tpo["bound_weight"])
+        self.v_error = loss_function.output_error(self.v_net_out,  self.Y_tv2 ,self.M_tv2)
 
 
         ######                    Regularization
@@ -112,10 +119,10 @@ class rnnModel(ModelMaster):
         def regularization(weights):
             w_error = 0
             for w in weights:
-                w_error = w_error + self.prm.optimize["reg_factor"]  * T.square(T.mean(T.sqr(w)))
+                w_error = w_error + tpo["reg_factor"]  * T.square(T.mean(T.sqr(w)))
             return w_error
 
-        if self.prm.optimize["regularization"]:
+        if tpo["regularization"]:
             self.t_error = o_error + regularization(self.all_weights)
         else:
             self.t_error = o_error
@@ -132,7 +139,7 @@ class rnnModel(ModelMaster):
 
         self.updates = optimizer.fit(self.all_weights,self.t_error, tpo)
 
-
+        #self.gradients = optimizer.grads todo remove
     ######            BUILD THEANO FUNCTIONS
     ########################################
     def get_training_function(self):

@@ -56,9 +56,10 @@ class ModelMaster(object):
         self.generate_random_streams()
         self.make_modelname()
 
-        self.mbh = MiniBatchHandler(self.rng, self.prm.data, self.prm.struct)
+        self.mbh = MiniBatchHandler(self.rng, self.prm)
         self.mbh.check_out_data_set()
         self.pub("#MBH: data check completed")
+        self.print_model_params() #todo remove
 
         self.build_model(old_weights)
         self.prm.struct["weight_numb"] = self.calc_numb_weights(self.all_weights)

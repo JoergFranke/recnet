@@ -26,7 +26,7 @@ parameter = OrderedDict()
 parameter["train_data_name"] = "little-timer_train.klepto"
 parameter["valid_data_name"] = "little-timer_valid.klepto"
 parameter["data_location"] = "data_set/"
-parameter["batch_size" ] = 10
+parameter["batch_size" ] = 1
 
 parameter["net_size"      ] = [      2,     10,         2]
 parameter["net_unit_type" ] = ['input', 'LSTM', 'softmax']
