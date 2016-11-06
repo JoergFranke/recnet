@@ -116,6 +116,8 @@ class MiniBatchHandler:
                 s = sample_selection[k]
                 sample_length =  self.prm.data[set + "_data_x_len"][s]
                 mb_train_x[:sample_length,k,:] = data_set_x[s][:sample_length]
+                mb_mask[:sample_length,k,0] = np.ones([sample_length])
+
                 if self.prm.optimize['CTC'] == False:
                     mb_train_y[:sample_length,k,:] = data_set_y[s][:sample_length]
                 else:
@@ -128,11 +130,6 @@ class MiniBatchHandler:
                     if self.prm.data["batch_size"] > 1:
                         half_len = mb_train_y.shape[1] / 2
                         mb_train_y[k,half_len:half_len+y1.__len__()] = np.ones(y1.__len__())
-
-
-                    #mb_train_y[k,-1] = y1.__len__() #todo waste
-                    #mb_train_y[k,:] = np.array(mb_train_y[k,:], dtype=theano.config.floatx)
-                mb_mask[:sample_length,k,:y1.__len__()] = np.ones([sample_length,1])
 
             data_mb_x.append(mb_train_x.astype(theano.config.floatX))
             data_mb_y.append(mb_train_y.astype(theano.config.floatX))
