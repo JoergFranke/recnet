@@ -338,6 +338,3 @@ class mbCTClog(LossMaster):
 
         return cost
 
-
-
-

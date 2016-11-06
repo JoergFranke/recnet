@@ -11,7 +11,7 @@ It connects the layers, adds regularization and optimizations.
 import numpy as np
 from collections import OrderedDict
 
-import error_function
+import loss_function
 import update_function
 from model_master import ModelMaster
 from layer_pool.super_layer import SuperLayer
@@ -84,11 +84,11 @@ class rnnModel(ModelMaster):
         ######              Choose loss function
         ########################################
         try:
-            loss_function_ = getattr(error_function, self.prm.optimize["loss_function"])
+            loss_function_ = getattr(loss_function, self.prm.optimize["loss_function"])
         except AttributeError:
-            raise NotImplementedError("Class `{}` does not implement `{}`".format(error_function.__name__, self.prm.optimize["loss_function"]))
+            raise NotImplementedError("Class `{}` does not implement `{}`".format(loss_function.__name__, self.prm.optimize["loss_function"]))
 
-        loss_function = loss_function_(tpo, self.prm.data["batch_size"]) #w2_cross_entropy() #cross_entropy() #
+        loss_fnc = loss_function_(tpo, self.prm.data["batch_size"]) #w2_cross_entropy() #cross_entropy() #
 
 
         ######                    Connect layers
@@ -101,7 +101,7 @@ class rnnModel(ModelMaster):
             if self.prm.struct["identity_func"] and l >= 1 and l <= self.prm.struct["hidden_layer"]:
                 t_signal[l+1] = t_signal[l+1] + t_signal[l]
         self.t_net_out = t_signal[-1]
-        o_error = loss_function.output_error(self.t_net_out,  self.Y_tv2,self.M_tv2)
+        o_error = loss_fnc.output_error(self.t_net_out,  self.Y_tv2,self.M_tv2)
 
         ## validation/test part
         v_signal = []
@@ -111,7 +111,7 @@ class rnnModel(ModelMaster):
             if self.prm.struct["identity_func"] and l >= 1 and l <= self.prm.struct["hidden_layer"]:
                 v_signal[l+1] = v_signal[l+1] + v_signal[l]
         self.v_net_out = v_signal[-1]
-        self.v_error = loss_function.output_error(self.v_net_out,  self.Y_tv2 ,self.M_tv2)
+        self.v_error = loss_fnc.output_error(self.v_net_out,  self.Y_tv2 ,self.M_tv2)
 
 
         ######                    Regularization
