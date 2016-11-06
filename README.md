@@ -103,6 +103,10 @@ Difference between train_fn and valid_fn is no use of dropout, noise or weight u
 - Please feel free to orient oneself on the [example](https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task) provided in this repository.
 
 
+## Credits
+* Theano implementation of CTC by [Shawn Tan](https://github.com/shawntan/theano-ctc/), [Rakesh Var](https://github.com/rakeshvar/rnn_ctc) and [Mohammad Pezeshki](https://github.com/mohammadpz)
+
+
 ## Further work
 
 - Extend documentation

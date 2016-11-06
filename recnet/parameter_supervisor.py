@@ -283,8 +283,12 @@ class ParameterSupervisor:
                     self.optimize["reg_factor"] = prm_optimization["reg_factor"]
                 else:
                     raise Warning("Please quote reg_factor")
+            else:
+                self.optimize["reg_factor"] = 0
+
         else:
             self.optimize["regularization"] = False
+            self.optimize["reg_factor"] = 0
 
 
         if "noisy_input" in prm_optimization:
@@ -301,6 +305,12 @@ class ParameterSupervisor:
 
         if "loss_function" in prm_optimization:
             self.optimize["loss_function"] = prm_optimization["loss_function"]
+
+            if self.optimize['loss_function'] in ['CTC', 'CTClog', 'mbCTC', 'mbCTClog']:
+                self.optimize['CTC'] = True
+                self.optimize['CTC_blank'] = self.struct["net_size"][-1]-1
+            else:
+                self.optimize['CTC'] = False
 
             if prm_optimization["loss_function"] == "w2_cross_entropy":
                 if "bound_weight" in prm_optimization:

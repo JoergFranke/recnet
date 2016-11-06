@@ -20,9 +20,9 @@ class MiniBatchHandler:
     def __init__(self,rng, prm):
 
         self.rng = rng
-        self.prm_data = prm.data
-        self.prm_struct = prm.struct
-        self.ctc = prm.optimize['loss_function'] == "CTC"
+        self.prm = prm
+
+
 
 
     ###### Check out if data exists and is consistent
@@ -30,30 +30,30 @@ class MiniBatchHandler:
     def check_out_data_set(self):
 
         for set in ['train', 'valid', 'test']:
-            if self.prm_data[set + "_data_name"] != None:
-                file_name = self.prm_data["data_location"] + self.prm_data[set + "_data_name"]
+            if self.prm.data[set + "_data_name"] != None:
+                file_name = self.prm.data["data_location"] + self.prm.data[set + "_data_name"]
                 try:
                     d = klepto.archives.file_archive(file_name, cached=True,serialized=True)
                     d.load()
                     data_set_x = d['x']
                     data_set_y = d['y']
                     d.clear()
-                    self.prm_data[set + "_set_len"] = data_set_x.__len__()
+                    self.prm.data[set + "_set_len"] = data_set_x.__len__()
                     if data_set_x.__len__() != data_set_y.__len__():
                         raise Warning("x and y " + set + "_data_name have not the same length")
-                    self.prm_data["x_size"] = data_set_x[0].shape[1]
-                    if self.prm_data["x_size"] != int(self.prm_struct["net_size"][0]):
+                    self.prm.data["x_size"] = data_set_x[0].shape[1]
+                    if self.prm.data["x_size"] != int(self.prm.struct["net_size"][0]):
                         raise Warning(set + " data x size and net input size are unequal")
-                    if self.ctc == False:
-                        self.prm_data["y_size"] = data_set_y[0].shape[1]
-                        if self.prm_data["y_size"] != int(self.prm_struct["net_size"][-1]):
+                    if self.prm.optimize['CTC'] == False:
+                        self.prm.data["y_size"] = data_set_y[0].shape[1]
+                        if self.prm.data["y_size"] != int(self.prm.struct["net_size"][-1]):
                             raise Warning(set + " data y size and net input size are unequal")
                     else:
-                        self.prm_data["y_size"] = self.prm_struct["net_size"][-1]
+                        self.prm.data["y_size"] = self.prm.struct["net_size"][-1]
                     del data_set_x
                     del data_set_y
-                    self.prm_data[set + "_batch_quantity"] = int(np.trunc(self.prm_data[set + "_set_len" ]/self.prm_data["batch_size"]))
-                    self.prm_data["checked_data"][set] = True
+                    self.prm.data[set + "_batch_quantity"] = int(np.trunc(self.prm.data[set + "_set_len" ]/self.prm.data["batch_size"]))
+                    self.prm.data["checked_data"][set] = True
                 except KeyError:
                     raise Warning("data_location or " + set + "_data_name wrong")
 
@@ -65,29 +65,29 @@ class MiniBatchHandler:
     ########################################
     def create_mini_batches(self, set):
 
-        if self.prm_data["checked_data"][set] == False:
+        if self.prm.data["checked_data"][set] == False:
             self.check_out_data_set()
 
         if set != "train" and set != "valid" and set != "test":
             raise Warning("set must be 'train' or 'valid' or 'test'")
 
-        if os.path.isfile(self.prm_data["mini_batch_location"] + "mb_of_" + self.prm_data[set + "_data_name"]):
+        if os.path.isfile(self.prm.data["mini_batch_location"] + "mb_of_" + self.prm.data[set + "_data_name"]):
             self.delete_mini_batches(set)
 
-        file_name = self.prm_data["data_location"] + self.prm_data[set + "_data_name"]
+        file_name = self.prm.data["data_location"] + self.prm.data[set + "_data_name"]
         d = klepto.archives.file_archive(file_name, cached=True,serialized=True)
         d.load()
         data_set_x = d['x']
         data_set_y = d['y']
         d.clear()
 
-        self.prm_data[set + "_data_x_len"] = [i.__len__() for i in data_set_x]
-        self.prm_data[set + "_data_y_len"]= [i.__len__() for i in data_set_y]
-        if self.ctc == False:
-            if not np.array_equal(self.prm_data[set + "_data_x_len"], self.prm_data[set + "_data_y_len"]):
+        self.prm.data[set + "_data_x_len"] = [i.__len__() for i in data_set_x]
+        self.prm.data[set + "_data_y_len"]= [i.__len__() for i in data_set_y]
+        if self.prm.optimize['CTC'] == False:
+            if not np.array_equal(self.prm.data[set + "_data_x_len"], self.prm.data[set + "_data_y_len"]):
                 raise Warning(set + " x and y sequences have not the same length")
 
-        sample_order = np.arange(0,self.prm_data[set + "_set_len" ])
+        sample_order = np.arange(0,self.prm.data[set + "_set_len" ])
         if set == "train":
             sample_order = self.rng.permutation(sample_order)
 
@@ -95,31 +95,31 @@ class MiniBatchHandler:
         data_mb_y = []
         data_mask = []
 
-        for j in range(self.prm_data[set + "_batch_quantity"]):
+        for j in range(self.prm.data[set + "_batch_quantity"]):
 
-            sample_selection = sample_order[ j*self.prm_data["batch_size"]:j*self.prm_data["batch_size"]+self.prm_data["batch_size"] ]
+            sample_selection = sample_order[ j*self.prm.data["batch_size"]:j*self.prm.data["batch_size"]+self.prm.data["batch_size"] ]
             max_seq_len = np.max(  [data_set_x[i].__len__() for i in sample_selection])
-            if self.ctc == True:
+            if self.prm.optimize['CTC'] == True:
                 max_y_len = np.max(  [data_set_y[i].__len__() for i in sample_selection])
 
-            mb_train_x = np.zeros([max_seq_len, self.prm_data["batch_size"], self.prm_data["x_size"]])
-            if self.ctc == False:
-                mb_train_y = np.zeros([max_seq_len, self.prm_data["batch_size"], self.prm_data["y_size"]])
+            mb_train_x = np.zeros([max_seq_len, self.prm.data["batch_size"], self.prm.data["x_size"]])
+            if self.prm.optimize['CTC'] == False:
+                mb_train_y = np.zeros([max_seq_len, self.prm.data["batch_size"], self.prm.data["y_size"]])
             else:
                 #mb_train_y = np.zeros([2*max_y_len+1]) #todo rebuild 2, batch size 1, no batch dimension
-                mb_train_y = np.zeros([self.prm_data["batch_size"], 2*max_y_len+1]) #todo rebuild # in case of ctc y is [batchsize, 2*max seq length + 2] shape[1] y_seq+blanks+number_y_sqe_length
-            mb_mask = np.zeros([max_seq_len, self.prm_data["batch_size"], 1])
+                mb_train_y = np.zeros([self.prm.data["batch_size"], 2*max_y_len+1]) #todo rebuild # in case of ctc y is [batchsize, 2*max seq length + 2] shape[1] y_seq+blanks+number_y_sqe_length
+            mb_mask = np.zeros([max_seq_len, self.prm.data["batch_size"], 1])
 
-            for k in range(self.prm_data["batch_size"]):
+            for k in range(self.prm.data["batch_size"]):
                 s = sample_selection[k]
-                sample_length =  self.prm_data[set + "_data_x_len"][s]
+                sample_length =  self.prm.data[set + "_data_x_len"][s]
                 mb_train_x[:sample_length,k,:] = data_set_x[s][:sample_length]
-                if self.ctc == False:
+                if self.prm.optimize['CTC'] == False:
                     mb_train_y[:sample_length,k,:] = data_set_y[s][:sample_length]
                 else:
-                    y1 = [self.prm_struct["net_size"][-1]-1]
+                    y1 = [self.prm.struct["net_size"][-1]-1]
                     for char in data_set_y[s]:
-                        y1 += [char, self.prm_struct["net_size"][-1]-1  ]
+                        y1 += [char, self.prm.optimize['CTC_blank']  ]
 
                     #mb_train_y[:] = y1
                     mb_train_y[k,:y1.__len__()] = y1 #todo rebuild 2, batch size 1, no batch dimension
@@ -133,7 +133,7 @@ class MiniBatchHandler:
             data_mb_y.append(mb_train_y.astype(theano.config.floatX))
             data_mask.append(mb_mask.astype(theano.config.floatX))
 
-        file_name = self.prm_data["mini_batch_location"] + "mb_of_" + self.prm_data[set + "_data_name"]
+        file_name = self.prm.data["mini_batch_location"] + "mb_of_" + self.prm.data[set + "_data_name"]
         d = klepto.archives.file_archive(file_name, cached=True,serialized=True)
         d['x'] = data_mb_x
         d['y'] = data_mb_y
@@ -145,14 +145,14 @@ class MiniBatchHandler:
     ###### Delete stored mini batch klepto files
     ########################################
     def delete_mini_batches(self, set):
-        file_name = self.prm_data["mini_batch_location"] + "mb_of_" + self.prm_data[set + "_data_name"]
+        file_name = self.prm.data["mini_batch_location"] + "mb_of_" + self.prm.data[set + "_data_name"]
         os.remove(file_name)
 
 
     ######  Load from mini batch klepto file
     ########################################
     def load_mini_batches(self, set):
-        file_name = self.prm_data["mini_batch_location"] + "mb_of_" + self.prm_data[set + "_data_name"]
+        file_name = self.prm.data["mini_batch_location"] + "mb_of_" + self.prm.data[set + "_data_name"]
         d = klepto.archives.file_archive(file_name, cached=True,serialized=True)
         d.load()
         data_mb_set_x = d['x']
