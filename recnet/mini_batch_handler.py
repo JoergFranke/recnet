@@ -106,6 +106,7 @@ class MiniBatchHandler:
             if self.ctc == False:
                 mb_train_y = np.zeros([max_seq_len, self.prm_data["batch_size"], self.prm_data["y_size"]])
             else:
+                #mb_train_y = np.zeros([2*max_y_len+1]) #todo rebuild 2, batch size 1, no batch dimension
                 mb_train_y = np.zeros([self.prm_data["batch_size"], 2*max_y_len+1]) #todo rebuild # in case of ctc y is [batchsize, 2*max seq length + 2] shape[1] y_seq+blanks+number_y_sqe_length
             mb_mask = np.zeros([max_seq_len, self.prm_data["batch_size"], 1])
 
@@ -119,10 +120,14 @@ class MiniBatchHandler:
                     y1 = [self.prm_struct["net_size"][-1]-1]
                     for char in data_set_y[s]:
                         y1 += [char, self.prm_struct["net_size"][-1]-1  ]
-                    mb_train_y[k,:y1.__len__()] = y1
-                    #mb_train_y[k,-1] = y1.__len__() #todo rebuild
+
+                    #mb_train_y[:] = y1
+                    mb_train_y[k,:y1.__len__()] = y1 #todo rebuild 2, batch size 1, no batch dimension
+
+
+                    #mb_train_y[k,-1] = y1.__len__() #todo waste
                     #mb_train_y[k,:] = np.array(mb_train_y[k,:], dtype=theano.config.floatx)
-                mb_mask[:sample_length,k,:] = np.ones([sample_length,1])
+                mb_mask[:sample_length,k,:y1.__len__()] = np.ones([sample_length,1])
 
             data_mb_x.append(mb_train_x.astype(theano.config.floatX))
             data_mb_y.append(mb_train_y.astype(theano.config.floatX))

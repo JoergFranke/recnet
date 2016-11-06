@@ -44,7 +44,8 @@ class rnnModel(ModelMaster):
         ########################################
         self.X_tv2 = T.tensor3('X_tv2', dtype=theano.config.floatX)
         if self.prm.optimize["loss_function"] == "CTC":
-            self.Y_tv2 = T.imatrix('Y_tv2', )
+            #self.Y_tv2 = T.ivector('Y_tv2', )
+            self.Y_tv2 = T.imatrix('Y_tv2', ) #todo rebuild 2, batch size 1, no batch dimension
         else:
             self.Y_tv2 = T.tensor3('Y_tv2', dtype=theano.config.floatX)
         self.M_tv2 = T.tensor3('M_tv2', dtype=theano.config.floatX)
@@ -97,7 +98,7 @@ class rnnModel(ModelMaster):
             if self.prm.struct["identity_func"] and l >= 1 and l <= self.prm.struct["hidden_layer"]:
                 t_signal[l+1] = t_signal[l+1] + t_signal[l]
         self.t_net_out = t_signal[-1]
-        o_error = loss_function.output_error(self.t_net_out,  self.Y_tv2, tpo["bound_weight"])
+        o_error = loss_function.output_error(self.t_net_out,  self.Y_tv2,self.M_tv2, tpo["bound_weight"]) #todo add mask in generell
 
         ## validation/test part
         v_signal = []
@@ -107,7 +108,7 @@ class rnnModel(ModelMaster):
             if self.prm.struct["identity_func"] and l >= 1 and l <= self.prm.struct["hidden_layer"]:
                 v_signal[l+1] = v_signal[l+1] + v_signal[l]
         self.v_net_out = v_signal[-1]
-        self.v_error = loss_function.output_error(self.v_net_out,  self.Y_tv2 , tpo["bound_weight"])
+        self.v_error = loss_function.output_error(self.v_net_out,  self.Y_tv2 ,self.M_tv2, tpo["bound_weight"]) #todo add mask in generell
 
 
         ######                    Regularization

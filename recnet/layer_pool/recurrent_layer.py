@@ -37,9 +37,13 @@ class conv(LayerMaster):
 
             np_weights = OrderedDict()
 
-            np_weights['w_in_hidden'] = self.rec_uniform_sqrt(rng, n_in, n_out)
-            np_weights['w_hidden_hidden'] = self.sqr_ortho(rng, n_out)
-            np_weights['b_act'] = np.zeros(n_out)
+            # np_weights['w_in_hidden'] = self.rec_uniform_sqrt(rng, n_in, n_out)
+            # np_weights['w_hidden_hidden'] = self.sqr_ortho(rng, n_out)
+            # np_weights['b_act'] = np.zeros(n_out)
+
+            np_weights['w_in_hidden'] = 1 * (np.random.rand(n_in, n_out) - 0.5) #self.rec_uniform_sqrt(rng, n_in, n_out)
+            np_weights['w_hidden_hidden'] = 1 * (np.random.rand(n_out, n_out) - 0.5) #self.sqr_ortho(rng, n_out)
+            np_weights['b_act'] = 1 * (np.random.rand(n_out) - 0.5) #np.zeros(n_out)
 
             self.weights = []
             for kk, pp in np_weights.items():
@@ -51,7 +55,9 @@ class conv(LayerMaster):
             for pp in old_weights:
                 self.weights.append(theano.shared(value=pp.astype(T.config.floatX)))
 
-        # Init last output and cell state
+        # Init last output and cell state #todo init rausziehn
+        #init_hidden = 1 * (np.random.rand(n_batches, n_out) - 0.5)
+        #init_hidden = init_hidden.astype(dtype=theano.config.floatX)
         init_hidden = np.zeros([n_batches, n_out]).astype(dtype=theano.config.floatX)
         self.t_init_hidden = theano.shared(name='init_hidden', value=init_hidden.astype(T.config.floatX))
 
