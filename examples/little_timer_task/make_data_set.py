@@ -8,7 +8,7 @@ Generates the data set for this little timer task
 ########################################
 import klepto
 import numpy as np
-
+from past.builtins import xrange
 
 
 ######               Create start signal

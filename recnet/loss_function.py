@@ -32,56 +32,44 @@ class LossMaster():
 class w2_cross_entropy(LossMaster):
 
     def _w_crossentropy(self, coding_dist, true_dist):
-        if true_dist.ndim == coding_dist.ndim:
-            no_bound =  true_dist[:,:,0] *  T.log(coding_dist[:,:,0])
-            bound =  true_dist[:,:,1] *  T.log(coding_dist[:,:,1]) * self.tpo["bound_weight"]
-            return - (no_bound + bound)
-        else:
-            pass
-            #raise TypeError('rank mismatch between coding and true distributions')
 
-    def output_error(self, input_sequence,   true_output,mask=None):
-        return T.mean(self._w_crossentropy(input_sequence, true_output))
+        no_bound =  true_dist[:,:,0] *  T.log(coding_dist[:,:,0])
+        bound =  true_dist[:,:,1] *  T.log(coding_dist[:,:,1]) * self.tpo["bound_weight"]
+        return - (no_bound + bound)
 
 
+    def output_error(self, input_sequence,   true_output, mask):
 
-###### dynamic 2-class weightes cross entropy
-########################################
-class dynamic_cross_entropy(LossMaster):
-    @staticmethod
-    def _w_crossentropy(self, coding_dist, true_dist):
-        if true_dist.ndim == coding_dist.ndim:
-            no_bound =  true_dist[:,:,0] *  T.log(coding_dist[:,:,0])
+        outputs = self._w_crossentropy(input_sequence, true_output)
 
-            weight =  0.5 / ( T.sum(true_dist[:,:,1]) / (true_dist.shape[0] * true_dist.shape[1]) )
-            bound =  true_dist[:,:,1] *  T.log(coding_dist[:,:,1]) * weight
-            return - (no_bound + bound)
+        outputs = T.mul(outputs.dimshuffle(0,1,'x'), mask)
 
-        else:
-            raise TypeError('rank mismatch between coding and true distributions')
+        return T.mean(outputs)
 
-    def output_error(self, input_sequence,   true_output, mask=None):
-        return T.mean(self._w_crossentropy(input_sequence, true_output))
 
 
 ######            Standard cross entropy
 ########################################
 class cross_entropy(LossMaster):
-    @staticmethod
-    def _crossentropy(coding_dist, true_dist):
-        if true_dist.ndim == coding_dist.ndim:
-            return T.nnet.categorical_crossentropy(coding_dist, true_dist)
-        else:
-            raise TypeError('rank mismatch between coding and true distributions')
 
-    def output_error(self, input_sequence,   true_output, mask=None):
+    def output_error(self, input_sequence,   true_output, mask):
 
-        outputs, updates = theano.scan(
-                                        fn=self._crossentropy,
-                                        sequences=[input_sequence, true_output],
-                                        )
+        outputs = T.nnet.categorical_crossentropy(input_sequence, true_output)
+
+        outputs = T.mul(outputs.dimshuffle(0,1,'x'), mask)
+
         return T.mean(outputs)
 
+
+
+"""
+Connectionist temporal classification
+Referece: Graves, Alex, et al. "Connectionist temporal classification:
+labelling unsegmented sequence data with recurrent neural networks."
+Proceedings of the 23rd international conference on Machine learning.
+ACM, 2006.
+Credits: Shawn Tan, Rakesh Var, Mohammad Pezeshki
+"""
 
 ######                 CTC loss function
 ########################################

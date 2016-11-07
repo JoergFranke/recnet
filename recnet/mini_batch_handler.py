@@ -11,6 +11,7 @@ import os
 import klepto
 import numpy as np
 import theano
+#import builtins
 
 
 ######          Mini Batch Handler Class

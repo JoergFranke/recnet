@@ -6,7 +6,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import theano
 import theano.tensor as T
-
+from past.builtins import xrange
 
 class LayerMaster(object):
 

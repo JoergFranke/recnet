@@ -1,3 +1,4 @@
+from __future__ import print_function
 __author__ = 'Joerg Franke'
 
 
@@ -27,8 +28,6 @@ class softmax(LayerMaster):
         w_out_np2 = 1 * (np.random.rand(self.n_in, self.n_out) - 0.5) #self.rec_uniform_sqrt(rng, self.n_in, self.n_out)
         b_out_np2 = 1 * (np.random.rand(self.n_out) - 0.5) #np.zeros(self.n_out)
 
-        print("w_out_np2 ")
-        print(w_out_np2.shape)
         if old_weights == None:
             self.t_w_out = theano.shared(name='w_out', value=w_out_np2.astype(T.config.floatX))
             self.t_b_out = theano.shared(name='b_out', value=b_out_np2.astype(T.config.floatX))
@@ -104,6 +103,7 @@ class softmax(LayerMaster):
 ### TEST FUNCTIONS
 from scipy.stats import multivariate_normal
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
+
 if __name__ == "__main__":
 
     x, y = np.mgrid[-1:1:.05, -1:1:.2]

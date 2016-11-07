@@ -17,6 +17,7 @@ os.environ["THEANO_FLAGS"] = t_flags
 import numpy as np
 import sklearn.metrics
 import time
+from past.builtins import xrange
 from collections import OrderedDict
 from recnet.build_model import rnnModel
 
@@ -26,7 +27,7 @@ parameter = OrderedDict()
 parameter["train_data_name"] = "little-timer_train.klepto"
 parameter["valid_data_name"] = "little-timer_valid.klepto"
 parameter["data_location"] = "data_set/"
-parameter["batch_size" ] = 1
+parameter["batch_size" ] = 10
 
 parameter["net_size"      ] = [      2,     10,         2]
 parameter["net_unit_type" ] = ['input', 'LSTM', 'softmax']
@@ -34,10 +35,12 @@ parameter["net_act_type"  ] = [    '-',  'tanh',      '-']
 parameter["net_arch"      ] = [    '-',    'bi',     'ff']
 
 parameter["epochs"        ] = 5
-parameter["learn_rate"    ] = 0.0001
+parameter["learn_rate"    ] = 0.001
 parameter["use_dropout"   ] = False       # False, True
 parameter["regularization"] = False       # False, L2,  L1
-parameter["optimization"  ] = "adadelta"  # sgd, nm_rmsprop, rmsprop, nesterov_momentum, adadelta
+parameter["momentum_rate"] = 0.1
+parameter["decay_rate"] = 0.9
+parameter["optimization"  ] = "nm_rmsprop"  # sgd, nm_rmsprop, rmsprop, nesterov_momentum, adadelta
 parameter["noisy_input"   ] = False       # False, True
 parameter["loss_function" ] = "cross_entropy" # w2_cross_entropy, cross_entropy
 

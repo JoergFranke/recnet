@@ -10,6 +10,7 @@ import numpy as np
 from collections import OrderedDict
 import datetime
 import time
+from past.builtins import xrange
 import os.path
 import sys
 
@@ -232,7 +233,7 @@ class ParameterSupervisor:
 
             elif prm_optimization["optimization"] == "nm_rmsprop":
                 self.optimize["optimization"] = prm_optimization["optimization"]
-                if "learn_rate" in prm_optimization:
+                if not "learn_rate" in prm_optimization:
                     raise Warning("learn_rate is missing")
                 if not "momentum_rate" in prm_optimization:
                     raise Warning("momentum_rate is missing")

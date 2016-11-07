@@ -1,3 +1,4 @@
+from __future__ import print_function
 __author__ = 'Joerg Franke'
 """
 This file contains a master class with support functions like load models, dump and print.
@@ -58,8 +59,8 @@ class ModelMaster(object):
 
         self.mbh = MiniBatchHandler(self.rng, self.prm)
         self.mbh.check_out_data_set()
-        self.pub("#MBH: data check completed")
-        self.print_model_params() #todo remove
+        self.pub("#mini batch handler: data check completed")
+
 
         self.build_model(old_weights)
         self.prm.struct["weight_numb"] = self.calc_numb_weights(self.all_weights)
@@ -88,15 +89,14 @@ class ModelMaster(object):
         if set_name not in ['test', 'train', 'valid']:
             raise Warning("'get_mini_batches': Wrong set name")
 
-        if "mb_of_" + self.prm.data[set_name + "_data_name"] in os.listdir(self.prm.data["mini_batch_location"][:-1]): #os.getcwd()):
-            if set_name == "train":
-                self.mbh.delete_mini_batches(set_name)
-                self.pub("#mini batch handler# delete old " + set_name + " mini batches")
-                self.mbh.create_mini_batches(set_name)
-                self.pub("#mini batch handler# create new " + set_name + " mini batches")
+        if "mb_of_" + self.prm.data[set_name + "_data_name"] in os.listdir(self.prm.data["mini_batch_location"][:-1]):
+            self.mbh.delete_mini_batches(set_name)
+            self.pub("#mini batch handler: delete old " + set_name + " mini batches")
+            self.mbh.create_mini_batches(set_name)
+            self.pub("#mini batch handler: create new " + set_name + " mini batches")
         else:
             self.mbh.create_mini_batches(set_name)
-            self.pub("#mini batch handler# create new " + set_name + " mini batches")
+            self.pub("#mini batch handler: create new " + set_name + " mini batches")
 
         return self.mbh.load_mini_batches(set_name)
 
@@ -193,7 +193,7 @@ class ModelMaster(object):
     ########################################
     def pub(self, text):
         if(self.prm.basic["output_type"]=="console" or self.prm.basic["output_type"]=="both"):
-            print text
+            print(text)
         if(self.prm.basic["output_type"]=="file" or self.prm.basic["output_type"]=="both"):
             self.fobj = open(self.prm.basic["output_location"] + self.prm.basic["model_name"]  + ".log", "a")
             self.fobj.write(str(text) + "\n")
