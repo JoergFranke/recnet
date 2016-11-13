@@ -21,12 +21,18 @@ class softmax(LayerMaster):
         self.n_in = n_in
         self.n_out = n_out
 
-        #output layer
-        w_out_np2 = self.rec_uniform_sqrt(rng, self.n_in, self.n_out)
-        b_out_np2 = np.zeros(self.n_out)
+        #w_out_np2 = self.rec_uniform_sqrt(rng, self.n_in, self.n_out)
 
-        w_out_np2 = 1 * (np.random.rand(self.n_in, self.n_out) - 0.5) #self.rec_uniform_sqrt(rng, self.n_in, self.n_out)
-        b_out_np2 = 1 * (np.random.rand(self.n_out) - 0.5) #np.zeros(self.n_out)
+        #w_out_np2 = 1 * (rng.rand(self.n_in, self.n_out) - 0.5)
+        #b_out_np2 = 1 * (rng.rand(self.n_out) - 0.5)
+
+        w_out_np2 = rng.uniform(-np.sqrt(1./self.n_in), np.sqrt(1./self.n_in), (self.n_in, self.n_out))
+        b_out_np2 = rng.uniform(-np.sqrt(1./self.n_in), np.sqrt(1./self.n_in), self.n_out)
+
+        #w_out_np2 = 0.01 * rng.randn(self.n_in, self.n_out)
+        #b_out_np2 = np.ones(self.n_out)
+
+        # todo initialization
 
         if old_weights == None:
             self.t_w_out = theano.shared(name='w_out', value=w_out_np2.astype(T.config.floatX))
@@ -42,65 +48,24 @@ class softmax(LayerMaster):
         self.weights = [self.t_w_out,self.t_b_out]
 
 
-    # def vanilla(self, output):
-    #     net_o = T.add( T.dot(output , self.t_w_out) , self.t_b_out )
-    #     result, updates = theano.map(T.nnet.softmax, net_o)
-    #     return result
-
-    def _drop_out_softmax(self, signal, mask,t_w_out,t_b_out, use_dropout, dropout_value):
-        d_w_out = T.switch(use_dropout,
-                             (t_w_out *
-                              self.trng.binomial(t_w_out.shape,
-                                            p=dropout_value, n=1,
-                                            dtype=t_w_out.dtype)),
-                             t_w_out)
-
-        net_o = T.add( T.dot(signal , d_w_out) , t_b_out)
-        output = T.nnet.softmax(net_o)
-
-        mask = T.addbroadcast(mask, 1) #todo rechange
-        output = mask * output   + (1. - mask) * 0.1**8
-
-        return output
-
-    # def sequence_iteration(self, output, mask,use_dropout=0,dropout_value=0.5):
-    #     prm = [self.t_w_out, self.t_b_out, use_dropout,dropout_value]
-    #     result, updates = theano.map(self._drop_out_softmax, [output, mask], prm)
-    #     return result #todo rechange
-
     def sequence_iteration(self, output, mask,use_dropout=0,dropout_value=0.5):
 
         dot_product = T.dot(output , self.t_w_out)
 
         net_o = T.add( dot_product , self.t_b_out )
 
-        #mask = mask[:,0,:]
-        #output = output[:,0,:]
-
-        #net_o = T.add( T.dot(output , self.t_w_out) , self.t_b_out)
-
-
         ex_net = T.exp(net_o)
-        #e_x = np.exp(x - np.max(x))
-
         sum_net = T.sum(ex_net, axis=2, keepdims=True)
-
         softmax_o = ex_net / sum_net
 
 
-        mask = T.addbroadcast(mask, 2) #todo rechange
-        #output = mask * output   + (1. - mask) * 0.1**8
-        output = T.mul(mask, softmax_o)   + T.mul( (1. - mask) , 0.1**8 )
-
-        #result = self._drop_out_softmax(output[:,0,:], mask[:,0,:],self.t_w_out, self.t_b_out, use_dropout , 1)
-
-        #prm = [self.t_w_out, self.t_b_out, use_dropout,dropout_value]
-        #result, updates = theano.map(self._drop_out_softmax, [output, mask], prm)
+        mask = T.addbroadcast(mask, 2) # todo nesseccary?
+        output = T.mul(mask, softmax_o)   + T.mul( (1. - mask) , 1e-6 )
 
         return output #result
 
 
-### TEST FUNCTIONS
+### TEST FUNCTIONS # todo make new file with test functions
 from scipy.stats import multivariate_normal
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 

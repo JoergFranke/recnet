@@ -44,8 +44,7 @@ class rnnModel(ModelMaster):
         ########################################
         self.X_tv2 = T.tensor3('X_tv2', dtype=theano.config.floatX)
         if self.prm.optimize["CTC"]:
-            #self.Y_tv2 = T.ivector('Y_tv2', )
-            self.Y_tv2 = T.imatrix('Y_tv2', ) #todo rebuild 2, batch size 1, no batch dimension
+            self.Y_tv2 = T.imatrix('Y_tv2')
         else:
             self.Y_tv2 = T.tensor3('Y_tv2', dtype=theano.config.floatX)
         self.M_tv2 = T.tensor3('M_tv2', dtype=theano.config.floatX)
@@ -54,7 +53,7 @@ class rnnModel(ModelMaster):
 
         ######           Create model parameters
         ########################################
-        tpo = OrderedDict() #theano optimization parameter
+        tpo = OrderedDict()
         for key, value in self.prm.optimize.items():
             if not isinstance(value,str):
                 if not isinstance(value, int):
@@ -77,7 +76,7 @@ class rnnModel(ModelMaster):
         for i in np.arange(1, self.prm.struct["hidden_layer"]+2):
             network_layer.append(SuperLayer(self.rng,self.trng, self.prm.struct,self.prm.data, i, old_weights[i-1]))
 
-        self.layer_weights = [l.weights for l in network_layer] # + [output_layer.weights]
+        self.layer_weights = [l.weights for l in network_layer]
         self.all_weights = sum([l for l in self.layer_weights],[])
 
 
@@ -88,7 +87,7 @@ class rnnModel(ModelMaster):
         except AttributeError:
             raise NotImplementedError("Class `{}` does not implement `{}`".format(loss_function.__name__, self.prm.optimize["loss_function"]))
 
-        loss_fnc = loss_function_(tpo, self.prm.data["batch_size"]) #w2_cross_entropy() #cross_entropy() #
+        loss_fnc = loss_function_(tpo, self.prm.data["batch_size"])
 
 
         ######                    Connect layers
@@ -119,10 +118,10 @@ class rnnModel(ModelMaster):
         def regularization(weights):
             w_error = 0
             for w in weights:
-                w_error = w_error + tpo["reg_factor"]  * T.square(T.mean(T.sqr(w)))
+                w_error = w_error + tpo["reg_factor"] * T.square(T.mean(T.sqr(w)))
             return w_error
 
-        if tpo["regularization"]:
+        if self.prm.optimize["regularization"] == True:
             self.t_error = o_error + regularization(self.all_weights)
         else:
             self.t_error = o_error
@@ -139,7 +138,7 @@ class rnnModel(ModelMaster):
 
         self.updates = optimizer.fit(self.all_weights,self.t_error, tpo)
 
-        #self.gradients = optimizer.grads todo remove
+
     ######            BUILD THEANO FUNCTIONS
     ########################################
     def get_training_function(self):

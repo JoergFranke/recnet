@@ -119,7 +119,7 @@ class adadelta:
             self.t_ada_d.append(theano.shared(value=c.astype(T.config.floatX)))
 
     def fit(self, weights, o_error, tpo):
-        epsilon = 1e-8 #for numerical stability
+        epsilon = 1e-6 #for numerical stability #todo find influence of epsilon to the training behaviour
         rho = 0.95
         updates = []
 
@@ -184,13 +184,5 @@ class sgd:
         for w, g in zip(weights, gradients):
             new_w = w - tpo["learn_rate"] * g
             updates.append((w, new_w))
-
-
-        # # # todo rebuild
-        # updates = []
-        # for w in weights:
-        #     gradient = T.grad(o_error ,w)
-        #     new_weights = w - (gradient * tpo["learn_rate"])
-        #     updates.append((w, new_weights))
 
         return updates

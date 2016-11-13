@@ -30,7 +30,6 @@ class LossMaster():
 ######    2-class weightes cross entropy
 ########################################
 class w2_cross_entropy(LossMaster):
-
     def _w_crossentropy(self, coding_dist, true_dist):
 
         no_bound =  true_dist[:,:,0] *  T.log(coding_dist[:,:,0])
@@ -42,9 +41,9 @@ class w2_cross_entropy(LossMaster):
 
         outputs = self._w_crossentropy(input_sequence, true_output)
 
-        outputs = T.mul(outputs.dimshuffle(0,1,'x'), mask)
+        #outputs = T.mul(outputs.dimshuffle(0,1,'x'), mask) #todo correct mask implementation? influence on result?
 
-        return T.mean(outputs)
+        return T.sum(outputs) / T.sum(mask)
 
 
 
@@ -58,7 +57,7 @@ class cross_entropy(LossMaster):
 
         outputs = T.mul(outputs.dimshuffle(0,1,'x'), mask)
 
-        return T.mean(outputs)
+        return T.sum(outputs) / T.sum(mask)
 
 
 
@@ -155,7 +154,7 @@ class CTClog(LossMaster):
             outputs_info=[safe_log(_1000)]
         )
 
-        # TODO: Add -2 if n > 1 and blank at end
+        # TO DO: Add -2 if n > 1 and blank at end
         log_labels_probab = log_probs[-1, -1] #T.sum(log_probs[-1, -2:]) to do
         return -log_labels_probab
 

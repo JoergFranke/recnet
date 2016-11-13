@@ -55,7 +55,7 @@ class conv(LayerMaster):
             for pp in old_weights:
                 self.weights.append(theano.shared(value=pp.astype(T.config.floatX)))
 
-        # Init last output and cell state #todo init rausziehn
+        # Init last output and cell state #todo make initialization of hidden state lernable
         #init_hidden = 1 * (np.random.rand(n_batches, n_out) - 0.5)
         #init_hidden = init_hidden.astype(dtype=theano.config.floatX)
         init_hidden = np.zeros([n_batches, n_out]).astype(dtype=theano.config.floatX)
@@ -125,16 +125,29 @@ class LSTMp(LayerMaster):
 
             np_weights = OrderedDict()
             # Peephole weights (input- forget- output- gate)
-            np_weights['w_ig_c'] = self.vec_uniform_sqrt(self.rng, n_out)
-            np_weights['w_fg_c'] = self.vec_uniform_sqrt(self.rng,
-                                                             n_out) + 2  # Forgot gate with +2 initialized for keeping sequences right from begin
-            np_weights['w_og_c'] = self.vec_uniform_sqrt(self.rng, n_out)
+            # np_weights['w_ig_c'] = self.vec_uniform_sqrt(self.rng, n_out)
+            # np_weights['w_fg_c'] = self.vec_uniform_sqrt(self.rng, n_out) + 2  # Forgot gate with +2 initialized for keeping sequences right from begin
+            # np_weights['w_og_c'] = self.vec_uniform_sqrt(self.rng, n_out)
+            # # Previous output weights
+            # np_weights['w_ifco'] = self.rec_ortho(rng, n_out, 4)
+            # np_weights['b_ifco'] = np.zeros(4 * n_out)
+            # # Input weights
+            # np_weights['w_ifco_x'] = self.rec_uniform_sqrt(rng, n_in, 4 * n_out)
+            # np_weights['b_ifco_x'] = np.zeros(4 * n_out)
+
+
+            # todo initialization
+            np_weights['w_ig_c'] = rng.uniform(-np.sqrt(1./n_out), np.sqrt(1./n_out), n_out)
+            np_weights['w_fg_c'] = rng.uniform(-np.sqrt(1./n_out), np.sqrt(1./n_out), n_out)+2 #Forgot gate with +2 initialized for keeping sequences right from begin
+            np_weights['w_og_c'] = rng.uniform(-np.sqrt(1./n_out), np.sqrt(1./n_out), n_out)
+
             # Previous output weights
-            np_weights['w_ifco'] = self.rec_ortho(rng, n_out, 4)
-            np_weights['b_ifco'] = np.zeros(4 * n_out)
+            np_weights['w_ifco'] = rng.uniform(-np.sqrt(1./n_out), np.sqrt(1./n_out), (n_out, 4*n_out))
+            np_weights['b_ifco'] = np.zeros(4*n_out)
             # Input weights
-            np_weights['w_ifco_x'] = self.rec_uniform_sqrt(rng, n_in, 4 * n_out)
-            np_weights['b_ifco_x'] = np.zeros(4 * n_out)
+            np_weights['w_ifco_x'] = rng.uniform(-np.sqrt(1./n_out), np.sqrt(1./n_out), (n_in, 4*n_out))
+            np_weights['b_ifco_x'] = np.zeros(4*n_out)
+
 
             self.weights = []
             for kk, pp in np_weights.items():
