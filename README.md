@@ -60,29 +60,29 @@ and another the corresponding targets. Each element of the list should be a matr
 
 __2.__
 
-# todo code example
-# please see exasmples for details example of use
+Instantiate recnet, define parameters and create model.
 
-Define the parameters for the recurrent neural network
-
-Please find a full list of possible parameters below.
+```bash
+rn = rnnModel()
+rn.parameter["train_data_name"] = "train_data_set.klepto"
+rn.parameter["net_size"      ] = [      2,     10,         2]
+rn.parameter["net_unit_type" ] = ['input', 'GRU', 'softmax']
+rn.parameter["net_arch"      ] = [    '-',    'bi',     'ff']
+rn.parameter["optimization"  ] = "adadelta"
+rn.parameter["loss_function" ] = "cross_entropy"
+rn.create()
+```
+*Please find a full list of possible parameters below.*
 
 __3.__
-- The framework contains the `rnnModel` which provides functions to train, validate and test the model.
-The `rnnModel` takes the parameters.
+
+Use the provided function for generating mini batches, training, validation or usage.
 ```bash
-from recnet.build_model import rnnModel
-model = rnnModel(parameter)
-train_fn    = model.get_training_function()
-valid_fn    = model.get_validation_function()
-forward_fn  = model.get_forward_function()
+mb_train_x, mb_train_y, mb_mask = rn.get_mini_batches("train")
+for j in range(train_batch_quantity):
+    net_out, train_error = rn.train_fn( mb_train_x[j], mb_train_y[j], mb_mask[j] )
 ```
-
-
-
-
-- Please feel free to orient oneself on the [example](https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task) provided in this repository.
-
+*Please find complete training and usage scripts in the provided examples*
 
 ## Documentation
 

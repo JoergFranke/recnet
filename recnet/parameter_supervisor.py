@@ -117,7 +117,8 @@ class ParameterSupervisor:
         if "data_location" in prm_data:
             self.data["data_location"] = prm_data["data_location"]
         else:
-            raise Warning("data_location is missing")
+            self.data["data_location"] = "data_set/"
+            #raise Warning("data_location is missing")
 
         if "train_data_name" in prm_data:
             self.data["train_data_name"] = prm_data["train_data_name"]
@@ -202,7 +203,7 @@ class ParameterSupervisor:
         if "epochs" in prm_optimization:
             self.optimize["epochs"] = prm_optimization["epochs"]
         else:
-            raise Warning("Number of epochs is missing")
+            self.optimize["epochs"] = 1
 
         if "optimization" in prm_optimization:
             if prm_optimization["optimization"] == "sgd":
