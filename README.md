@@ -147,6 +147,7 @@ for j in range(train_batch_quantity):
 - Add tests
 - Implementations:
     - CTC decoder
+    - Parametrize initialization
     - Lern initialization
     - Annealed Gradient Descent
     - Mix of SGD and others like AdaDelta
