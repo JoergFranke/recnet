@@ -1,0 +1,1 @@
+from recnet.build_model import rnnModel

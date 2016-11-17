@@ -16,10 +16,10 @@ os.environ["THEANO_FLAGS"] = t_flags
 import numpy as np
 import sklearn.metrics
 import matplotlib.pyplot as plt
-from recnet.build_model import rnnModel
+import recnet
 
 ### 1. Step: Create new model
-rn = rnnModel()
+rn = recnet.rnnModel
 
 ### 2. Step: Define parameters
 rn.parameter["load_model"] = True

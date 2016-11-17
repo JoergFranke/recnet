@@ -18,12 +18,12 @@ import numpy as np
 import sklearn.metrics
 import time
 from past.builtins import xrange
-from recnet.build_model import rnnModel
-#import recnet
+#from recnet.build_model import rnnModel
+import recnet
 
 
 ### 1. Step: Create new model
-rn = rnnModel()
+rn = recnet.rnnModel()
 
 ### 2. Step: Define parameters
 rn.parameter["train_data_name"] = "little-timer_train.klepto"
