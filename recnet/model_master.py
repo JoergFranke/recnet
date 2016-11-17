@@ -1,5 +1,4 @@
 from __future__ import print_function
-__author__ = 'Joerg Franke'
 """
 This file contains a master class with support functions like load models, dump and print.
 """
@@ -26,32 +25,38 @@ class ModelMaster(object):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, parameter):
+    def __init__(self):
+        self.parameter = OrderedDict()
+
+
+    ######       Create recnet model method
+    ########################################
+    def create(self, compile=None):
 
         self.prm = ParameterSupervisor()
 
-        if "model_location" in parameter:
-            if parameter["model_location"]:
-                if not "model_location" in parameter:
+        if "model_location" in self.parameter:
+            if self.parameter["model_location"]:
+                if not "model_location" in self.parameter:
                     raise Warning("Model loction is missing")
-                if not "model_name" in parameter:
+                if not "model_name" in self.parameter:
                     raise Warning("Model name is missing")
 
-                old_weights, basic, struct,optimize = self.load(parameter["model_location"] + parameter["model_name"])
+                old_weights, basic, struct,optimize = self.load(self.parameter["model_location"] + self.parameter["model_name"])
 
                 self.prm.basic = basic
                 self.prm.struct = struct
                 self.prm.optimize = optimize
 
-                self.prm.overwrite_parameter_dict(parameter)
-                self.prm.pass_data_dict(parameter)
+                self.prm.overwrite_parameter_dict(self.parameter)
+                self.prm.pass_data_dict(self.parameter)
 
             else:
-                self.prm.pass_all_parameter_dict(parameter)
+                self.prm.pass_all_parameter_dict(self.parameter)
                 old_weights = np.repeat(None,self.prm.struct["net_size"].__len__())
 
         else:
-            self.prm.pass_all_parameter_dict(parameter)
+            self.prm.pass_all_parameter_dict(self.parameter)
             old_weights = np.repeat(None,self.prm.struct["net_size"].__len__())
 
         self.generate_random_streams()
@@ -68,12 +73,46 @@ class ModelMaster(object):
         self.pub(" #-- Build model --#")
 
 
+        if compile == None:
+            self.pub(" #-- Compile all functions --#")
+            self.compiling_training_function()
+            self.compiling_validation_function()
+            self.compiling_forward_function()
+        elif 'train' in compile:
+            self.pub(" #-- Compile train function --#")
+            self.compiling_training_function()
+        elif 'valid' in compile:
+            self.pub(" #-- Compile valid function --#")
+            self.compiling_validation_function()
+        elif 'forward' in compile:
+            self.pub(" #-- Compile forward function --#")
+            self.compiling_forward_function()
+        else:
+            raise Warning("Please provide valid compile names ('train','valid','forward')")
+
+        self.pub(" #-- Compilation complete --#")
+
+
+
     ######       Abstract build model method
     ########################################
     @abstractmethod
     def build_model(self, old_weights=None):
         pass
 
+    ######       Abstract compiling methods
+    ########################################
+    @abstractmethod
+    def compiling_training_function(self):
+        pass
+
+    @abstractmethod
+    def compiling_validation_function(self):
+        pass
+
+    @abstractmethod
+    def compiling_forward_function(self):
+        pass
 
     ######           Generate random streams
     ########################################
@@ -88,6 +127,9 @@ class ModelMaster(object):
 
         if set_name not in ['test', 'train', 'valid']:
             raise Warning("'get_mini_batches': Wrong set name")
+
+        if self.prm.data["checked_data"][set_name] == False:
+            raise Warning(set_name + " data set is not available")
 
         if "mb_of_" + self.prm.data[set_name + "_data_name"] in os.listdir(self.prm.data["mini_batch_location"][:-1]):
             self.mbh.delete_mini_batches(set_name)

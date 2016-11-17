@@ -59,6 +59,11 @@ and another the corresponding targets. Each element of the list should be a matr
 ```
 
 __2.__
+
+# todo code example
+# please see exasmples for details example of use
+# view all parameters below
+
 Define the parameters for the recurrent neural network
 
 | Parameter           | Description                                        | Value          |
@@ -113,5 +118,7 @@ Difference between train_fn and valid_fn is no use of dropout, noise or weight u
 - Extend documentation
 - Add tests
 - Implementations:
-    - CTC
+    - CTC decoder
+    - Lern initialization
+    - Annealed Gradient Descent
     - Mix of SGD and others like AdaDelta

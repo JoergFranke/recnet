@@ -1,5 +1,4 @@
 from __future__ import print_function
-__author__ = 'Joerg Franke'
 """
 This file contains the organization of the mini-batches. It loads existing mini-batch-data and creates mini-batches from a
 list of sequences/file. This includes bucketing, padding and mask creation.
@@ -68,6 +67,7 @@ class MiniBatchHandler:
 
         if self.prm.data["checked_data"][set] == False:
             self.check_out_data_set()
+
 
         if set != "train" and set != "valid" and set != "test":
             raise Warning("set must be 'train' or 'valid' or 'test'")

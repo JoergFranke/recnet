@@ -1,5 +1,3 @@
-__author__ = 'Joerg Franke'
-
 ######                           Imports
 ########################################
 from abc import ABCMeta, abstractmethod

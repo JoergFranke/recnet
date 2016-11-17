@@ -1,4 +1,3 @@
-__author__ = 'Joerg Franke'
 """
 This file contains the rnnModel-Class which builds the RNN-model and the training, validation and forward functions.
 It connects the layers, adds regularization and optimizations.
@@ -115,14 +114,22 @@ class rnnModel(ModelMaster):
 
         ######                    Regularization
         ########################################
-        def regularization(weights):
+        def L1_regularization(weights):
+            w_error = 0
+            for w in weights:
+                w_error = w_error + tpo["reg_factor"] * T.mean(T.abs(w))
+            return w_error
+
+        def L2_regularization(weights):
             w_error = 0
             for w in weights:
                 w_error = w_error + tpo["reg_factor"] * T.square(T.mean(T.sqr(w)))
             return w_error
 
-        if self.prm.optimize["regularization"] == True:
-            self.t_error = o_error + regularization(self.all_weights)
+        if self.prm.optimize["regularization"] == 'L1':
+            self.t_error = o_error + L1_regularization(self.all_weights)
+        elif self.prm.optimize["regularization"] == 'L2':
+            self.t_error = o_error + L2_regularization(self.all_weights)
         else:
             self.t_error = o_error
 
@@ -141,8 +148,8 @@ class rnnModel(ModelMaster):
 
     ######            BUILD THEANO FUNCTIONS
     ########################################
-    def get_training_function(self):
-        train_fn = theano.function(inputs=[self.X_tv2, self.Y_tv2, self.M_tv2],
+    def compiling_training_function(self):
+        self.train_fn = theano.function(inputs=[self.X_tv2, self.Y_tv2, self.M_tv2],
                                    outputs=[self.t_net_out, self.t_error],
                                    updates=self.updates,
                                    allow_input_downcast=True
@@ -150,18 +157,18 @@ class rnnModel(ModelMaster):
                                    #profile=profile,
                                    #mode=theano.Mode(linker='c'),
                                     )
-        return train_fn
+        #return train_fn
 
-    def get_validation_function(self):
-        valid_fn = theano.function(inputs=[self.X_tv2_v,self.Y_tv2, self.M_tv2],
+    def compiling_validation_function(self):
+        self.valid_fn = theano.function(inputs=[self.X_tv2_v,self.Y_tv2, self.M_tv2],
                                         outputs=[self.v_net_out, self.v_error],
                                         allow_input_downcast=True
                                     )
-        return valid_fn
+        #return valid_fn
 
-    def get_forward_function(self):
-        forward_fn = theano.function(inputs=[self.X_tv2_v,self.M_tv2],
+    def compiling_forward_function(self):
+        self.forward_fn = theano.function(inputs=[self.X_tv2_v,self.M_tv2],
                                           outputs=[self.v_net_out, ],
                                           allow_input_downcast=True
                                     )
-        return forward_fn
+        #return forward_fn
