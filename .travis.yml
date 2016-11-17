@@ -29,7 +29,7 @@ matrix:
 #              # python library, development version
 #              # boost
 #            - libboost-all-dev
- Setup Python environment with BLAS libraries
+# Setup Python environment with BLAS libraries
 before_install:
 
   - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh

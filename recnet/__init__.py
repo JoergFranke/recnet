@@ -1,1 +1,1 @@
-from recnet.build_model import rnnModel
+#from recnet.build_model import rnnModel #todo change back
