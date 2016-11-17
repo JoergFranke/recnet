@@ -31,7 +31,7 @@ class ModelMaster(object):
 
     ######       Create recnet model method
     ########################################
-    def create(self, compile=None):
+    def create(self, functions=None):
 
         self.prm = ParameterSupervisor()
 
@@ -72,21 +72,21 @@ class ModelMaster(object):
         self.print_model_params()
         self.pub(" #-- Build model --#")
 
-
-        if compile == None:
+        if functions == None:
             self.pub(" #-- Compile all functions --#")
             self.compiling_training_function()
             self.compiling_validation_function()
             self.compiling_forward_function()
-        elif 'train' in compile:
-            self.pub(" #-- Compile train function --#")
-            self.compiling_training_function()
-        elif 'valid' in compile:
-            self.pub(" #-- Compile valid function --#")
-            self.compiling_validation_function()
-        elif 'forward' in compile:
-            self.pub(" #-- Compile forward function --#")
-            self.compiling_forward_function()
+        elif all(x in ['train', 'valid', 'forward'] for x in functions):
+            if 'train' in functions:
+                self.pub(" #-- Compile train function --#")
+                self.compiling_training_function()
+            if 'valid' in functions:
+                self.pub(" #-- Compile valid function --#")
+                self.compiling_validation_function()
+            if 'forward' in functions:
+                self.pub(" #-- Compile forward function --#")
+                self.compiling_forward_function()
         else:
             raise Warning("Please provide valid compile names ('train','valid','forward')")
 
@@ -154,15 +154,18 @@ class ModelMaster(object):
             self.mbh.delete_mini_batches(set_name)
             self.pub("#mini batch handler# delete old " + set_name + " mini batches")
 
-    def get_samples_quantity(self, set_name):
+    def sample_quantity(self, set_name):
         return self.prm.data[set_name + "_batch_quantity"] *self.prm.data["batch_size"]
 
 
-    def get_batches_quantity(self, set_name):
+    def batch_quantity(self, set_name):
         return self.prm.data[set_name + "_batch_quantity"]
 
-    def get_batch_size(self):
+    def batch_size(self):
         return self.prm.data["batch_size"]
+
+    def epochs(self):
+        return self.prm.optimize["epochs"]
 
 
     ######       Dump weights in kelpto file

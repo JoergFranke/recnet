@@ -6,17 +6,15 @@
 """
 
 
-######  GLOBAL THEANO CONFIG   #######
+######  Set global Theano config  #######
 import os
-t_flags = "mode=FAST_RUN,device=cpu,floatX=float32, optimizer='fast_run', allow_gc=False" #ast_run
+t_flags = "mode=FAST_RUN,device=cpu,floatX=float32, optimizer='fast_run', allow_gc=False"
 print "Theano Flags: " + t_flags
 os.environ["THEANO_FLAGS"] = t_flags
 
-
-######         IMPORTS          ######
+######         Imports          ######
 import numpy as np
 import sklearn.metrics
-from collections import OrderedDict
 import matplotlib.pyplot as plt
 from recnet.build_model import rnnModel
 
@@ -28,7 +26,7 @@ rn.parameter["load_model"] = True
 rn.parameter["model_location"] = "model_save/"
 ################################################################################
 ########################### ADD NAME FROM TRAINED MODEL HERE ! #################
-rn.parameter["model_name"] = "**********************************.prm"
+rn.parameter["model_name"] = "***************************.prm"
 rn.parameter["batch_size" ] = 5
 rn.parameter["data_location"] = "data_set/"
 rn.parameter["test_data_name"] = "little-timer_test.klepto"
@@ -36,26 +34,24 @@ rn.parameter["test_data_name"] = "little-timer_test.klepto"
 ### 3. Step: Create model and compile functions
 rn.create(['forward'])
 
-
-### 3. Step: Get mini batches from your test data set
+### 4. Step: Get mini batches from your test data set
 rn.mbh.create_mini_batches("test")
 test_mb_set_x, test_mb_set_y, test_mb_set_m = rn.mbh.load_mini_batches("test")
 
+### 5. Step: Define your model test
+cross_entropy_error = np.zeros([rn.sample_quantity('test')])
+auc_error = np.zeros([rn.sample_quantity('test')])
 
-### 4. Step: Define your model test
-cross_entropy_error = np.zeros([rn.prm.data["test_batch_quantity"]*rn.prm.data["batch_size"]])
-auc_error = np.zeros([rn.prm.data["test_batch_quantity"]*rn.prm.data["batch_size"]])
-
-#iterate over batches
-for v in np.arange(0, rn.prm.data["test_batch_quantity"]):
-    #get network output
+### Iterate over batches
+for v in np.arange(0, rn.batch_quantity('test')):
+    # get network output
     v_net_out_ = rn.forward_fn(test_mb_set_x[v], test_mb_set_m[v])[0]
-    #iterate over batch size
-    for b in np.arange(0,rn.prm.data["batch_size"]):
-        #calculate error
+    # iterate over batch size
+    for b in np.arange(0,rn.batch_size()):
+        # calculate error
         true_out = test_mb_set_y[v][:, b, :]
         code_out = v_net_out_[:, b, :]
-        count = v * rn.prm.data["batch_size"] + b
+        count = v * rn.batch_size() + b
         cross_entropy_error[count] = sklearn.metrics.log_loss(true_out, code_out)
         auc_error[count] = sklearn.metrics.roc_auc_score(true_out, code_out)
 
