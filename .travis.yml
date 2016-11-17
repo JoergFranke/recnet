@@ -8,36 +8,36 @@ matrix:
       env: TOXENV=py34
       env: FLOATX=float32
 
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-             # compilers
-            - g++
-            - gfortran
-            - cmake
-              # math libraries
-            - libblas-dev
-            - liblapack-dev
-            - libatlas-base-dev
-            #- libopenblas-base
-            - libopenblas-dev
-              # mpi
-            - openmpi-bin
-            - libopenmpi-dev
-              # python library, development version
-              # boost
-            - libboost-all-dev
-# Setup Python environment with BLAS libraries
-#before_install:
-#
-#  - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-#  - chmod +x miniconda.sh
-#  - ./miniconda.sh -b -p $HOME/miniconda
-#  - export PATH=$HOME/miniconda/bin:$PATH
-#  - conda update -q --yes conda
-#  - export FUEL_DATA_PATH=$TRAVIS_BUILD_DIR/data
+#      addons:
+#        apt:
+#          sources:
+#            - ubuntu-toolchain-r-test
+#          packages:
+#             # compilers
+#            - g++
+#            - gfortran
+#            - cmake
+#              # math libraries
+#            - libblas-dev
+#            - liblapack-dev
+#            - libatlas-base-dev
+#            #- libopenblas-base
+#            - libopenblas-dev
+#              # mpi
+#            - openmpi-bin
+#            - libopenmpi-dev
+#              # python library, development version
+#              # boost
+#            - libboost-all-dev
+ Setup Python environment with BLAS libraries
+before_install:
+
+  - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b -p $HOME/miniconda
+  - export PATH=$HOME/miniconda/bin:$PATH
+  - conda update -q --yes conda
+  - export FUEL_DATA_PATH=$TRAVIS_BUILD_DIR/data
 
 
 
