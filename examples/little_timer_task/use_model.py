@@ -20,41 +20,42 @@ from collections import OrderedDict
 import matplotlib.pyplot as plt
 from recnet.build_model import rnnModel
 
-### 1. Step: Define parameters
-parameter = OrderedDict()
-parameter["load_model"] = True
-parameter["model_location"] = "model_save/"
+### 1. Step: Create new model
+rn = rnnModel()
+
+### 2. Step: Define parameters
+rn.parameter["load_model"] = True
+rn.parameter["model_location"] = "model_save/"
 ################################################################################
 ########################### ADD NAME FROM TRAINED MODEL HERE ! #################
-parameter["model_name"] = "**********************************.prm"
-parameter["batch_size" ] = 5
-parameter["data_location"] = "data_set/"
-parameter["test_data_name"] = "little-timer_test.klepto"
+rn.parameter["model_name"] = "**********************************.prm"
+rn.parameter["batch_size" ] = 5
+rn.parameter["data_location"] = "data_set/"
+rn.parameter["test_data_name"] = "little-timer_test.klepto"
 
-### 2. Step: Build model and get a forward function
-model = rnnModel(parameter)
-forward_fn = model.get_forward_function()
+### 3. Step: Create model and compile functions
+rn.create(['forward'])
 
 
 ### 3. Step: Get mini batches from your test data set
-model.mbh.create_mini_batches("test")
-test_mb_set_x, test_mb_set_y, test_mb_set_m = model.mbh.load_mini_batches("test")
+rn.mbh.create_mini_batches("test")
+test_mb_set_x, test_mb_set_y, test_mb_set_m = rn.mbh.load_mini_batches("test")
 
 
 ### 4. Step: Define your model test
-cross_entropy_error = np.zeros([model.prm.data["test_batch_quantity"]*model.prm.data["batch_size"]])
-auc_error = np.zeros([model.prm.data["test_batch_quantity"]*model.prm.data["batch_size"]])
+cross_entropy_error = np.zeros([rn.prm.data["test_batch_quantity"]*rn.prm.data["batch_size"]])
+auc_error = np.zeros([rn.prm.data["test_batch_quantity"]*rn.prm.data["batch_size"]])
 
 #iterate over batches
-for v in np.arange(0, model.prm.data["test_batch_quantity"]):
+for v in np.arange(0, rn.prm.data["test_batch_quantity"]):
     #get network output
-    v_net_out_ = forward_fn(test_mb_set_x[v], test_mb_set_m[v])[0]
+    v_net_out_ = rn.forward_fn(test_mb_set_x[v], test_mb_set_m[v])[0]
     #iterate over batch size
-    for b in np.arange(0,model.prm.data["batch_size"]):
+    for b in np.arange(0,rn.prm.data["batch_size"]):
         #calculate error
         true_out = test_mb_set_y[v][:, b, :]
         code_out = v_net_out_[:, b, :]
-        count = v * model.prm.data["batch_size"] + b
+        count = v * rn.prm.data["batch_size"] + b
         cross_entropy_error[count] = sklearn.metrics.log_loss(true_out, code_out)
         auc_error[count] = sklearn.metrics.roc_auc_score(true_out, code_out)
 
@@ -64,7 +65,7 @@ print("## area under the curve  : " + "{0:.4f}".format(np.mean(auc_error)))
 # Plot results
 sample_no = 0
 batch = 0
-net_out = forward_fn(test_mb_set_x[sample_no], test_mb_set_m[sample_no])[0]
+net_out = rn.forward_fn(test_mb_set_x[sample_no], test_mb_set_m[sample_no])[0]
 
 fig = plt.figure()
 fig.suptitle('Little timer task - Sample')
@@ -88,5 +89,5 @@ plt.xlim([0,80])
 plt.show()
 
 ### Delete mini batches
-model.mbh.delete_mini_batches("test")
+rn.mbh.delete_mini_batches("test")
 print("### TEST FINISH ###")

@@ -62,29 +62,10 @@ __2.__
 
 # todo code example
 # please see exasmples for details example of use
-# view all parameters below
 
 Define the parameters for the recurrent neural network
 
-| Parameter           | Description                                        | Value          |
-| ------------------- | ---------------------------------------------------| ---------------- |
-| train_data_name     | Name of the training data set | String |
-| valid_data_name     | Name of the validation data set | String |
-| data_location     | Path/dictionary to the data set in kelpto files | Path |
-| batch_size     | Size of the mini batches | Integer >=1 |
-| net_size            | input size, size of each hidden layer, output size | List of integer |
-| net_unit_type       | unit type of each layer (input, GRU, LSTM, conv, GRU_ln ...) | List of unit types |
-| net_act_type        | activation function of each layer (tanh, relu, softplus) | List of activation functions |
-| net_arch            | architecture of each layer (unidirectional, bidirectional, feed forward)  | List of architectures |
-| epochs             | Number of epochs to train                          | Integer >=1          |
-| learn_rate         | Lerning rate for optimization algorithm            | Float [0.0001...0.5] |
-| optimization       | Optimization algorithm                             | "sgd" / "rmsprop" / "nesterov_momentum" / "adadelta" |
-| use_dropout        | Use of dropout between layers vertical             | False/True       |
-| regularization     | Use of regularization (L1/L2)                      | False/"L1"/"L2"  |
-| noisy_input        | Add noise to the input                             | True/False          |
-| loss_function      | Loss/Error function (weighted or normal ce)        | "w2_cross_entropy" / "cross_entropy"          |
-
-*View documentation for full list of RecNet parameters*
+Please find a full list of possible parameters below.
 
 __3.__
 - The framework contains the `rnnModel` which provides functions to train, validate and test the model.
@@ -97,16 +78,54 @@ valid_fn    = model.get_validation_function()
 forward_fn  = model.get_forward_function()
 ```
 
-| Function | Arguments | Return   |
-|----------|-----------|----------|
-| `train_fn` | features, targets, mini  batch mask | training error, network output |
-| `valid_fn` | features, targets, mini batch mask | validation error, network output |
-| `forward_fn` | features, mini batch mask | network output |
 
-Difference between train_fn and valid_fn is no use of dropout, noise or weight update.
 
 
 - Please feel free to orient oneself on the [example](https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task) provided in this repository.
+
+
+## Documentation
+
+#### Parameters
+
+| Parameter           | Description                                        | Value          |
+| ------------------- | ---------------------------------------------------| ---------------- |
+| train_data_name     | Name of the training data set | String |
+| valid_data_name     | Name of the validation data set | String |
+| data_location     | Path/dictionary to the data set in kelpto files | Path |
+| batch_size     | Size of the mini batches | Integer >=1 |
+| output_location     | Path/dictionary for saving the log/prm files | Path |
+| output_type         | Log during training in console, log-file or both | "console"/"file"/"both" |
+| net_size            | input size, size of each hidden layer, output size | List of integer |
+| net_unit_type       | unit type of each layer (input, GRU, LSTM, conv, GRU_ln ...) | List of unit types |
+| net_act_type        | activation function of each layer (tanh, relu, softplus) | List of activation functions |
+| net_arch            | architecture of each layer (unidirectional, bidirectional, feed forward)  | List of architectures |
+| epochs             | Number of epochs to train                          | Integer >=1          |
+| learn_rate         | Lerning rate for optimization algorithm            | Float [0.0001...0.5] |
+| optimization       | Optimization algorithm                             | "sgd" / "rmsprop" / "nesterov_momentum" / "adadelta" |
+| momentum           | Momentum for some optimization algorithms          | Float [0...1]    |
+| decay_rate         | Decay rate for some optimization algorithms        | Float [0...1]    |
+| use_dropout        | Use of dropout between layers vertical             | False/True       |
+| dropout_level      | Probability of dropout                             | Float [0...1]    |
+| regularization     | Use of regularization (L1/L2)                      | False/"L1"/"L2"  |
+| reg_factor         | Influence of regularization                        | Float [0...1]    |
+| noisy_input        | Add noise to the input                             | True/False          |
+| noise_level        | Factor for noise level                             | Float [0...1]    |
+| loss_function      | Loss/Error function (weighted or normal ce)        | w2_cross_entropy/cross_entropy/CTC/CTClog|
+| bound_weight       | Weight for weighted cross entropy                  | Integer          |
+
+
+#### Functionality
+
+| Function | Describtion | Arguments | Return   |
+|----------|-------------|-----------|----------|
+| `create` | Create model and compile functions | List of function to compile ['train','valid','forward']| - |
+| `pub` | Publish in console or log-file | String of text  | - |
+| `get_mini_batches` | Create model and compile functions | Name of data set 'train'/'valid'/'test'| - |
+| `dump` | Make a dump of current model | -  | - |
+| `train_fn` | Train model with mini batch | features, targets, mask | training error, network output |
+| `valid_fn` | Determine validation error without update | features, targets, mask | validation error, network output |
+| `forward_fn` | Determin output based on mini batch | features, mask | network output |
 
 
 ## Credits

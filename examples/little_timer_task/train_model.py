@@ -23,13 +23,12 @@ from recnet.build_model import rnnModel
 #import recnet
 
 
-### 2. Step: Create new model
+### 1. Step: Create new model
 rn = rnnModel()
 #rn = recnet.rnnModel(parameter)
 
 
-### 1. Step: Define parameters
-#parameter = OrderedDict()
+### 2. Step: Define parameters
 rn.parameter["train_data_name"] = "little-timer_train.klepto"
 rn.parameter["valid_data_name"] = "little-timer_valid.klepto"
 rn.parameter["data_location"] = "data_set/"
@@ -50,11 +49,8 @@ rn.parameter["optimization"  ] = "nesterov_momentum"  # sgd, nm_rmsprop, rmsprop
 rn.parameter["loss_function" ] = "cross_entropy" # w2_cross_entropy, cross_entropy
 
 
+### 3. Step: Create model and compile functions
 rn.create(['train', 'valid'])
-
-### 3. Step: Build model functions
-#train_fn    = rn.get_training_function()
-#valid_fn    = rn.get_validation_function()
 
 
 ### 4. Step: Train model
