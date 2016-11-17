@@ -5,16 +5,17 @@ language: python
 matrix:
   include:
     - python: 3.4
+      env: TOXENV=py34
       env: FLOATX=float32
 # Setup Python environment with BLAS libraries
-before_install:
-
-  - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b -p $HOME/miniconda
-  - export PATH=$HOME/miniconda/bin:$PATH
-  - conda update -q --yes conda
-  - export FUEL_DATA_PATH=$TRAVIS_BUILD_DIR/data
+#before_install:
+#
+#  - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+#  - chmod +x miniconda.sh
+#  - ./miniconda.sh -b -p $HOME/miniconda
+#  - export PATH=$HOME/miniconda/bin:$PATH
+#  - conda update -q --yes conda
+#  - export FUEL_DATA_PATH=$TRAVIS_BUILD_DIR/data
 
 
 
