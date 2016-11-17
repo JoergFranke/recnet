@@ -19,9 +19,6 @@ before_install:
 
 
 install:
-  - pip install .
-  - pip2 install theano
-  - pip2.7 install theano
   - pip install -r requirements.txt
   - python setup.py install
 
