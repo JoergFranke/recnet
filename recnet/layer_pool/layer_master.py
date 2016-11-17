@@ -1,3 +1,8 @@
+from __future__ import absolute_import, print_function, division
+"""
+This file contains a super class for all layers
+"""
+
 ######                           Imports
 ########################################
 from abc import ABCMeta, abstractmethod
@@ -36,7 +41,7 @@ class LayerMaster(object):
         return W
 
     def rec_uniform_sqrt(self, rng, ndimA, ndimB):
-        return rng.uniform(-np.sqrt(1./ndimB), np.sqrt(1./ndimB), (ndimA,ndimB))
+        return rng.uniform(-np.sqrt(1./ndimB), np.sqrt(1./ndimB), (int(ndimA),int(ndimB)))
 
     def rec_uniform_const(self, rng, ndimA, ndimB):
         return rng.uniform(-0.1,0.1, (ndimA, ndimB))

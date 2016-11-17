@@ -1,4 +1,4 @@
-__author__ = 'Joerg Franke'
+from __future__ import absolute_import, print_function, division
 """
 This file contains different error/loss functions.
 """
@@ -58,7 +58,6 @@ class cross_entropy(LossMaster):
         outputs = T.mul(outputs.dimshuffle(0,1,'x'), mask)
 
         return T.sum(outputs) / T.sum(mask)
-
 
 
 """

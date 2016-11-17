@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import absolute_import, print_function, division
 """
 This file contains a master class with support functions like load models, dump and print.
 """
@@ -11,12 +11,12 @@ import numpy as np
 import theano
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 from collections import OrderedDict
+from future.utils import iteritems
 import datetime
 import time
 import os.path
-import sys
-from parameter_supervisor import ParameterSupervisor
-from mini_batch_handler import MiniBatchHandler
+from .parameter_supervisor import ParameterSupervisor
+from .mini_batch_handler import MiniBatchHandler
 
 
 #### Master class with support and abstract methods
@@ -255,27 +255,22 @@ class ModelMaster(object):
             self.pub("# Start Datetime: "+ date_time )
             self.pub("###")
             self.pub("# Basic Informations")
-            for kk, pp in self.prm.basic.iteritems():
+            for kk, pp in iteritems(self.prm.basic):
                 str_obj = str(kk) + ": "+ str(pp)
                 self.pub(str_obj)
             self.pub("###")
             self.pub("# Data Information")
-            for kk, pp in self.prm.data.iteritems():
+            for kk, pp in iteritems(self.prm.data):
                 str_obj = str(kk) + ": " + str(pp)
                 self.pub(str_obj)
             self.pub("###")
             self.pub("# Network Structure")
-            for kk, pp in self.prm.struct.iteritems():
+            for kk, pp in iteritems(self.prm.struct):
                 str_obj = str(kk) + ": "+ str(pp)
                 self.pub(str_obj)
             self.pub("###")
             self.pub("# Optimization Parameters")
-            for kk, pp in self.prm.optimize.iteritems():
+            for kk, pp in iteritems(self.prm.optimize):
                 str_obj = str(kk) + ": "+ str(pp)
                 self.pub(str_obj)
             self.pub("###")
-
-
-
-
-

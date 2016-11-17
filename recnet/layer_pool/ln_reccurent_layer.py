@@ -1,10 +1,7 @@
-__author__ = 'Joerg Franke'
+from __future__ import absolute_import, print_function, division
 """
 This file contains the implementation of different layer normalized recurrent layers.
 """
-
-
-
 
 ######                           Imports
 ########################################
@@ -12,8 +9,7 @@ import numpy as np
 import theano
 import theano.tensor as T
 from collections import OrderedDict
-
-from layer_master import LayerMaster
+from .layer_master import LayerMaster
 
 
 ###### Conventional recurrent layer with layer normalization
@@ -105,7 +101,7 @@ class conv_ln(LayerMaster):
 ########################################
 class LSTMp_ln(LayerMaster):
     """
-    Long short term memory layer
+    Long short term memory layer with layer normalization
 
     key ideas of implementation:
         - peepholes at input gate and forget gate but not at output gate
@@ -125,6 +121,8 @@ class LSTMp_ln(LayerMaster):
         # Random
         self.rng = rng
         self.trng = trng
+
+        self.t_n_out = theano.shared(name='t_n_out', value=n_out)
 
         if old_weights == None:
 
@@ -216,15 +214,13 @@ class LSTMp_ln(LayerMaster):
                             in_seq)
 
         w_in_seq = T.dot(in_seq_d, self.weights[0])
-        #w_in_seq = T.add(ifco_x, self.weights[1])
 
-        t_n_out = self.weights[0].shape[1] / 4
 
         [out_seq, cell_seq], updates = theano.scan(
                                                     fn=self.t_forward_step,
                                                     sequences=[mask, w_in_seq],
                                                     outputs_info=[self.t_ol_t00, self.t_cs_t00],
-                                                    non_sequences=self.weights[1:] + [t_n_out],
+                                                    non_sequences=self.weights[1:] + [self.t_n_out],
                                                     go_backwards=self.go_backwards,
                                                     truncate_gradient=-1,
                                                     # n_steps=50,
@@ -258,6 +254,8 @@ class LSTM_ln(LayerMaster):
         # Random
         self.rng = rng
         self.trng = trng
+
+        self.t_n_out = theano.shared(name='t_n_out', value=n_out)
 
         if old_weights == None:
 
@@ -346,13 +344,12 @@ class LSTM_ln(LayerMaster):
                             in_seq)
 
         w_in_seq = T.dot(in_seq_d, self.weights[0])
-        t_n_out = self.weights[0].shape[1] / 4
 
         [out_seq, cell_seq], updates = theano.scan(
             fn=self.t_forward_step,
             sequences=[mask, w_in_seq],
             outputs_info=[self.t_ol_t00, self.t_cs_t00],
-            non_sequences=self.weights[1:] + [t_n_out],
+            non_sequences=self.weights[1:] + [self.t_n_out],
             go_backwards=self.go_backwards,
             truncate_gradient=-1,
             # n_steps=50,
@@ -381,6 +378,8 @@ class GRU_ln(LayerMaster):
         # Random
         self.rng = rng
         self.trng = trng
+
+        self.t_n_out = theano.shared(name='t_n_out', value=n_out)
 
         if old_weights == None:
 
@@ -462,18 +461,16 @@ class GRU_ln(LayerMaster):
                              in_seq)
 
         rz_in_seq =  T.dot(in_seq_d, self.weights[0])
-        t_n_out = self.weights[1].shape[0] / 3
 
         out_seq, updates = theano.scan(
                                         fn=self.t_forward_step,
                                         sequences=[mask, rz_in_seq],
                                         outputs_info=[self.t_ol_t00],
-                                        non_sequences=[i for i in self.weights][1:] + [t_n_out],
+                                        non_sequences=[i for i in self.weights][1:] + [self.t_n_out],
                                         go_backwards = self.go_backwards,
                                         truncate_gradient=-1,
                                         #n_steps=50,
                                         strict=True,
                                         allow_gc=False,
                                         )
-
         return out_seq

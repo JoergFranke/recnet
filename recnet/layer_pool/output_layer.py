@@ -1,15 +1,14 @@
-from __future__ import print_function
-__author__ = 'Joerg Franke'
-
+from __future__ import absolute_import, print_function, division
+"""
+This file contains output layers.
+"""
 
 ######                           Imports
 ########################################
 import numpy as np
 import theano
 import theano.tensor as T
-
-
-from layer_master import LayerMaster
+from .layer_master import LayerMaster
 
 
 ######                     Softmax Layer
@@ -59,13 +58,13 @@ class softmax(LayerMaster):
         softmax_o = ex_net / sum_net
 
 
-        mask = T.addbroadcast(mask, 2) # todo nesseccary?
+        mask = T.addbroadcast(mask, 2) # to do nesseccary?
         output = T.mul(mask, softmax_o)   + T.mul( (1. - mask) , 1e-6 )
 
         return output #result
 
 
-### TEST FUNCTIONS # todo make new file with test functions
+### TEST FUNCTIONS # to do make new file with test functions
 from scipy.stats import multivariate_normal
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 

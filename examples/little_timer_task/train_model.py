@@ -9,7 +9,7 @@
 ######  Set global Theano config  #######
 import os
 t_flags = "mode=FAST_RUN,device=cpu,floatX=float32, optimizer='fast_run', allow_gc=False"
-print "Theano Flags: " + t_flags
+print("Theano Flags: " + t_flags)
 os.environ["THEANO_FLAGS"] = t_flags
 
 
@@ -18,7 +18,6 @@ import numpy as np
 import sklearn.metrics
 import time
 from past.builtins import xrange
-#from recnet.build_model import rnnModel
 import recnet
 
 
@@ -32,7 +31,7 @@ rn.parameter["data_location"  ] = "data_set/"
 rn.parameter["batch_size"     ] = 10
 
 rn.parameter["net_size"       ] = [      2,     10,         2]
-rn.parameter["net_unit_type"  ] = ['input',  'GRU', 'softmax']
+rn.parameter["net_unit_type"  ] = ['input',  'LSTMp_ln', 'softmax']
 rn.parameter["net_act_type"   ] = [    '-',  'tanh',      '-']
 rn.parameter["net_arch"       ] = [    '-',    'bi',     'ff']
 

@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import absolute_import, print_function, division
 """
 This file contains the organization of the mini-batches. It loads existing mini-batch-data and creates mini-batches from a
 list of sequences/file. This includes bucketing, padding and mask creation.
@@ -10,7 +10,6 @@ import os
 import klepto
 import numpy as np
 import theano
-#import builtins
 
 
 ######          Mini Batch Handler Class
@@ -21,8 +20,6 @@ class MiniBatchHandler:
 
         self.rng = rng
         self.prm = prm
-
-
 
 
     ###### Check out if data exists and is consistent

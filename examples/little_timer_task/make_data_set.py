@@ -29,7 +29,7 @@ def make_start_signal(rng, length):
 ########################################
 def make_duration_signal(rng, length):
     duration_signal = np.zeros(length)
-    for i in xrange(0,length, 1):
+    for i in xrange(0,length[0], 1):
         duration_signal[i] = rng.randint(1,9,1)
     return duration_signal
 
@@ -59,7 +59,7 @@ def make_data_set(rng, samples):
         start_signal = make_start_signal(rng, length)
         duration_signal = make_duration_signal(rng, length)
         target_signal = make_target_signal(start_signal, duration_signal)
-        input_data.append(np.concatenate([start_signal.reshape([length,1]),duration_signal.reshape([length,1])],axis=1))
+        input_data.append(np.concatenate([start_signal.reshape([length[0],1]),duration_signal.reshape([length[0],1])],axis=1))
         output_data.append(target_signal)
     return input_data, output_data
 

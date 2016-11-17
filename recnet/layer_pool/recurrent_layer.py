@@ -1,19 +1,15 @@
-__author__ = 'Joerg Franke'
 """
 This file contains the implementation of different recurrent layers.
 """
 
-
-
-
 ######                           Imports
 ########################################
+from __future__ import absolute_import, print_function, division
 import numpy as np
 import theano
 import theano.tensor as T
 from collections import OrderedDict
-
-from layer_master import LayerMaster
+from .layer_master import LayerMaster
 
 
 ######      Conventional recurrent layer
@@ -121,6 +117,8 @@ class LSTMp(LayerMaster):
         self.rng = rng
         self.trng = trng
 
+        self.t_n_out = theano.shared(name='t_n_out', value=n_out)
+
         if old_weights == None:
 
             np_weights = OrderedDict()
@@ -207,13 +205,12 @@ class LSTMp(LayerMaster):
                             in_seq)
 
         w_in_seq = T.add(T.dot(in_seq_d, self.weights[5]), self.weights[6])
-        t_n_out = self.weights[6].shape[0] / 4
 
         [out_seq, cell_seq], updates = theano.scan(
                                                     fn=self.t_forward_step,
                                                     sequences=[mask, w_in_seq],
                                                     outputs_info=[self.t_ol_t00, self.t_cs_t00],
-                                                    non_sequences=self.weights[:5] + [t_n_out],
+                                                    non_sequences=self.weights[:5] + [self.t_n_out],
                                                     go_backwards=self.go_backwards,
                                                     truncate_gradient=-1,
                                                     # n_steps=50,
@@ -247,6 +244,8 @@ class LSTM(LayerMaster):
         # Random
         self.rng = rng
         self.trng = trng
+
+        self.t_n_out = theano.shared(name='t_n_out', value=n_out)
 
         if old_weights == None:
 
@@ -320,19 +319,18 @@ class LSTM(LayerMaster):
                             in_seq)
 
         w_in_seq = T.add(T.dot(in_seq_d, self.weights[2]), self.weights[3])
-        t_n_out = self.weights[1].shape[0] / 4
 
         [out_seq, cell_seq], updates = theano.scan(
-            fn=self.t_forward_step,
-            sequences=[mask, w_in_seq],
-            outputs_info=[self.t_ol_t00, self.t_cs_t00],
-            non_sequences=self.weights[:2] + [t_n_out],
-            go_backwards=self.go_backwards,
-            truncate_gradient=-1,
-            # n_steps=50,
-            strict=True,
-            allow_gc=False,
-        )
+                                                        fn=self.t_forward_step,
+                                                        sequences=[mask, w_in_seq],
+                                                        outputs_info=[self.t_ol_t00, self.t_cs_t00],
+                                                        non_sequences=self.weights[:2] + [self.t_n_out],
+                                                        go_backwards=self.go_backwards,
+                                                        truncate_gradient=-1,
+                                                        # n_steps=50,
+                                                        strict=True,
+                                                        allow_gc=False,
+                                                    )
 
         return out_seq
 
@@ -362,7 +360,7 @@ class GRU(LayerMaster):
 
             # Input weights for reset/update gate and update weights
             np_weights['w_rzup'] = self.rec_uniform_sqrt(rng,n_in, 3 * n_out ) # rng.uniform(-0.1, 0.1,(n_in, 3 * n_out))
-            np_weights['b_rzup'] = np.zeros(3 * n_out)
+            np_weights['b_rzup'] = np.zeros( 3 * n_out )
 
             # reset and update gate
             np_weights['u_rz'] = self.rec_ortho(rng, n_out, 2) #self.uniform(-0.1, 0.1, (n_out, n_out))
@@ -386,6 +384,8 @@ class GRU(LayerMaster):
             self.weights = []
             for pp in old_weights:
                 self.weights.append(theano.shared(value=pp.astype(T.config.floatX)))
+
+        self.t_n_out = theano.shared(name='t_n_out', value=n_out)
 
         #Init last output and cell state
         ol_t00_np1 = np.zeros([n_batches,n_out]).astype(dtype=theano.config.floatX)
@@ -423,18 +423,16 @@ class GRU(LayerMaster):
                              in_seq)
 
         rz_in_seq =  T.add( T.dot(in_seq_d, self.weights[0]) , self.weights[1] )
-        t_n_out = self.weights[1].shape[0] / 3
 
         out_seq, updates = theano.scan(
                                         fn=self.t_forward_step,
                                         sequences=[mask, rz_in_seq],  # in_seq_d],
                                         outputs_info=[self.t_ol_t00],
-                                        non_sequences=[i for i in self.weights][2:] + [t_n_out],
+                                        non_sequences=[i for i in self.weights][2:] + [self.t_n_out],
                                         go_backwards = self.go_backwards,
                                         truncate_gradient=-1,
                                         #n_steps=50,
                                         strict=True,
                                         allow_gc=False,
                                         )
-
         return out_seq

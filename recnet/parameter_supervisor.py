@@ -1,4 +1,4 @@
-__author__ = 'Joerg Franke'
+from __future__ import absolute_import, print_function, division
 """
 This file contains a supervision for parameters and contains all dictionaries (basic, data, structure, optimization)
 which are necessary to build and train a model.
@@ -8,8 +8,6 @@ which are necessary to build and train a model.
 ########################################
 import numpy as np
 from collections import OrderedDict
-import datetime
-import time
 from past.builtins import xrange
 import os.path
 import sys
@@ -327,9 +325,3 @@ class ParameterSupervisor:
                 self.optimize["bound_weight"] = 0
         else:
             raise Warning("Name of loss function is missing")
-
-
-
-
-
-

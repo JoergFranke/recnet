@@ -5,16 +5,14 @@ It connects the layers, adds regularization and optimizations.
 
 ######                           Imports
 ########################################
-#import os
-#os.environ["CUDA_LAUNCH_BLOCKING"] = "0"
+from __future__ import absolute_import, print_function, division
 import numpy as np
 from collections import OrderedDict
 
-import loss_function
-import update_function
-from model_master import ModelMaster
-from layer_pool.super_layer import SuperLayer
-
+from . import loss_function
+from . import update_function
+from .model_master import ModelMaster
+from .layer_pool.super_layer import SuperLayer
 
 ######                     Theano Config
 ########################################

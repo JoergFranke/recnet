@@ -1,4 +1,4 @@
-__author__ = 'Joerg Franke'
+from __future__ import absolute_import, print_function, division
 """
 This file contains update weights class includes the optimization functions for the network
 """

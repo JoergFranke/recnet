@@ -1,12 +1,14 @@
-__author__ = 'Joerg Franke'
-
+"""
+This file contains a super layer, which implements the differen layer architectures like unidirectional or bidirectional.
+"""
 
 ######                           Imports
 ########################################
+from __future__ import absolute_import, print_function, division
 import theano.tensor as T
-import output_layer
-import recurrent_layer
-import ln_reccurent_layer
+from . import output_layer
+from . import recurrent_layer
+from . import ln_reccurent_layer
 
 
 
@@ -20,12 +22,12 @@ class SuperLayer:
         rng = rng
         trng = trng
 
-        n_in = prm_structure["net_size"][layer_no-1]
-        n_out = prm_structure["net_size"][layer_no]
+        n_in = int(prm_structure["net_size"][layer_no-1])
+        n_out = int(prm_structure["net_size"][layer_no])
         unit_type = prm_structure["net_unit_type"][layer_no]
         activation_type = prm_structure["net_act_type"][layer_no]
         self.arch = prm_structure["net_arch"][layer_no]
-        n_batches = prm_data["batch_size"]
+        n_batches = int(prm_data["batch_size"])
 
         output_layer_list = ["softmax",]
         recurrent_layer_list = ["conv", "LSTM", "LSTMp", "GRU"]
@@ -63,11 +65,11 @@ class SuperLayer:
             if n_out % 2 != 0:
                 raise Warning("Hidden layer number have to be even in case of bi")
 
-            n_out = n_out / 2
+            n_out = int(n_out / 2)
 
             if not old_weights == None:
-                forward_weights = old_weights[:old_weights.__len__() / 2]
-                backward_weights = old_weights[old_weights.__len__() / 2:]
+                forward_weights = old_weights[:int(old_weights.__len__() / 2)]
+                backward_weights = old_weights[int(old_weights.__len__() / 2):]
 
                 self.forward_layer = layer_(rng, trng, n_in, n_out, n_batches, activation, forward_weights)
                 self.backward_layer = layer_(rng, trng, n_in, n_out, n_batches, activation, backward_weights, go_backwards=True)
