@@ -7,6 +7,28 @@ matrix:
     - python: 3.4
       env: TOXENV=py34
       env: FLOATX=float32
+
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+             # compilers
+            - g++
+            - gfortran
+            - cmake
+              # math libraries
+            - libblas-dev
+            - liblapack-dev
+            - libatlas-base-dev
+            #- libopenblas-base
+            - libopenblas-dev
+              # mpi
+            - openmpi-bin
+            - libopenmpi-dev
+              # python library, development version
+              # boost
+            - libboost-all-dev
 # Setup Python environment with BLAS libraries
 #before_install:
 #
