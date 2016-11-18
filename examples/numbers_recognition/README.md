@@ -1,5 +1,5 @@
 
-## Number Recognition using CTC
+## Numbers Recognition using CTC
 
 This example is based on a toy training example from [Rakesh Var](https://github.com/rakeshvar/rnn_ctc). A model recognize
 numbers from a generated image using the CTC loss function.
