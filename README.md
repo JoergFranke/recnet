@@ -33,7 +33,8 @@ __Example of use:__
 
 <table>
   <tr>
-    <td><img src="examples/little_timer_task/little_timer_task.png" >[Little timer task](https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task)</td>
+    <td><img src="examples/little_timer_task/little_timer_task.png" >
+    <a href="https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task">Little timer task</a></td>
     <td><img src="examples/numbers_recognition/numbers_recognition.png" ></td>
     <td><img src="https://github.com/joergfranke/phoneme_recognition/blob/master/images/example.png" ></td>
   </tr>
