@@ -10,7 +10,7 @@
 *RecNet* is a easy to use framework for recurrent neural networks. It implements a deep uni/bidirectional
 Conventional/LSTM/GRU architecture in Python with use of the [Theano](http://deeplearning.net/software/theano/)
 library. The intension is a easy handling, light weight implementation with the opportunity to check out new
-ideas and to implement the current research.
+ideas and to implement current research.
 
 __Current implemented features:__
 

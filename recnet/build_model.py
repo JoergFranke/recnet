@@ -166,7 +166,7 @@ class rnnModel(ModelMaster):
 
     def compiling_forward_function(self):
         self.forward_fn = theano.function(inputs=[self.X_tv2_v,self.M_tv2],
-                                          outputs=[self.v_net_out, ],
+                                          outputs=self.v_net_out,
                                           allow_input_downcast=True
                                     )
         #return forward_fn
