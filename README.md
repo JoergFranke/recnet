@@ -33,15 +33,16 @@ __Example of use:__
 
 <table>
   <tr>
-    <td><img src="examples/little_timer_task/little_timer_task.png" >
+    <td align="center"><img src="examples/little_timer_task/little_timer_task.png" >
     <a href="https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task">Little timer task</a></td>
     <td><img src="examples/numbers_recognition/numbers_recognition.png" ></td>
+    <a href="https://github.com/joergfranke/recnet/tree/master/examples/numbers_recognition">Numbers recognition using CTC</a></td>
     <td><img src="https://github.com/joergfranke/phoneme_recognition/blob/master/images/example.png" ></td>
+    <a href="https://github.com/joergfranke/phoneme_recognition">Phoneme recognition</a></td>
   </tr>
 </table>
 
-- [Little timer task](https://github.com/joergfranke/recnet/tree/master/examples/little_timer_task)
-- [Phoneme Recognition](https://github.com/joergfranke/phoneme_recognition)
+
 
 
 ## How to install it
