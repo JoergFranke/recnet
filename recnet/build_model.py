@@ -6,16 +6,8 @@ It connects the layers, adds regularization and optimizations.
 ######                           Imports
 ########################################
 from __future__ import absolute_import, print_function, division
-import numpy as np
-from collections import OrderedDict
 
-from . import loss_function
-from . import update_function
-from .model_master import ModelMaster
-from .layer_pool.super_layer import SuperLayer
-
-######                     Theano Config
-########################################
+### Theano Config
 import theano
 import theano.tensor as T
 #theano.config.device='gpu0'
@@ -29,6 +21,16 @@ theano.config.scan.allow_gc = False
 #theano.config.optimizer_excluding ='low_memory'
 #theano.config.scan.allow_output_prealloc = True
 #theano.config.exception_verbosity='high'
+
+import numpy as np
+from collections import OrderedDict
+
+from . import loss_function
+from . import update_function
+from .model_master import ModelMaster
+from .layer_pool.super_layer import SuperLayer
+
+
 
 
 class rnnModel(ModelMaster):
