@@ -9,16 +9,6 @@ matrix:
       env: TOXENV=py34
       env: FLOATX=float32
 
-    - os: linux
-      python: 3.3
-      env: TOXENV=py33
-      env: FLOATX=float32
-
-    - os: linux
-      python: 2.7
-      env: TOXENV=py27
-      env: FLOATX=float32
-
 # Setup Python environment with BLAS libraries
 before_install:
 
