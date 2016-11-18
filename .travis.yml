@@ -1,28 +1,52 @@
 
+#language: python
+#
+#
+#matrix:
+#  include:
+#    - python: 2.7
+#      env: TOXENV=py27
+#      env: FLOATX=float32
+#
+## Setup Python environment with BLAS libraries
+#before_install:
+#
+#  - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+#  - chmod +x miniconda.sh
+#  - ./miniconda.sh -b -p $HOME/miniconda
+#  - export PATH=$HOME/miniconda/bin:$PATH
+#  - conda update -q --yes conda
+#  - export FUEL_DATA_PATH=$TRAVIS_BUILD_DIR/data
+#
+#
+#
+#install:
+#  - pip install -r requirements.txt
+#  - python setup.py install
+
+sudo: false
 language: python
-
-
-matrix:
-  include:
-    - python: 2.7
-      env: TOXENV=py27
-      env: FLOATX=float32
-
-# Setup Python environment with BLAS libraries
+python:
+  - "2.7"
+  - "3.4"
+cache: apt
+addons:
+  apt:
+    packages:
+    - libatlas-dev
+    - libatlas-base-dev
+    - liblapack-dev
+    - gfortran
 before_install:
-
-  - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b -p $HOME/miniconda
-  - export PATH=$HOME/miniconda/bin:$PATH
-  - conda update -q --yes conda
-  - export FUEL_DATA_PATH=$TRAVIS_BUILD_DIR/data
-
-
-
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda update --yes conda
 install:
-  - pip install -r requirements.txt
-  - python setup.py install
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION pip numpy scipy nose theano
+  - pip install .
+
+
 
 # command to run tests
-script: "python setup.py develop && nosetests"
+script: nosetests
