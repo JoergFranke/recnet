@@ -26,7 +26,7 @@ rn.parameter["load_model"] = True
 rn.parameter["model_location"] = "model_save/"
 ################################################################################
 ########################### ADD NAME FROM TRAINED MODEL HERE ! #################
-rn.parameter["model_name"] = "LSTMp_ln-softmax_2-10-2_bi_d-18-11-2016_v-3.prm" #***************************.prm"
+rn.parameter["model_name"] = "***************************.prm"
 rn.parameter["batch_size" ] = 5
 rn.parameter["data_location"] = "data_set/"
 rn.parameter["test_data_name"] = "little-timer_test.klepto"
