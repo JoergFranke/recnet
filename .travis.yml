@@ -4,8 +4,8 @@ language: python
 
 matrix:
   include:
-    - python: 3.4
-      env: TOXENV=py34
+    - python: 2.7
+      env: TOXENV=py27
       env: FLOATX=float32
 
 # Setup Python environment with BLAS libraries
