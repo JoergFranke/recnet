@@ -19,14 +19,14 @@ import matplotlib.pyplot as plt
 import recnet
 
 ### 1. Step: Create new model
-rn = recnet.rnnModel
+rn = recnet.rnnModel()
 
 ### 2. Step: Define parameters
 rn.parameter["load_model"] = True
 rn.parameter["model_location"] = "model_save/"
 ################################################################################
 ########################### ADD NAME FROM TRAINED MODEL HERE ! #################
-rn.parameter["model_name"] = "***************************.prm"
+rn.parameter["model_name"] = "LSTMp_ln-softmax_2-10-2_bi_d-18-11-2016_v-3.prm" #***************************.prm"
 rn.parameter["batch_size" ] = 5
 rn.parameter["data_location"] = "data_set/"
 rn.parameter["test_data_name"] = "little-timer_test.klepto"
@@ -35,8 +35,7 @@ rn.parameter["test_data_name"] = "little-timer_test.klepto"
 rn.create(['forward'])
 
 ### 4. Step: Get mini batches from your test data set
-rn.mbh.create_mini_batches("test")
-test_mb_set_x, test_mb_set_y, test_mb_set_m = rn.mbh.load_mini_batches("test")
+test_mb_set_x, test_mb_set_y, test_mb_set_m = rn.get_mini_batches("test")
 
 ### 5. Step: Define your model test
 cross_entropy_error = np.zeros([rn.sample_quantity('test')])
@@ -45,7 +44,7 @@ auc_error = np.zeros([rn.sample_quantity('test')])
 ### Iterate over batches
 for v in np.arange(0, rn.batch_quantity('test')):
     # get network output
-    v_net_out_ = rn.forward_fn(test_mb_set_x[v], test_mb_set_m[v])[0]
+    v_net_out_ = rn.forward_fn(test_mb_set_x[v], test_mb_set_m[v])
     # iterate over batch size
     for b in np.arange(0,rn.batch_size()):
         # calculate error
@@ -61,7 +60,7 @@ print("## area under the curve  : " + "{0:.4f}".format(np.mean(auc_error)))
 # Plot results
 sample_no = 0
 batch = 0
-net_out = rn.forward_fn(test_mb_set_x[sample_no], test_mb_set_m[sample_no])[0]
+net_out = rn.forward_fn(test_mb_set_x[sample_no], test_mb_set_m[sample_no])
 
 fig = plt.figure()
 fig.suptitle('Little timer task - Sample')
@@ -85,5 +84,5 @@ plt.xlim([0,80])
 plt.show()
 
 ### Delete mini batches
-rn.mbh.delete_mini_batches("test")
+rn.clear_mini_batches("test")
 print("### TEST FINISH ###")

@@ -7,7 +7,7 @@ each *start signal* peak and builds a rectangular signal. This signal length is 
 
 <table>
   <tr>
-    <td><img src="sample.png" ></td>
+    <td><img src="little_timer_task.png" ></td>
   </tr>
 </table>
 

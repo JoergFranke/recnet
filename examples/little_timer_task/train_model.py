@@ -36,12 +36,10 @@ rn.parameter["net_act_type"   ] = [    '-',  'tanh',      '-']
 rn.parameter["net_arch"       ] = [    '-',    'bi',     'ff']
 
 rn.parameter["epochs"         ] = 5
-rn.parameter["learn_rate"     ] = 0.01
-rn.parameter["use_dropout"    ] = False       # False, True
-rn.parameter["regularization" ] = 'L2'       # False, L2,  L1
+rn.parameter["use_dropout"    ] = False
+rn.parameter["regularization" ] = 'L2'
 rn.parameter["reg_factor"     ] = 0.1
-rn.parameter["optimization"   ] = "nesterov_momentum"  # sgd, nm_rmsprop, rmsprop, nesterov_momentum, adadelta
-rn.parameter["momentum_rate"  ] = 0.9
+rn.parameter["optimization"   ] = "adadelta"
 rn.parameter["loss_function"  ] = "cross_entropy"
 
 ### 3. Step: Create model and compile functions
