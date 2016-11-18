@@ -66,7 +66,9 @@ Referece: Graves, Alex, et al. "Connectionist temporal classification:
 labelling unsegmented sequence data with recurrent neural networks."
 Proceedings of the 23rd international conference on Machine learning.
 ACM, 2006.
-Credits: Shawn Tan, Rakesh Var, Mohammad Pezeshki
+Credits: I used and modified software from Shawn Tan, Rakesh Var and Mohammad Pezeshki under Apache 2 License.
+https://www.apache.org/licenses/LICENSE-2.0
+
 """
 
 ######                 CTC loss function

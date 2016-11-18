@@ -173,7 +173,7 @@ class ModelMaster(object):
     def dump(self):
 
         data_location = self.prm.basic["model_location"] + self.prm.basic["model_name"] + ".prm"
-        self.pub("save " + data_location)
+        self.pub("Save model: " + data_location)
         d = klepto.archives.file_archive(data_location, cached=True,serialized=True)
         d['layer_weights'] = [[np.asarray(w.eval()) for w in layer] for layer in self.layer_weights]
         d['p_basic'] = self.prm.basic
