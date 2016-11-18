@@ -43,7 +43,7 @@ before_install:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - conda update --yes conda
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION pip numpy scipy nose theano
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION pip numpy scipy nose
   - pip install .
 
 
