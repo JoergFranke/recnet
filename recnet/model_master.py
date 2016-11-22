@@ -123,13 +123,17 @@ class ModelMaster(object):
 
     ######                  Get mini batches
     ########################################
-    def get_mini_batches(self, set_name):
+    def get_mini_batches(self, set_name, data_set_name=None):
 
         if set_name not in ['test', 'train', 'valid']:
             raise Warning("'get_mini_batches': Wrong set name")
 
-        if self.prm.data["checked_data"][set_name] == False:
-            raise Warning(set_name + " data set is not available")
+        if data_set_name == None:
+            if self.prm.data["checked_data"][set_name] == False:
+                raise Warning(set_name + " data set is not available")
+        else:
+            self.prm.data[set_name +"_data_name"] = data_set_name
+            self.mbh.check_out_data_set()
 
         if "mb_of_" + self.prm.data[set_name + "_data_name"] in os.listdir(self.prm.data["mini_batch_location"][:-1]):
             self.mbh.delete_mini_batches(set_name)
