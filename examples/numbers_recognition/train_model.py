@@ -18,7 +18,7 @@ import numpy as np
 import time
 from past.builtins import xrange
 import recnet
-from util import edit_distance
+from .util import edit_distance
 
 ### 1. Step: Create new model
 rn = recnet.rnnModel()

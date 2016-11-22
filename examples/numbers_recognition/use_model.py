@@ -9,14 +9,14 @@
 ######  Set global Theano config  #######
 import os
 t_flags = "mode=FAST_RUN,device=cpu,floatX=float32, optimizer='fast_run', allow_gc=False"
-print "Theano Flags: " + t_flags
+print("Theano Flags: " + t_flags)
 os.environ["THEANO_FLAGS"] = t_flags
 
 ######         Imports          ######
 import numpy as np
 import matplotlib.pyplot as plt
 import recnet
-from util import edit_distance
+from .util import edit_distance
 
 ### 1. Step: Create new model
 rn = recnet.rnnModel()

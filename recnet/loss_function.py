@@ -25,7 +25,18 @@ class LossMaster():
                 raise Warning("Please use for batch size > 1 mbCTC or mbCTClog")
 
         
-    
+######           Mean squared error loss
+########################################
+class MSE(LossMaster):
+
+    def output_error(self, input_sequence,   true_output, mask):
+
+        outputs = T.pow(true_output - input_sequence, 2)
+        outputs = T.sum(outputs, axis=2) / outputs.shape[2]
+        outputs = T.mul(outputs.dimshuffle(0,1,'x'), mask)
+        return T.sum(outputs) / T.sum(mask)
+
+
 
 ######    2-class weightes cross entropy
 ########################################

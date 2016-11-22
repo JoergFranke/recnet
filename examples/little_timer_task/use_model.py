@@ -9,7 +9,7 @@
 ######  Set global Theano config  #######
 import os
 t_flags = "mode=FAST_RUN,device=cpu,floatX=float32, optimizer='fast_run', allow_gc=False"
-print "Theano Flags: " + t_flags
+print("Theano Flags: " + t_flags)
 os.environ["THEANO_FLAGS"] = t_flags
 
 ######         Imports          ######

@@ -21,7 +21,7 @@ __Current implemented features:__
 - Softmax Output
 - SGD, Nesterov momentum, RMSprop and AdaDelta optimization [4, 5]
 - Dropout Training [6]
-- Cross-Entropy Loss and Weighted Cross-Entropy Loss
+- MSE, Cross-Entropy Loss and Weighted Cross-Entropy Loss
 - normal and log Connectionist Temporal Classification [7]
 - Regularization (L1/L2)
 - Noisy Inputs
@@ -58,7 +58,7 @@ python setup.py install
 ## How to use it
 
 __1.__
-Please provide our data in form of two lists and storage it in a klepto file. One list contains sequences of features
+Please provide your data in form of two lists and storage it in a klepto file. One list contains sequences of features
 and another the corresponding targets. Each element of the list should be a matrix with shape `sequence length | feature/target size` .
 
 ```bash
@@ -120,7 +120,7 @@ for j in range(train_batch_quantity):
 | reg_factor         | Influence of regularization                        | Float [0...1]    |
 | noisy_input        | Add noise to the input                             | True/False          |
 | noise_level        | Factor for noise level                             | Float [0...1]    |
-| loss_function      | Loss/Error function (weighted or normal ce)        | w2_cross_entropy/cross_entropy/CTC/CTClog|
+| loss_function      | Loss function (weighted or normal ce)        | MSE/w2_cross_entropy/cross_entropy/CTC/CTClog|
 | bound_weight       | Weight for weighted cross entropy                  | Integer          |
 
 

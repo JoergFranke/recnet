@@ -76,7 +76,7 @@ for i in range(rn.epochs()):
             time_0 = time.time()
 
         ### 4.7: Print validation error
-        if ( (j%500) == 0 or j == rn.sample_quantity('train')-1 ) and j>0:
+        if ( (j%500) == 0 or j == rn.batch_quantity('train')-1 ) and j>0:
             rn.pub("###########################################")
             rn.pub("## epoch validation at " + str(i) + "/" + str(j))
 
