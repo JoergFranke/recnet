@@ -130,7 +130,7 @@ for j in range(train_batch_quantity):
 |----------|-------------|-----------|----------|
 | `create` | Create model and compile functions | List of function to compile ['train','valid','forward']| - |
 | `pub` | Publish in console or log-file | String of text  | - |
-| `get_mini_batches` | Create model and compile functions | Name of data set 'train'/'valid'/'test'| - |
+| `get_mini_batches` | Create model and compile functions | 'train'/'valid'/'test', opt:'data_name' | - |
 | `dump` | Make a dump of current model | -  | - |
 | `train_fn` | Train model with mini batch | features, targets, mask | training error, network output |
 | `valid_fn` | Determine validation error without update | features, targets, mask | validation error, network output |
