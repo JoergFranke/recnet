@@ -29,7 +29,7 @@ class SuperLayer:
         self.arch = prm_structure["net_arch"][layer_no]
         n_batches = int(prm_data["batch_size"])
 
-        output_layer_list = ["softmax",]
+        output_layer_list = ["softmax","linear"]
         recurrent_layer_list = ["conv", "LSTM", "LSTMp", "GRU"]
         ln_recurrent_layer_list = ["conv_ln", "LSTM_ln", "LSTMp_ln", "GRU_ln"]
 

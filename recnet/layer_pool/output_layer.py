@@ -63,6 +63,53 @@ class softmax(LayerMaster):
 
         return output #result
 
+######                     Linear Layer
+########################################
+class linear(LayerMaster):
+    def __init__(self, rng, trng, n_in, n_out, n_batches=None, activation=None,
+                 old_weights=None):  # self, rng,trng, prm_structure, layer_no, old_weights=None):
+
+        # Parameters
+        self.n_in = n_in
+        self.n_out = n_out
+
+        # w_out_np2 = self.rec_uniform_sqrt(rng, self.n_in, self.n_out)
+
+        # w_out_np2 = 1 * (rng.rand(self.n_in, self.n_out) - 0.5)
+        # b_out_np2 = 1 * (rng.rand(self.n_out) - 0.5)
+
+        w_out_np2 = rng.uniform(-np.sqrt(1. / self.n_in), np.sqrt(1. / self.n_in), (self.n_in, self.n_out))
+        b_out_np2 = rng.uniform(-np.sqrt(1. / self.n_in), np.sqrt(1. / self.n_in), self.n_out)
+
+        # w_out_np2 = 0.01 * rng.randn(self.n_in, self.n_out)
+        # b_out_np2 = np.ones(self.n_out)
+
+        # todo initialization
+
+        if old_weights == None:
+            self.t_w_out = theano.shared(name='w_out', value=w_out_np2.astype(T.config.floatX))
+            self.t_b_out = theano.shared(name='b_out', value=b_out_np2.astype(T.config.floatX))
+        else:
+            self.t_w_out = theano.shared(name='w_out', value=old_weights[0].astype(T.config.floatX))
+            self.t_b_out = theano.shared(name='b_out', value=old_weights[1].astype(T.config.floatX))
+
+        self.trng = trng
+
+        # All layer weights
+        self.weights = [self.t_w_out, self.t_b_out]
+
+    def sequence_iteration(self, output, mask, use_dropout=0, dropout_value=0.5):
+
+        dot_product = T.dot(output, self.t_w_out)
+
+        linear_o = T.add(dot_product, self.t_b_out)
+
+
+        mask = T.addbroadcast(mask, 2)  # to do nesseccary?
+        output = T.mul(mask, linear_o) + T.mul((1. - mask), 1e-6)
+
+        return output  # result
+
 
 ### TEST FUNCTIONS # to do make new file with test functions
 from scipy.stats import multivariate_normal
