@@ -11,6 +11,7 @@ import theano.tensor as T
 from .layer_master import LayerMaster
 
 
+
 ######                     Softmax Layer
 ########################################
 class softmax(LayerMaster):
@@ -62,6 +63,7 @@ class softmax(LayerMaster):
         output = T.mul(mask, softmax_o)   + T.mul( (1. - mask) , 1e-6 )
 
         return output #result
+
 
 ######                     Linear Layer
 ########################################
